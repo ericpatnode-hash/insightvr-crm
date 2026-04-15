@@ -1,723 +1,82 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>InsightVR CRM</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<style>
-  :root {
-    --purple: #534AB7; --purple-light: #EEEDFE; --purple-dark: #3C3489;
-    --green: #3B6D11; --green-light: #EAF3DE;
-    --amber: #854F0B; --amber-light: #FAEEDA; --amber-mid: #FAC775;
-    --red: #A32D2D; --red-light: #FCEBEB;
-    --blue: #185FA5; --blue-light: #E6F1FB;
-    --teal: #0F6E56; --teal-light: #E1F5EE;
-    --gray: #5F5E5A; --gray-light: #F1EFE8;
-    --text: #1a1a1a; --text-muted: #6b6b6b; --text-hint: #9b9b9b;
-    --bg: #ffffff; --bg-surface: #f7f7f5; --bg-page: #f0efe8;
-    --border: rgba(0,0,0,0.12); --border-mid: rgba(0,0,0,0.2);
-    --radius: 8px; --radius-lg: 12px;
-    --sidebar-w: 200px;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 14px; color: var(--text); background: var(--bg-page); }
-  a { color: inherit; text-decoration: none; }
+# InsightVR CRM — Deployment Guide
 
-  /* Layout */
-  .app { display: flex; min-height: 100vh; }
-  .sidebar { width: var(--sidebar-w); background: var(--bg-surface); border-right: 1px solid var(--border); position: fixed; top: 0; left: 0; height: 100vh; overflow-y: auto; display: flex; flex-direction: column; z-index: 100; }
-  .main { margin-left: var(--sidebar-w); flex: 1; min-height: 100vh; }
-  .topbar { background: var(--bg); border-bottom: 1px solid var(--border); padding: 13px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
-  .page-content { padding: 24px; }
+Follow these steps in order. Each takes only a few minutes.
 
-  /* Sidebar */
-  .brand { padding: 16px; border-bottom: 1px solid var(--border); }
-  .brand-name { font-size: 15px; font-weight: 600; color: var(--text); }
-  .brand-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
-  .nav-section { padding: 12px 14px 4px; font-size: 10px; font-weight: 600; color: var(--text-hint); letter-spacing: .07em; text-transform: uppercase; }
-  .nav-item { padding: 8px 14px; font-size: 13px; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; gap: 9px; border-right: 2px solid transparent; transition: background .1s; }
-  .nav-item:hover { background: var(--bg); color: var(--text); }
-  .nav-item.active { background: var(--bg); color: var(--text); font-weight: 500; border-right: 2px solid var(--purple); }
-  .nav-dot { width: 6px; height: 6px; border-radius: 50%; background: #ccc; flex-shrink: 0; }
-  .nav-item.active .nav-dot { background: var(--purple); }
-  .nav-badge { margin-left: auto; font-size: 10px; background: var(--red-light); color: var(--red); border-radius: 999px; padding: 1px 6px; font-weight: 600; }
+---
 
-  /* Topbar */
-  .page-title { font-size: 15px; font-weight: 600; }
-  .topbar-actions { display: flex; gap: 8px; align-items: center; }
+## Step 1 — Create your Supabase database (free)
 
-  /* Buttons */
-  .btn { padding: 7px 15px; border-radius: var(--radius); border: 1px solid var(--border-mid); background: var(--bg); color: var(--text); cursor: pointer; font-size: 13px; font-family: inherit; transition: background .1s; }
-  .btn:hover { background: var(--bg-surface); }
-  .btn-primary { background: var(--purple); color: #fff; border-color: var(--purple); }
-  .btn-primary:hover { background: var(--purple-dark); }
-  .btn-danger { color: var(--red); border-color: #f09595; }
-  .btn-danger:hover { background: var(--red-light); }
-  .btn-sm { padding: 4px 10px; font-size: 12px; }
+1. Go to **https://supabase.com** and click "Start your project"
+2. Sign up with your email or Google account
+3. Click **"New project"** and fill in:
+   - Name: `insightvr-crm`
+   - Database password: choose something strong and save it somewhere
+   - Region: pick the closest to you (e.g. US East)
+4. Wait ~2 minutes for the project to be created
+5. Once ready, go to the left sidebar → **SQL Editor**
+6. Click **"New query"**, then paste the entire contents of `supabase-setup.sql` into the editor
+7. Click **"Run"** — you should see "Success"
+8. Now go to **Settings → API** in the sidebar
+9. Copy and save two values:
+   - **Project URL** (looks like `https://abcdefgh.supabase.co`)
+   - **anon / public key** (long string starting with `eyJ...`)
 
-  /* Metrics */
-  .metrics { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; margin-bottom: 24px; }
-  .metric { background: var(--bg-surface); border-radius: var(--radius); padding: 14px 16px; }
-  .metric-label { font-size: 11px; color: var(--text-muted); margin-bottom: 5px; }
-  .metric-val { font-size: 26px; font-weight: 600; line-height: 1; }
-  .metric-sub { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
-  .metric-val.alert { color: var(--red); }
+---
 
-  /* Cards & Tables */
-  .card { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 20px; }
-  .card-header { padding: 13px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: var(--bg-surface); }
-  .card-title { font-size: 13px; font-weight: 600; }
-  table { width: 100%; border-collapse: collapse; }
-  th { padding: 9px 14px; text-align: left; font-size: 11px; font-weight: 600; color: var(--text-muted); border-bottom: 1px solid var(--border); background: var(--bg-surface); white-space: nowrap; }
-  td { padding: 11px 14px; font-size: 13px; border-bottom: 1px solid var(--border); vertical-align: middle; }
-  tr:last-child td { border-bottom: none; }
-  tbody tr { cursor: pointer; transition: background .1s; }
-  tbody tr:hover td { background: #fafaf8; }
-  .acct-name { font-weight: 500; }
-  .acct-sub { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
-  .col-muted { color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 150px; }
+## Step 2 — Put your code on GitHub (free)
 
-  /* Badges */
-  .badge { font-size: 10px; padding: 2px 8px; border-radius: 999px; font-weight: 600; display: inline-block; white-space: nowrap; }
-  .b-prospect { background: var(--purple-light); color: var(--purple-dark); }
-  .b-intro { background: var(--blue-light); color: var(--blue); }
-  .b-early { background: var(--amber-light); color: var(--amber); }
-  .b-late { background: var(--amber-mid); color: #412402; }
-  .b-proposal { background: #FBEAF0; color: #72243E; }
-  .b-won { background: var(--green-light); color: var(--green); }
-  .b-lost { background: var(--red-light); color: var(--red); }
-  .b-discovery { background: var(--purple-light); color: var(--purple-dark); }
-  .b-golive { background: var(--blue-light); color: var(--blue); }
-  .b-30day { background: var(--amber-light); color: var(--amber); }
-  .b-60day { background: var(--amber-mid); color: #412402; }
-  .b-overdue { background: var(--red-light); color: var(--red); }
-  .b-active { background: var(--green-light); color: var(--green); }
-  .b-monthly { background: var(--teal-light); color: var(--teal); }
-  .b-yearly { background: var(--purple-light); color: var(--purple-dark); }
+1. Go to **https://github.com** and sign up for a free account
+2. Click the **"+"** in the top right → **"New repository"**
+3. Name it `insightvr-crm`, set it to **Public**, click **"Create repository"**
+4. On the next screen, click **"uploading an existing file"**
+5. Drag and drop just the **`index.html`** file (not the SQL file — that was only needed once)
+6. Click **"Commit changes"**
 
-  /* Alerts */
-  .alert-banner { padding: 10px 16px; font-size: 12px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
-  .alert-warn { background: var(--amber-light); color: #633806; }
-  .alert-danger { background: var(--red-light); color: var(--red); }
-  .warn { color: var(--amber); font-weight: 600; }
-  .danger { color: var(--red); font-weight: 600; }
+---
 
-  /* Search & Filter bar */
-  .filter-bar { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
-  input[type=text].search { padding: 7px 12px; border: 1px solid var(--border-mid); border-radius: var(--radius); background: var(--bg); color: var(--text); font-size: 13px; font-family: inherit; width: 240px; }
-  input[type=text].search:focus { outline: none; border-color: var(--purple); box-shadow: 0 0 0 2px rgba(83,74,183,.15); }
+## Step 3 — Deploy to Vercel (free, gives you a real URL)
 
-  /* Modal */
-  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 200; display: flex; align-items: flex-start; justify-content: center; padding: 40px 16px; overflow-y: auto; }
-  .modal { background: var(--bg); border-radius: var(--radius-lg); width: 100%; max-width: 620px; border: 1px solid var(--border); }
-  .modal-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-  .modal-title { font-size: 15px; font-weight: 600; }
-  .modal-body { padding: 20px; max-height: 70vh; overflow-y: auto; }
-  .modal-footer { padding: 14px 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; }
-  .close-btn { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-muted); line-height: 1; padding: 2px 4px; }
-  .close-btn:hover { color: var(--text); }
+1. Go to **https://vercel.com** and sign up with your GitHub account
+2. Click **"Add New Project"**
+3. You'll see your `insightvr-crm` repo — click **"Import"**
+4. Leave all settings as default and click **"Deploy"**
+5. Wait about 30 seconds — Vercel will give you a URL like:
+   `https://insightvr-crm.vercel.app`
+6. That's your permanent CRM link! Bookmark it and share it with your team.
 
-  /* Forms */
-  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  .form-group { display: flex; flex-direction: column; gap: 5px; }
-  .form-group.full { grid-column: 1 / -1; }
-  .form-label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .04em; }
-  .form-input { padding: 8px 11px; border: 1px solid var(--border-mid); border-radius: var(--radius); background: var(--bg); color: var(--text); font-size: 13px; font-family: inherit; }
-  .form-input:focus { outline: none; border-color: var(--purple); box-shadow: 0 0 0 2px rgba(83,74,183,.15); }
-  .form-section { font-size: 11px; font-weight: 600; color: var(--text-muted); margin: 20px 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); text-transform: uppercase; letter-spacing: .05em; }
-  textarea.form-input { resize: vertical; min-height: 70px; }
+---
 
-  /* Detail view tabs */
-  .tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 18px; }
-  .tab { padding: 9px 16px; font-size: 13px; cursor: pointer; color: var(--text-muted); border-bottom: 2px solid transparent; margin-bottom: -1px; }
-  .tab:hover { color: var(--text); }
-  .tab.active { color: var(--text); font-weight: 600; border-bottom-color: var(--purple); }
-  .detail-grid { display: grid; grid-template-columns: 150px 1fr; gap: 8px 16px; font-size: 13px; }
-  .detail-label { color: var(--text-muted); }
-  .detail-val { color: var(--text); }
+## Step 4 — Connect to your database (first time only)
 
-  /* Renewal buckets */
-  .bucket-label { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: .05em; }
+1. Open your Vercel URL in the browser
+2. You'll see a setup screen asking for your Supabase credentials
+3. Paste in the **Project URL** and **anon key** you saved in Step 1
+4. Click **"Connect & Launch CRM"**
+5. Done! Your CRM is live.
 
-  /* Empty state */
-  .empty { text-align: center; padding: 48px 20px; color: var(--text-muted); font-size: 13px; }
-  .empty-icon { font-size: 32px; margin-bottom: 10px; opacity: .4; }
+> **Note for your team:** Each team member only needs to do Step 4 once on their device. The credentials are saved in their browser automatically after that.
 
-  /* Loading */
-  .loading { text-align: center; padding: 60px; color: var(--text-muted); }
+---
 
-  /* Config screen */
-  .config-screen { max-width: 540px; margin: 80px auto; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 36px; }
-  .config-title { font-size: 20px; font-weight: 600; margin-bottom: 8px; }
-  .config-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 28px; line-height: 1.6; }
-  .config-label { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 5px; display: block; }
-  .config-input { width: 100%; padding: 9px 12px; border: 1px solid var(--border-mid); border-radius: var(--radius); font-size: 13px; font-family: inherit; margin-bottom: 14px; }
-  .config-input:focus { outline: none; border-color: var(--purple); }
-  .config-note { font-size: 12px; color: var(--text-muted); background: var(--bg-surface); border-radius: var(--radius); padding: 12px; margin-bottom: 20px; line-height: 1.6; }
+## Future updates
 
-  @media (max-width: 768px) {
-    .sidebar { width: 100%; height: auto; position: relative; }
-    .main { margin-left: 0; }
-    .metrics { grid-template-columns: repeat(2, 1fr); }
-    .form-grid { grid-template-columns: 1fr; }
-  }
-</style>
-</head>
-<body>
+If you ever want to change something in the CRM, just:
+1. Edit `index.html`
+2. Go to your GitHub repo → click `index.html` → click the pencil (edit) icon
+3. Paste in the new code and commit
+4. Vercel automatically redeploys in ~30 seconds
 
-<div id="config-screen" style="display:none; padding:20px; background:var(--bg-page); min-height:100vh;">
-  <div class="config-screen">
-    <div class="config-title">Welcome to InsightVR CRM</div>
-    <div class="config-sub">To get started, connect your Supabase database. You only need to do this once — your credentials will be saved in this browser.</div>
-    <div class="config-note">
-      <strong>Where to find these:</strong><br>
-      1. Go to <strong>supabase.com</strong> and create a free project<br>
-      2. In your project, go to <strong>Settings → API</strong><br>
-      3. Copy the <strong>Project URL</strong> and <strong>anon/public key</strong> below<br>
-      4. Also run the SQL setup script (provided in the README)
-    </div>
-    <label class="config-label">Supabase Project URL</label>
-    <input class="config-input" id="cfg-url" type="text" placeholder="https://xxxxxxxxxxxx.supabase.co">
-    <label class="config-label">Supabase Anon Key</label>
-    <input class="config-input" id="cfg-key" type="text" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
-    <button class="btn btn-primary" style="width:100%;padding:10px" onclick="saveConfig()">Connect &amp; Launch CRM</button>
-  </div>
-</div>
+---
 
-<div id="app" style="display:none;">
-  <div class="app">
-    <div class="sidebar" id="sidebar">
-      <div class="brand">
-        <div class="brand-name">InsightVR CRM</div>
-        <div class="brand-sub">InSightVR</div>
-      </div>
-      <div class="nav-section">Overview</div>
-      <div class="nav-item active" id="nav-dashboard" onclick="nav('dashboard')"><span class="nav-dot"></span>Dashboard</div>
-      <div class="nav-section">Sales</div>
-      <div class="nav-item" id="nav-pipeline" onclick="nav('pipeline')"><span class="nav-dot"></span>Sales pipeline</div>
-      <div class="nav-section">Implementation</div>
-      <div class="nav-item" id="nav-impl" onclick="nav('impl')"><span class="nav-dot"></span>Implementation</div>
-      <div class="nav-section">Accounts</div>
-      <div class="nav-item" id="nav-active" onclick="nav('active')"><span class="nav-dot"></span>Active accounts</div>
-      <div class="nav-item" id="nav-renewals" onclick="nav('renewals')"><span class="nav-dot"></span>Renewals <span class="nav-badge" id="renewal-badge" style="display:none">0</span></div>
-      <div style="margin-top:auto;padding:14px;border-top:1px solid var(--border);">
-        <div style="font-size:11px;color:var(--text-muted)">Connected to Supabase</div>
-        <button class="btn btn-sm" style="margin-top:8px;width:100%;font-size:11px" onclick="resetConfig()">Change database</button>
-      </div>
-    </div>
-    <div class="main">
-      <div class="topbar">
-        <span class="page-title" id="topbar-title">Dashboard</span>
-        <div class="topbar-actions" id="topbar-actions"></div>
-      </div>
-      <div class="page-content" id="page-content">
-        <div class="loading">Loading...</div>
-      </div>
-    </div>
-  </div>
-</div>
+## Your CRM includes
 
-<div id="modal-container"></div>
+- **Dashboard** — live metrics, renewal alerts, overdue evaluation warnings
+- **Sales pipeline** — Prospect → Intro meeting → Early diligence → Late diligence → Proposal sent → Deal won/lost
+- **Implementation pipeline** — Discovery & planning → Go-live scheduled → First 30 days → First 60 days → Overdue
+- **Active accounts** — kit count, hardware cost, subscription type/amount, renewal tracking
+- **Renewals** — accounts bucketed by urgency with color-coded warnings
+- **Full account records** — contact info, implementation details, subscription fields, notes
 
-<script>
-const SALES_STAGES = ['Prospect','Intro meeting','Early diligence','Late diligence','Proposal sent','Deal won','Deal lost'];
-const IMPL_STAGES = ['Discovery & planning','Go-live scheduled','First 30 days','First 60 days','Overdue'];
-const PROB = {'Prospect':'—','Intro meeting':'—','Early diligence':'50%','Late diligence':'80%','Proposal sent':'90%','Deal won':'Closed','Deal lost':'Lost'};
-const STAGE_BADGE = {
-  'Prospect':'b-prospect','Intro meeting':'b-intro','Early diligence':'b-early',
-  'Late diligence':'b-late','Proposal sent':'b-proposal','Deal won':'b-won','Deal lost':'b-lost',
-  'Discovery & planning':'b-discovery','Go-live scheduled':'b-golive',
-  'First 30 days':'b-30day','First 60 days':'b-60day','Overdue':'b-overdue','Active':'b-active'
-};
+---
 
-let supabase = null;
-let currentView = 'dashboard';
-let accounts = [];
-let searchTerm = '';
-let filterStage = 'all';
-
-// ── Config ──────────────────────────────────────────────────────────────────
-function saveConfig() {
-  const url = document.getElementById('cfg-url').value.trim();
-  const key = document.getElementById('cfg-key').value.trim();
-  if (!url || !key) { alert('Please enter both the URL and key.'); return; }
-  localStorage.setItem('sb_url', url);
-  localStorage.setItem('sb_key', key);
-  initSupabase(url, key);
-}
-function resetConfig() {
-  if (!confirm('Change database connection? You will need to re-enter your Supabase credentials.')) return;
-  localStorage.removeItem('sb_url');
-  localStorage.removeItem('sb_key');
-  location.reload();
-}
-function initSupabase(url, key) {
-  supabase = window.supabase.createClient(url, key);
-  document.getElementById('config-screen').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
-  loadAccounts();
-}
-
-// ── Data ─────────────────────────────────────────────────────────────────────
-async function loadAccounts() {
-  try {
-    const { data, error } = await supabase.from('accounts').select('*').order('updated_at', { ascending: false });
-    if (error) throw error;
-    accounts = data || [];
-    updateRenewalBadge();
-    render();
-  } catch (e) {
-    document.getElementById('page-content').innerHTML = `<div class="empty"><div class="empty-icon">⚠</div>Could not load data.<br><small style="margin-top:8px;display:block">${e.message}</small><br><button class="btn" onclick="loadAccounts()">Retry</button></div>`;
-  }
-}
-
-async function upsertAccount(acc) {
-  const { error } = await supabase.from('accounts').upsert(acc);
-  if (error) throw error;
-  await loadAccounts();
-}
-
-async function deleteAccount(id) {
-  if (!confirm('Delete this account? This cannot be undone.')) return;
-  const { error } = await supabase.from('accounts').delete().eq('id', id);
-  if (error) { alert('Error deleting: ' + error.message); return; }
-  closeModal();
-  await loadAccounts();
-}
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-function uid() { return crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2); }
-function daysFrom(d) { if (!d) return null; return Math.round((new Date(d) - new Date()) / 86400000); }
-function fmtDate(d) { if (!d) return '—'; return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); }
-function badge(stage) { return `<span class="badge ${STAGE_BADGE[stage] || 'b-prospect'}">${stage}</span>`; }
-function daysLabel(d) { if (d === null) return ''; return d < 0 ? `(${Math.abs(d)}d overdue)` : `(${d}d)`; }
-function escHtml(s) { if (!s) return ''; return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-
-function updateRenewalBadge() {
-  const n = accounts.filter(a => a.stage === 'Active' && daysFrom(a.renewal_date) !== null && daysFrom(a.renewal_date) <= 30 && daysFrom(a.renewal_date) >= 0).length;
-  const el = document.getElementById('renewal-badge');
-  if (el) { el.textContent = n; el.style.display = n ? '' : 'none'; }
-}
-
-// ── Navigation ───────────────────────────────────────────────────────────────
-function nav(v) {
-  currentView = v;
-  searchTerm = '';
-  filterStage = 'all';
-  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-  const el = document.getElementById('nav-' + v);
-  if (el) el.classList.add('active');
-  const titles = { dashboard: 'Dashboard', pipeline: 'Sales pipeline', impl: 'Implementation', active: 'Active accounts', renewals: 'Renewals' };
-  document.getElementById('topbar-title').textContent = titles[v] || '';
-  render();
-}
-
-function render() {
-  const content = document.getElementById('page-content');
-  const actions = document.getElementById('topbar-actions');
-  actions.innerHTML = '';
-  switch (currentView) {
-    case 'dashboard': renderDashboard(content, actions); break;
-    case 'pipeline': renderPipeline(content, actions); break;
-    case 'impl': renderImpl(content, actions); break;
-    case 'active': renderActive(content, actions); break;
-    case 'renewals': renderRenewals(content, actions); break;
-  }
-}
-
-// ── Dashboard ─────────────────────────────────────────────────────────────────
-function renderDashboard(el, actions) {
-  actions.innerHTML = `<button class="btn btn-primary" onclick="openAddModal()">+ Add account</button>`;
-  const pipeline = accounts.filter(a => SALES_STAGES.includes(a.stage) && a.stage !== 'Deal won' && a.stage !== 'Deal lost');
-  const impl = accounts.filter(a => IMPL_STAGES.includes(a.stage));
-  const active = accounts.filter(a => a.stage === 'Active');
-  const renewSoon = active.filter(a => { const d = daysFrom(a.renewal_date); return d !== null && d <= 30 && d >= 0; });
-  const overdue = impl.filter(a => a.stage === 'Overdue');
-  const evalExpiring = impl.filter(a => { if (a.stage !== 'First 60 days') return false; const d = daysFrom(a.eval_end_date); return d !== null && d <= 10 && d >= 0; });
-
-  let alerts = '';
-  renewSoon.forEach(a => { const d = daysFrom(a.renewal_date); alerts += `<div class="alert-banner ${d <= 7 ? 'alert-danger' : 'alert-warn'}"><span><strong>${escHtml(a.name)}</strong> — subscription renews in ${d} day${d === 1 ? '' : 's'} (${fmtDate(a.renewal_date)})</span><button class="btn btn-sm" onclick="openDetailModal('${a.id}')">View</button></div>`; });
-  overdue.forEach(a => { alerts += `<div class="alert-banner alert-danger"><span><strong>${escHtml(a.name)}</strong> — evaluation overdue (60-day period expired)</span><button class="btn btn-sm" onclick="openDetailModal('${a.id}')">View</button></div>`; });
-  evalExpiring.forEach(a => { const d = daysFrom(a.eval_end_date); alerts += `<div class="alert-banner alert-warn"><span><strong>${escHtml(a.name)}</strong> — 60-day evaluation ends in ${d} day${d === 1 ? '' : 's'}</span><button class="btn btn-sm" onclick="openDetailModal('${a.id}')">View</button></div>`; });
-
-  const recent = accounts.slice(0, 8);
-
-  el.innerHTML = `
-    <div class="metrics">
-      <div class="metric"><div class="metric-label">Active accounts</div><div class="metric-val">${active.length}</div><div class="metric-sub">Subscribed customers</div></div>
-      <div class="metric"><div class="metric-label">Sales pipeline</div><div class="metric-val">${pipeline.length}</div><div class="metric-sub">Prospects &amp; leads</div></div>
-      <div class="metric"><div class="metric-label">In implementation</div><div class="metric-val">${impl.length}</div><div class="metric-sub">Post-close</div></div>
-      <div class="metric"><div class="metric-label">Renewing (30 days)</div><div class="metric-val ${renewSoon.length ? 'alert' : ''}">${renewSoon.length}</div><div class="metric-sub">Needs attention</div></div>
-    </div>
-    ${alerts ? `<div class="card" style="margin-bottom:20px;overflow:hidden">${alerts}</div>` : ''}
-    <div class="card">
-      <div class="card-header"><span class="card-title">Recent activity</span></div>
-      <div style="overflow-x:auto">
-        <table>
-          <thead><tr><th style="width:26%">Account</th><th style="width:18%">Stage</th><th style="width:18%">Key date</th><th style="width:10%">Kits</th><th style="width:18%">Contact</th><th style="width:10%"></th></tr></thead>
-          <tbody>
-          ${recent.length ? recent.map(a => {
-            let keyDate = '—';
-            if (a.stage === 'Active' && a.renewal_date) { const d = daysFrom(a.renewal_date); keyDate = `<span class="${d <= 30 ? d <= 7 ? 'danger' : 'warn' : ''}">Renews ${fmtDate(a.renewal_date)}</span>`; }
-            else if (a.stage === 'First 60 days' && a.eval_end_date) { const d = daysFrom(a.eval_end_date); keyDate = `<span class="${d <= 10 ? 'warn' : ''}">Eval ends ${fmtDate(a.eval_end_date)}</span>`; }
-            else if (a.go_live_date) keyDate = `Go-live ${fmtDate(a.go_live_date)}`;
-            return `<tr onclick="openDetailModal('${a.id}')"><td><div class="acct-name">${escHtml(a.name)}</div><div class="acct-sub">${escHtml(a.city || '')}</div></td><td>${badge(a.stage)}</td><td>${keyDate}</td><td>${a.kit_count || '—'}</td><td><div>${escHtml(a.contact_name || '—')}</div></td><td><button class="btn btn-sm" onclick="event.stopPropagation();openEditModal('${a.id}')">Edit</button></td></tr>`;
-          }).join('') : `<tr><td colspan="6" class="empty">No accounts yet. Click "Add account" to get started.</td></tr>`}
-          </tbody>
-        </table>
-      </div>
-    </div>`;
-}
-
-// ── Pipeline ──────────────────────────────────────────────────────────────────
-function renderPipeline(el, actions) {
-  actions.innerHTML = `<button class="btn btn-primary" onclick="openAddModal()">+ Add account</button>`;
-  let list = accounts.filter(a => SALES_STAGES.includes(a.stage));
-  if (searchTerm) list = list.filter(a => a.name.toLowerCase().includes(searchTerm.toLowerCase()) || (a.city || '').toLowerCase().includes(searchTerm.toLowerCase()));
-  if (filterStage !== 'all') list = list.filter(a => a.stage === filterStage);
-
-  el.innerHTML = `
-    <div class="filter-bar">
-      <input type="text" class="search" placeholder="Search accounts..." value="${escHtml(searchTerm)}" oninput="searchTerm=this.value;render()">
-      <select class="form-input" style="width:190px" onchange="filterStage=this.value;render()">
-        <option value="all">All stages</option>
-        ${SALES_STAGES.map(s => `<option value="${s}" ${filterStage === s ? 'selected' : ''}>${s}</option>`).join('')}
-      </select>
-    </div>
-    <div class="card">
-      <div style="overflow-x:auto">
-        <table>
-          <thead><tr><th style="width:24%">Account</th><th style="width:16%">Stage</th><th style="width:8%">Prob.</th><th style="width:16%">Contact</th><th style="width:12%">Last updated</th><th style="width:16%">Notes</th><th style="width:8%"></th></tr></thead>
-          <tbody>
-          ${list.length ? list.map(a => `
-            <tr onclick="openDetailModal('${a.id}')">
-              <td><div class="acct-name">${escHtml(a.name)}</div><div class="acct-sub">${escHtml(a.city || '')}</div></td>
-              <td>${badge(a.stage)}</td><td>${PROB[a.stage] || '—'}</td>
-              <td><div>${escHtml(a.contact_name || '—')}</div><div class="acct-sub">${escHtml(a.contact_email || '')}</div></td>
-              <td style="color:var(--text-muted)">${fmtDate(a.updated_at)}</td>
-              <td class="col-muted">${escHtml(a.notes || '—')}</td>
-              <td><button class="btn btn-sm" onclick="event.stopPropagation();openEditModal('${a.id}')">Edit</button></td>
-            </tr>`).join('') : `<tr><td colspan="7" class="empty">No accounts match this filter.</td></tr>`}
-          </tbody>
-        </table>
-      </div>
-    </div>`;
-}
-
-// ── Implementation ────────────────────────────────────────────────────────────
-function renderImpl(el, actions) {
-  let list = accounts.filter(a => IMPL_STAGES.includes(a.stage));
-  if (searchTerm) list = list.filter(a => a.name.toLowerCase().includes(searchTerm.toLowerCase()));
-  if (filterStage !== 'all') list = list.filter(a => a.stage === filterStage);
-
-  el.innerHTML = `
-    <div class="filter-bar">
-      <input type="text" class="search" placeholder="Search..." value="${escHtml(searchTerm)}" oninput="searchTerm=this.value;render()">
-      <select class="form-input" style="width:210px" onchange="filterStage=this.value;render()">
-        <option value="all">All stages</option>
-        ${IMPL_STAGES.map(s => `<option value="${s}" ${filterStage === s ? 'selected' : ''}>${s}</option>`).join('')}
-      </select>
-    </div>
-    <div class="card">
-      <div style="overflow-x:auto">
-        <table>
-          <thead><tr><th style="width:22%">Account</th><th style="width:18%">Stage</th><th style="width:14%">Go-live date</th><th style="width:16%">Eval end (60-day)</th><th style="width:14%">Impl. manager</th><th style="width:8%">Kits</th><th style="width:8%"></th></tr></thead>
-          <tbody>
-          ${list.length ? list.map(a => {
-            const ed = daysFrom(a.eval_end_date);
-            return `<tr onclick="openDetailModal('${a.id}')">
-              <td><div class="acct-name">${escHtml(a.name)}</div><div class="acct-sub">${escHtml(a.city || '')}</div></td>
-              <td>${badge(a.stage)}</td>
-              <td>${fmtDate(a.go_live_date)}</td>
-              <td>${a.eval_end_date ? `<span class="${ed !== null && ed <= 10 ? 'warn' : ''}">${fmtDate(a.eval_end_date)} ${daysLabel(ed)}</span>` : '—'}</td>
-              <td>${escHtml(a.impl_manager || '—')}</td>
-              <td>${a.kit_count || '—'}</td>
-              <td><button class="btn btn-sm" onclick="event.stopPropagation();openEditModal('${a.id}')">Edit</button></td>
-            </tr>`;
-          }).join('') : `<tr><td colspan="7" class="empty">No accounts in implementation.</td></tr>`}
-          </tbody>
-        </table>
-      </div>
-    </div>`;
-}
-
-// ── Active Accounts ───────────────────────────────────────────────────────────
-function renderActive(el, actions) {
-  let list = accounts.filter(a => a.stage === 'Active');
-  if (searchTerm) list = list.filter(a => a.name.toLowerCase().includes(searchTerm.toLowerCase()));
-
-  el.innerHTML = `
-    <div class="filter-bar">
-      <input type="text" class="search" placeholder="Search active accounts..." value="${escHtml(searchTerm)}" oninput="searchTerm=this.value;render()">
-    </div>
-    <div class="card">
-      <div style="overflow-x:auto">
-        <table>
-          <thead><tr><th style="width:20%">Account</th><th style="width:12%">Subscription</th><th style="width:14%">Renewal date</th><th style="width:8%">Kits</th><th style="width:12%">HW cost</th><th style="width:12%">Sub amount</th><th style="width:14%">Contact</th><th style="width:8%"></th></tr></thead>
-          <tbody>
-          ${list.length ? list.map(a => {
-            const d = daysFrom(a.renewal_date);
-            return `<tr onclick="openDetailModal('${a.id}')">
-              <td><div class="acct-name">${escHtml(a.name)}</div><div class="acct-sub">${escHtml(a.city || '')}</div></td>
-              <td>${a.sub_type ? `<span class="badge ${a.sub_type === 'Monthly' ? 'b-monthly' : 'b-yearly'}">${a.sub_type}</span>` : '—'}</td>
-              <td>${a.renewal_date ? `<span class="${d !== null && d <= 30 ? d <= 7 ? 'danger' : 'warn' : ''}">${fmtDate(a.renewal_date)} ${daysLabel(d)}</span>` : '—'}</td>
-              <td>${a.kit_count || '—'}</td>
-              <td>${a.hardware_cost ? '$' + Number(a.hardware_cost).toLocaleString() : '—'}</td>
-              <td>${a.sub_amount ? '$' + Number(a.sub_amount).toLocaleString() + (a.sub_type === 'Monthly' ? '/mo' : '/yr') : '—'}</td>
-              <td>${escHtml(a.contact_name || '—')}</td>
-              <td><button class="btn btn-sm" onclick="event.stopPropagation();openEditModal('${a.id}')">Edit</button></td>
-            </tr>`;
-          }).join('') : `<tr><td colspan="8" class="empty">No active accounts yet.</td></tr>`}
-          </tbody>
-        </table>
-      </div>
-    </div>`;
-}
-
-// ── Renewals ──────────────────────────────────────────────────────────────────
-function renderRenewals(el, actions) {
-  const active = accounts.filter(a => a.stage === 'Active');
-  const buckets = [
-    { label: 'Overdue', cls: 'danger', accts: active.filter(a => { const d = daysFrom(a.renewal_date); return d !== null && d < 0; }) },
-    { label: 'Next 7 days', cls: 'danger', accts: active.filter(a => { const d = daysFrom(a.renewal_date); return d !== null && d >= 0 && d <= 7; }) },
-    { label: 'Next 30 days', cls: 'warn', accts: active.filter(a => { const d = daysFrom(a.renewal_date); return d !== null && d > 7 && d <= 30; }) },
-    { label: 'Next 90 days', cls: '', accts: active.filter(a => { const d = daysFrom(a.renewal_date); return d !== null && d > 30 && d <= 90; }) },
-    { label: '90+ days', cls: '', accts: active.filter(a => { const d = daysFrom(a.renewal_date); return d !== null && d > 90; }) },
-  ];
-
-  const html = buckets.filter(b => b.accts.length).map(b => `
-    <div class="bucket-label">${b.label} (${b.accts.length})</div>
-    <div class="card" style="margin-bottom:20px">
-      <div style="overflow-x:auto">
-        <table>
-          <thead><tr><th style="width:26%">Account</th><th style="width:16%">Renewal date</th><th style="width:14%">Subscription</th><th style="width:14%">Amount</th><th style="width:16%">Contact</th><th style="width:14%">Notes</th></tr></thead>
-          <tbody>
-          ${b.accts.map(a => {
-            const d = daysFrom(a.renewal_date);
-            return `<tr onclick="openDetailModal('${a.id}')">
-              <td><div class="acct-name">${escHtml(a.name)}</div><div class="acct-sub">${escHtml(a.city || '')}</div></td>
-              <td><span class="${d !== null && d <= 7 ? 'danger' : d !== null && d <= 30 ? 'warn' : ''}">${fmtDate(a.renewal_date)} ${daysLabel(d)}</span></td>
-              <td>${a.sub_type ? `<span class="badge ${a.sub_type === 'Monthly' ? 'b-monthly' : 'b-yearly'}">${a.sub_type}</span>` : '—'}</td>
-              <td>${a.sub_amount ? '$' + Number(a.sub_amount).toLocaleString() : '—'}</td>
-              <td>${escHtml(a.contact_name || '—')}</td>
-              <td class="col-muted">${escHtml(a.notes || '—')}</td>
-            </tr>`;
-          }).join('')}
-          </tbody>
-        </table>
-      </div>
-    </div>`).join('');
-
-  el.innerHTML = html || `<div class="empty"><div class="empty-icon">✓</div>No active accounts to track yet.</div>`;
-}
-
-// ── Modals ────────────────────────────────────────────────────────────────────
-function closeModal() { document.getElementById('modal-container').innerHTML = ''; }
-
-function openAddModal() { showFormModal(null); }
-function openEditModal(id) { showFormModal(accounts.find(a => a.id === id)); }
-
-function showFormModal(acc) {
-  const isEdit = !!acc;
-  const a = acc || {};
-  const isImpl = a.stage && IMPL_STAGES.includes(a.stage);
-  const isActive = a.stage === 'Active';
-  const ptype = isActive ? 'active' : isImpl ? 'impl' : 'sales';
-
-  document.getElementById('modal-container').innerHTML = `
-    <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
-      <div class="modal">
-        <div class="modal-header">
-          <span class="modal-title">${isEdit ? 'Edit account' : 'Add account'}</span>
-          <button class="close-btn" onclick="closeModal()">×</button>
-        </div>
-        <div class="modal-body">
-          <div class="form-grid">
-            <div class="form-group full"><label class="form-label">Account name *</label><input class="form-input" id="f-name" type="text" value="${escHtml(a.name || '')}"></div>
-            <div class="form-group"><label class="form-label">City / location</label><input class="form-input" id="f-city" type="text" value="${escHtml(a.city || '')}"></div>
-            <div class="form-group"><label class="form-label">Industry / type</label><input class="form-input" id="f-industry" type="text" value="${escHtml(a.industry || '')}"></div>
-          </div>
-
-          <div class="form-section">Pipeline stage</div>
-          <div class="form-grid">
-            <div class="form-group">
-              <label class="form-label">Pipeline type</label>
-              <select class="form-input" id="f-ptype" onchange="updateStageSelect()">
-                <option value="sales" ${ptype==='sales'?'selected':''}>Sales pipeline</option>
-                <option value="impl" ${ptype==='impl'?'selected':''}>Implementation</option>
-                <option value="active" ${ptype==='active'?'selected':''}>Active account</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Stage</label>
-              <select class="form-input" id="f-stage">
-                ${ptype==='impl' ? IMPL_STAGES.map(s=>`<option value="${s}" ${a.stage===s?'selected':''}>${s}</option>`).join('') : ptype==='active' ? `<option value="Active" selected>Active</option>` : SALES_STAGES.map(s=>`<option value="${s}" ${a.stage===s?'selected':''}>${s}</option>`).join('')}
-              </select>
-            </div>
-          </div>
-
-          <div class="form-section">Primary contact</div>
-          <div class="form-grid">
-            <div class="form-group"><label class="form-label">Contact name</label><input class="form-input" id="f-cname" type="text" value="${escHtml(a.contact_name || '')}"></div>
-            <div class="form-group"><label class="form-label">Contact title</label><input class="form-input" id="f-ctitle" type="text" value="${escHtml(a.contact_title || '')}"></div>
-            <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="f-cemail" type="text" value="${escHtml(a.contact_email || '')}"></div>
-            <div class="form-group"><label class="form-label">Phone</label><input class="form-input" id="f-cphone" type="text" value="${escHtml(a.contact_phone || '')}"></div>
-          </div>
-
-          <div class="form-section">Implementation & hardware</div>
-          <div class="form-grid">
-            <div class="form-group"><label class="form-label">Implementation manager</label><input class="form-input" id="f-impl" type="text" value="${escHtml(a.impl_manager || '')}"></div>
-            <div class="form-group"><label class="form-label">Signed / close date</label><input class="form-input" id="f-signed" type="date" value="${a.signed_date || ''}"></div>
-            <div class="form-group"><label class="form-label">Go-live date (on-site)</label><input class="form-input" id="f-golive" type="date" value="${a.go_live_date || ''}"></div>
-            <div class="form-group"><label class="form-label">Eval end date (60-day)</label><input class="form-input" id="f-evalend" type="date" value="${a.eval_end_date || ''}"></div>
-            <div class="form-group"><label class="form-label">Number of kits</label><input class="form-input" id="f-kits" type="number" min="0" value="${a.kit_count || ''}"></div>
-            <div class="form-group"><label class="form-label">Hardware cost ($)</label><input class="form-input" id="f-hwcost" type="number" min="0" value="${a.hardware_cost || ''}"></div>
-          </div>
-
-          <div class="form-section">Subscription (active accounts)</div>
-          <div class="form-grid">
-            <div class="form-group">
-              <label class="form-label">Subscription type</label>
-              <select class="form-input" id="f-subtype">
-                <option value="" ${!a.sub_type?'selected':''}>—</option>
-                <option value="Monthly" ${a.sub_type==='Monthly'?'selected':''}>Monthly</option>
-                <option value="Yearly" ${a.sub_type==='Yearly'?'selected':''}>Yearly</option>
-              </select>
-            </div>
-            <div class="form-group"><label class="form-label">Subscription amount ($)</label><input class="form-input" id="f-subamt" type="number" min="0" value="${a.sub_amount || ''}"></div>
-            <div class="form-group"><label class="form-label">Renewal date</label><input class="form-input" id="f-renewal" type="date" value="${a.renewal_date || ''}"></div>
-          </div>
-
-          <div class="form-section">Notes</div>
-          <textarea class="form-input" id="f-notes" style="width:100%">${escHtml(a.notes || '')}</textarea>
-        </div>
-        <div class="modal-footer">
-          ${isEdit ? `<button class="btn btn-danger" onclick="deleteAccount('${a.id}')" style="margin-right:auto">Delete account</button>` : ''}
-          <button class="btn" onclick="closeModal()">Cancel</button>
-          <button class="btn btn-primary" onclick="saveAccount('${a.id || ''}')">Save account</button>
-        </div>
-      </div>
-    </div>`;
-}
-
-function updateStageSelect() {
-  const ptype = document.getElementById('f-ptype').value;
-  const sel = document.getElementById('f-stage');
-  if (ptype === 'sales') sel.innerHTML = SALES_STAGES.map(s => `<option value="${s}">${s}</option>`).join('');
-  else if (ptype === 'impl') sel.innerHTML = IMPL_STAGES.map(s => `<option value="${s}">${s}</option>`).join('');
-  else sel.innerHTML = `<option value="Active">Active</option>`;
-}
-
-async function saveAccount(existingId) {
-  const name = document.getElementById('f-name').value.trim();
-  if (!name) { alert('Account name is required.'); return; }
-  const now = new Date().toISOString();
-  const acc = {
-    id: existingId || uid(),
-    name,
-    city: document.getElementById('f-city').value.trim() || null,
-    industry: document.getElementById('f-industry').value.trim() || null,
-    stage: document.getElementById('f-stage').value,
-    contact_name: document.getElementById('f-cname').value.trim() || null,
-    contact_title: document.getElementById('f-ctitle').value.trim() || null,
-    contact_email: document.getElementById('f-cemail').value.trim() || null,
-    contact_phone: document.getElementById('f-cphone').value.trim() || null,
-    impl_manager: document.getElementById('f-impl').value.trim() || null,
-    signed_date: document.getElementById('f-signed').value || null,
-    go_live_date: document.getElementById('f-golive').value || null,
-    eval_end_date: document.getElementById('f-evalend').value || null,
-    kit_count: document.getElementById('f-kits').value ? parseInt(document.getElementById('f-kits').value) : null,
-    hardware_cost: document.getElementById('f-hwcost').value ? parseFloat(document.getElementById('f-hwcost').value) : null,
-    sub_type: document.getElementById('f-subtype').value || null,
-    sub_amount: document.getElementById('f-subamt').value ? parseFloat(document.getElementById('f-subamt').value) : null,
-    renewal_date: document.getElementById('f-renewal').value || null,
-    notes: document.getElementById('f-notes').value.trim() || null,
-    updated_at: now,
-    created_at: existingId ? (accounts.find(a => a.id === existingId) || {}).created_at || now : now,
-  };
-  try {
-    const btn = document.querySelector('.modal-footer .btn-primary');
-    if (btn) { btn.textContent = 'Saving...'; btn.disabled = true; }
-    await upsertAccount(acc);
-    closeModal();
-  } catch (e) {
-    alert('Error saving: ' + e.message);
-  }
-}
-
-function openDetailModal(id) {
-  const a = accounts.find(x => x.id === id);
-  if (!a) return;
-  const d = daysFrom(a.renewal_date);
-  const ed = daysFrom(a.eval_end_date);
-
-  document.getElementById('modal-container').innerHTML = `
-    <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
-      <div class="modal">
-        <div class="modal-header">
-          <div>
-            <div class="modal-title">${escHtml(a.name)}</div>
-            <div style="font-size:11px;color:var(--text-muted);margin-top:3px">${escHtml(a.city || '')}${a.industry ? ' · ' + escHtml(a.industry) : ''}</div>
-          </div>
-          <div style="display:flex;align-items:center;gap:10px">${badge(a.stage)}<button class="close-btn" onclick="closeModal()">×</button></div>
-        </div>
-        <div class="modal-body">
-          <div class="tabs">
-            <div class="tab active" id="dtab-info" onclick="switchDetailTab('info')">Contact</div>
-            <div class="tab" id="dtab-impl" onclick="switchDetailTab('impl')">Implementation</div>
-            <div class="tab" id="dtab-sub" onclick="switchDetailTab('sub')">Subscription</div>
-          </div>
-          <div id="dtab-content-info">
-            <div class="detail-grid">
-              <div class="detail-label">Contact name</div><div class="detail-val">${escHtml(a.contact_name || '—')}</div>
-              <div class="detail-label">Title</div><div class="detail-val">${escHtml(a.contact_title || '—')}</div>
-              <div class="detail-label">Email</div><div class="detail-val">${a.contact_email ? `<a href="mailto:${escHtml(a.contact_email)}" style="color:var(--blue)">${escHtml(a.contact_email)}</a>` : '—'}</div>
-              <div class="detail-label">Phone</div><div class="detail-val">${escHtml(a.contact_phone || '—')}</div>
-              <div class="detail-label">Notes</div><div class="detail-val" style="white-space:pre-wrap">${escHtml(a.notes || '—')}</div>
-            </div>
-          </div>
-          <div id="dtab-content-impl" style="display:none">
-            <div class="detail-grid">
-              <div class="detail-label">Impl. manager</div><div class="detail-val">${escHtml(a.impl_manager || '—')}</div>
-              <div class="detail-label">Signed date</div><div class="detail-val">${fmtDate(a.signed_date)}</div>
-              <div class="detail-label">Go-live date</div><div class="detail-val">${fmtDate(a.go_live_date)}</div>
-              <div class="detail-label">Eval end (60-day)</div><div class="detail-val">${a.eval_end_date ? `<span class="${ed !== null && ed <= 10 ? 'warn' : ''}">${fmtDate(a.eval_end_date)} ${daysLabel(ed)}</span>` : '—'}</div>
-              <div class="detail-label">Number of kits</div><div class="detail-val">${a.kit_count || '—'}</div>
-              <div class="detail-label">Hardware cost</div><div class="detail-val">${a.hardware_cost ? '$' + Number(a.hardware_cost).toLocaleString() : '—'}</div>
-            </div>
-          </div>
-          <div id="dtab-content-sub" style="display:none">
-            <div class="detail-grid">
-              <div class="detail-label">Subscription type</div><div class="detail-val">${a.sub_type ? `<span class="badge ${a.sub_type === 'Monthly' ? 'b-monthly' : 'b-yearly'}">${a.sub_type}</span>` : '—'}</div>
-              <div class="detail-label">Amount</div><div class="detail-val">${a.sub_amount ? '$' + Number(a.sub_amount).toLocaleString() + (a.sub_type === 'Monthly' ? '/mo' : '/yr') : '—'}</div>
-              <div class="detail-label">Renewal date</div><div class="detail-val">${a.renewal_date ? `<span class="${d !== null && d <= 30 ? d <= 7 ? 'danger' : 'warn' : ''}">${fmtDate(a.renewal_date)} ${daysLabel(d)}</span>` : '—'}</div>
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button class="btn" onclick="closeModal()">Close</button>
-          <button class="btn btn-primary" onclick="closeModal();openEditModal('${a.id}')">Edit account</button>
-        </div>
-      </div>
-    </div>`;
-}
-
-function switchDetailTab(t) {
-  ['info','impl','sub'].forEach(x => {
-    document.getElementById('dtab-' + x).classList.toggle('active', x === t);
-    document.getElementById('dtab-content-' + x).style.display = x === t ? '' : 'none';
-  });
-}
-
-// ── Boot ──────────────────────────────────────────────────────────────────────
-const savedUrl = localStorage.getItem('sb_url');
-const savedKey = localStorage.getItem('sb_key');
-if (savedUrl && savedKey) {
-  initSupabase(savedUrl, savedKey);
-} else {
-  document.getElementById('config-screen').style.display = 'block';
-}
-</script>
-</body>
-</html>
+Questions? Ask Claude to help you troubleshoot any step.
