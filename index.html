@@ -148,7 +148,8 @@
       <input class="config-input" id="cfg-url" type="text" placeholder="https://xxxxxxxxxxxx.supabase.co">
       <label class="config-label">Supabase Publishable Key</label>
       <input class="config-input" id="cfg-key" type="text" placeholder="sb_publishable_...">
-      <button class="btn btn-navy" style="width:100%;padding:11px;font-size:14px" onclick="saveConfig()">Connect &amp; Launch CRM</button>
+      <div id="cfg-error" style="color:#9c1f1f;font-size:12px;margin-bottom:10px;display:none;"></div>
+      <button id="cfg-btn" class="btn btn-navy" style="width:100%;padding:11px;font-size:14px">Connect &amp; Launch CRM</button>
     </div>
   </div>
 </div>
@@ -213,10 +214,7 @@ class CRMClient{
   async del(table,id){return this.request('DELETE',table,null,['id=eq.'+id],null);}
 }
 
-function saveConfig(){
-  const url=document.getElementById('cfg-url').value.trim();
-  const key=document.getElementById('cfg-key').value.trim();
-  if(!url||!key){alert('Please enter both fields.');return;}
+function saveConfig(){const url=document.getElementById('cfg-url').value.trim();const key=document.getElementById('cfg-key').value.trim();const errEl=document.getElementById('cfg-error');if(!url||!key){if(errEl){errEl.textContent='Please enter both fields.';errEl.style.display='block';}else{alert('Please enter both fields.');}return;}if(errEl)errEl.style.display='none';const btn=document.getElementById('cfg-btn');if(btn){btn.textContent='Connecting...';btn.disabled=true;}localStorage.setItem('sb_url',url);localStorage.setItem('sb_key',key);initCRM(url,key);}
   localStorage.setItem('sb_url',url);localStorage.setItem('sb_key',key);
   initCRM(url,key);
 }
@@ -455,7 +453,7 @@ function switchDetailTab(t){
   });
 }
 
-function boot(){
+function boot(){const cfgBtn=document.getElementById('cfg-btn');if(cfgBtn)cfgBtn.addEventListener('click',saveConfig);
   const url=localStorage.getItem('sb_url');const key=localStorage.getItem('sb_key');
   if(url&&key)initCRM(url,key);
 }
