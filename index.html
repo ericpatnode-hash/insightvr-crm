@@ -567,6 +567,15 @@ function rReports(el,act){
   },50);
 }
 
+function exportReports(){
+  const active=accs.filter(a=>a.stage==='Active');
+  exportCSV(active,[
+    {label:'Account',fn:a=>a.name},{label:'Sub Type',fn:a=>a.sub_type},
+    {label:'Sub Amount',fn:a=>a.sub_amount},{label:'HW Cost',fn:a=>a.hardware_cost},
+    {label:'Kits',fn:a=>a.kit_count},{label:'Sub Start',fn:a=>fmt(a.sub_start_date)},
+    {label:'Renewal',fn:a=>fmt(a.renewal_date)}
+  ],'revenue-report.csv');
+}
 function toggleDrill(id){const el=document.getElementById(id);if(el)el.style.display=el.style.display==='none'?'block':'none';}
 function toggleLostDrill(btn,reason){const cls='lost-drill-'+btoa(reason).replace(/=/g,'');document.querySelectorAll('.'+cls).forEach(r=>{r.style.display=r.style.display==='none'?'table-row':'none';});btn.textContent=btn.textContent==='Show'?'Hide':'Show';}
 function toggleSrcDrill(btn,src){const cls='src-drill-'+btoa(src).replace(/=/g,'');document.querySelectorAll('.'+cls).forEach(r=>{r.style.display=r.style.display==='none'?'table-row':'none';});btn.textContent=btn.textContent==='Show'?'Hide':'Show';}
