@@ -4,7 +4,63 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>InsightVR CRM</title>
-<script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+// Inline minimal Supabase REST client - no CDN needed
+class SupabaseClient {
+  constructor(url, key) {
+    this.url = url.replace(/\/$/, '');
+    this.key = key;
+  }
+  from(table) {
+    const self = this;
+    return {
+      _table: table,
+      _filters: [],
+      select(cols) { this._cols = cols || '*'; return this; },
+      order(col, opts) { this._order = col + (opts && opts.ascending===false ? '.desc' : '.asc'); return this; },
+      eq(col, val) { this._filters.push(`${col}=eq.${val}`); return this; },
+      async _fetch(method, body) {
+        let url = `${self.url}/rest/v1/${this._table}`;
+        const params = [];
+        if (this._cols) params.push(`select=${this._cols}`);
+        if (this._order) params.push(`order=${this._order}`);
+        this._filters.forEach(f => params.push(f));
+        if (params.length) url += '?' + params.join('&');
+        const opts = {
+          method: method || 'GET',
+          headers: {
+            'apikey': self.key,
+            'Authorization': 'Bearer ' + self.key,
+            'Content-Type': 'application/json',
+            'Prefer': method === 'POST' ? 'resolution=merge-duplicates,return=minimal' : 'return=minimal'
+          }
+        };
+        if (body) opts.body = JSON.stringify(body);
+        const res = await fetch(url, opts);
+        if (!res.ok) {
+          const err = await res.text();
+          return { data: null, error: { message: err } };
+        }
+        const text = await res.text();
+        return { data: text ? JSON.parse(text) : [], error: null };
+      },
+      async then(resolve) {
+        const result = await this._fetch('GET');
+        resolve(result);
+        return result;
+      },
+      upsert(row) { this._upsertRow = row; return this; },
+      delete() { this._delete = true; return this; },
+      async execute() {
+        if (this._delete) return this._fetch('DELETE');
+        if (this._upsertRow) return this._fetch('POST', Array.isArray(this._upsertRow) ? this._upsertRow : [this._upsertRow]);
+        return this._fetch('GET');
+      }
+    };
+  }
+}
+window._SupabaseClient = SupabaseClient;
+</script>
 <style>
   :root {
     --purple: #534AB7; --purple-light: #EEEDFE; --purple-dark: #3C3489;
@@ -254,7 +310,7 @@ function resetConfig() {
 }
 function initSupabase(url, key) {
   try {
-    supabase = window.supabase.createClient(url, key);
+    supabase = new window._SupabaseClient(url, key);
     document.getElementById('config-screen').style.display = 'none';
     document.getElementById('app').style.display = 'block';
     loadAccounts();
@@ -266,7 +322,7 @@ function initSupabase(url, key) {
 // ── Data ─────────────────────────────────────────────────────────────────────
 async function loadAccounts() {
   try {
-    const { data, error } = await supabase.from('accounts').select('*').order('updated_at', { ascending: false });
+    const { data, error } = await supabase.from('accounts').select('*').order('updated_at', { ascending: false })._fetch('GET');
     if (error) throw error;
     accounts = data || [];
     updateRenewalBadge();
@@ -278,14 +334,14 @@ async function loadAccounts() {
 }
 
 async function upsertAccount(acc) {
-  const { error } = await supabase.from('accounts').upsert(acc);
+  const { error } = await supabase.from('accounts').upsert(acc).execute();
   if (error) throw error;
   await loadAccounts();
 }
 
 async function deleteAccount(id) {
   if (!confirm('Delete this account? This cannot be undone.')) return;
-  const { error } = await supabase.from('accounts').delete().eq('id', id);
+  const { error } = await supabase.from('accounts').delete().eq('id', id).execute();
   if (error) { alert('Error deleting: ' + error.message); return; }
   closeModal();
   await loadAccounts();
