@@ -169,6 +169,7 @@ textarea.finput{resize:vertical;min-height:60px;}
       <div class="nav-item" id="nav-renewals" onclick="nav('renewals')"><span class="nav-dot"></span>Renewals<span class="nav-badge" id="rnb" style="display:none">0</span></div>
       <div class="nav-sec">Insights</div>
       <div class="nav-item" id="nav-reports" onclick="nav('reports')"><span class="nav-dot"></span>Reports</div>
+      <div class="nav-item" id="nav-activity" onclick="nav('activity')"><span class="nav-dot"></span>Activity</div>
       <div class="nav-sec">Settings</div>
       <div class="nav-item" id="nav-settings" onclick="nav('settings')"><span class="nav-dot"></span>Settings</div>
       <div class="sf">
@@ -297,7 +298,7 @@ function nav(v){
   view=v;q='';fs='all';sortCol='';sortDir=1;
   document.querySelectorAll('.nav-item').forEach(e=>e.classList.remove('active'));
   const el=document.getElementById('nav-'+v);if(el)el.classList.add('active');
-  document.getElementById('ptitle').textContent={dashboard:'Dashboard',pipeline:'Sales Pipeline',impl:'Implementation',active:'Active Accounts',renewals:'Renewals',reports:'Reports',settings:'Settings'}[v]||'';
+  document.getElementById('ptitle').textContent={dashboard:'Dashboard',pipeline:'Sales Pipeline',impl:'Implementation',active:'Active Accounts',renewals:'Renewals',reports:'Reports',activity:'Activity',settings:'Settings'}[v]||'';
   const rc=document.getElementById('ring-container');if(rc)rc.style.display=v==='dashboard'?'block':'none';
   render();
 }
@@ -311,6 +312,7 @@ function render(){
   else if(view==='active')rActive(c,a);
   else if(view==='renewals')rRenewals(c,a);
   else if(view==='reports')rReports(c,a);
+  else if(view==='activity')rActivity(c,a);
   else if(view==='settings')rSettings(c,a);
 }
 
@@ -329,14 +331,37 @@ function rDash(el,act){
   const impl=accs.filter(a=>IMPL.includes(a.stage));
   const active=accs.filter(a=>a.stage==='Active');
   const rs=active.filter(a=>{const d=daysFrom(a.renewal_date);return d!==null&&d<=30&&d>=0;});
+  const hwRev=active.reduce((s,a)=>s+(parseC(a.hardware_cost)||0),0);
+  const subRev=active.reduce((s,a)=>s+(parseC(a.sub_amount)||0),0);
+  const pipeVal=pipe.reduce((s,a)=>s+(parseC(a.deal_value)||0),0);
+  const totalKits=active.reduce((s,a)=>s+(a.kit_count||0),0);
+
+  // Alerts
   let alerts='';
-  rs.forEach(a=>{const d=daysFrom(a.renewal_date);alerts+='<div class="alert-row '+(d<=7?'alert-danger':'alert-warn')+'"><span><strong>'+esc(a.name)+'</strong> — renewal in '+d+' day'+(d===1?'':'s')+' ('+fmt(a.renewal_date)+')</span><button class="btn btn-sm" onclick="openDetail(\''+a.id+'\')">View</button></div>';});
-  impl.filter(a=>a.stage==='60-day evaluation'&&daysFrom(a.checkin_30_date)!==null&&daysFrom(a.checkin_30_date)<0&&!a.checkin_30_done).forEach(a=>{alerts+='<div class="alert-row alert-danger"><span><strong>'+esc(a.name)+'</strong> — 30-day check-in missed (due '+fmt(a.checkin_30_date)+')</span><button class="btn btn-sm" onclick="openDetail(\''+a.id+'\')">View</button></div>';});
-  impl.filter(a=>a.stage==='60-day evaluation'&&daysFrom(a.checkin_30_date)!==null&&daysFrom(a.checkin_30_date)>=0&&daysFrom(a.checkin_30_date)<=7&&!a.checkin_30_done).forEach(a=>{const d=daysFrom(a.checkin_30_date);alerts+='<div class="alert-row alert-warn"><span><strong>'+esc(a.name)+'</strong> — 30-day check-in due in '+d+'d</span><button class="btn btn-sm" onclick="openDetail(\''+a.id+'\')">View</button></div>';});
-  impl.filter(a=>a.stage==='Overdue').forEach(a=>{alerts+='<div class="alert-row alert-danger"><span><strong>'+esc(a.name)+'</strong> — 60-day evaluation overdue</span><button class="btn btn-sm" onclick="openDetail(\''+a.id+'\')">View</button></div>';});
-  impl.filter(a=>a.stage==='60-day evaluation'&&daysFrom(a.eval_end_date)!==null&&daysFrom(a.eval_end_date)<=10&&daysFrom(a.eval_end_date)>=0).forEach(a=>{const d=daysFrom(a.eval_end_date);alerts+='<div class="alert-row alert-warn"><span><strong>'+esc(a.name)+'</strong> — 60-day evaluation ends in '+d+'d</span><button class="btn btn-sm" onclick="openDetail(\''+a.id+'\')">View</button></div>';});
-  const rec=accs.slice(0,8);
-  el.innerHTML='<div class="metrics"><div class="metric" onclick="nav(\'active\')" style="cursor:pointer"><div class="metric-lbl">Active Accounts</div><div class="metric-val">'+active.length+'</div><div class="metric-sub" style="color:var(--navy)">View →</div></div><div class="metric" onclick="nav(\'pipeline\')" style="cursor:pointer"><div class="metric-lbl">Sales Pipeline</div><div class="metric-val">'+pipe.length+'</div><div class="metric-sub" style="color:var(--navy)">View →</div></div><div class="metric" onclick="nav(\'impl\')" style="cursor:pointer"><div class="metric-lbl">Implementation</div><div class="metric-val">'+impl.length+'</div><div class="metric-sub" style="color:var(--navy)">View →</div></div><div class="metric" onclick="nav(\'renewals\')" style="cursor:pointer"><div class="metric-lbl">Renewing (30 days)</div><div class="metric-val '+(rs.length?'red':'')+'">'+rs.length+'</div><div class="metric-sub" style="color:'+(rs.length?'var(--danger)':'var(--navy)')+'">View →</div></div></div>'+(alerts?'<div class="card" style="overflow:hidden;margin-bottom:20px">'+alerts+'</div>':'')+'<div class="card"><div class="card-hdr"><span class="card-title">Recent activity</span></div><div style="padding:0">'+(function(){const allActivity=[];accs.forEach(a=>{const log=getActivity(a);log.forEach(e=>allActivity.push({...e,accId:a.id,accName:a.name,accStage:a.stage}));});allActivity.sort((a,b)=>new Date(b.ts)-new Date(a.ts));const recent=allActivity.slice(0,20);if(!recent.length)return'<div class="empty">No activity yet — start adding and editing accounts.</div>';return recent.map(e=>'<div style="padding:12px 18px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:12px"><div style="flex:1"><span style="font-weight:700;color:var(--navy)">'+esc(e.accName)+'</span><span style="font-size:12px;color:var(--muted);margin-left:8px">'+fmtDT(e.ts)+'</span><div style="font-size:12px;color:var(--text);margin-top:2px">'+esc(e.what)+'</div><div style="font-size:11px;color:var(--muted);margin-top:1px">by '+esc(e.who||'Unknown')+'</div></div><button class="btn btn-sm btn-navy" onclick="openDetail(\''+e.accId+'\')" style="flex-shrink:0">View</button></div>').join('');})()+'</div></div>';
+  rs.forEach(a=>{const d=daysFrom(a.renewal_date);alerts+='<div class="alert-row '+(d<=7?'alert-danger':'alert-warn')+'"><span><strong>'+esc(a.name)+'</strong> — renewal in '+d+' day'+(d===1?'':'s')+' ('+fmt(a.renewal_date)+')</span><button class="btn btn-sm" onclick="openDetail(''+a.id+'')">View</button></div>';});
+  impl.filter(a=>a.stage==='60-day evaluation'&&daysFrom(a.checkin_30_date)!==null&&daysFrom(a.checkin_30_date)<0&&!a.checkin_30_done).forEach(a=>{alerts+='<div class="alert-row alert-danger"><span><strong>'+esc(a.name)+'</strong> — 30-day check-in missed (due '+fmt(a.checkin_30_date)+')</span><button class="btn btn-sm" onclick="openDetail(''+a.id+'')">View</button></div>';});
+  impl.filter(a=>a.stage==='60-day evaluation'&&daysFrom(a.checkin_30_date)!==null&&daysFrom(a.checkin_30_date)>=0&&daysFrom(a.checkin_30_date)<=7&&!a.checkin_30_done).forEach(a=>{const d=daysFrom(a.checkin_30_date);alerts+='<div class="alert-row alert-warn"><span><strong>'+esc(a.name)+'</strong> — 30-day check-in due in '+d+'d</span><button class="btn btn-sm" onclick="openDetail(''+a.id+'')">View</button></div>';});
+  impl.filter(a=>a.stage==='Overdue').forEach(a=>{alerts+='<div class="alert-row alert-danger"><span><strong>'+esc(a.name)+'</strong> — 60-day evaluation overdue</span><button class="btn btn-sm" onclick="openDetail(''+a.id+'')">View</button></div>';});
+  impl.filter(a=>a.stage==='60-day evaluation'&&daysFrom(a.eval_end_date)!==null&&daysFrom(a.eval_end_date)<=10&&daysFrom(a.eval_end_date)>=0).forEach(a=>{const d=daysFrom(a.eval_end_date);alerts+='<div class="alert-row alert-warn"><span><strong>'+esc(a.name)+'</strong> — 60-day evaluation ends in '+d+'d</span><button class="btn btn-sm" onclick="openDetail(''+a.id+'')">View</button></div>';});
+
+  // Pipeline stage breakdown
+  const stageBreakdown=SALES.filter(s=>s!=='Deal won'&&s!=='Deal lost').map(s=>{const n=pipe.filter(a=>a.stage===s).length;return{s,n};}).filter(x=>x.n>0);
+  const maxN=Math.max(...stageBreakdown.map(x=>x.n),1);
+  const pipeHTML=stageBreakdown.length?stageBreakdown.map(x=>'<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><div style="width:130px;font-size:12px;font-weight:600;color:var(--muted);flex-shrink:0">'+x.s+'</div><div style="flex:1;background:var(--surface);border-radius:999px;height:8px;overflow:hidden"><div style="background:var(--navy);height:8px;border-radius:999px;width:'+(x.n/maxN*100)+'%"></div></div><div style="width:24px;text-align:right;font-size:13px;font-weight:800;color:var(--navy)">'+x.n+'</div></div>').join(''):'<div style="color:var(--muted);font-size:13px">No open pipeline deals.</div>';
+
+  el.innerHTML=
+    // Metric cards
+    '<div class="metrics"><div class="metric" onclick="nav('active')" style="cursor:pointer"><div class="metric-lbl">Active Accounts</div><div class="metric-val">'+active.length+'</div><div class="metric-sub" style="color:var(--navy)">View →</div></div><div class="metric" onclick="nav('pipeline')" style="cursor:pointer"><div class="metric-lbl">Sales Pipeline</div><div class="metric-val">'+pipe.length+'</div><div class="metric-sub" style="color:var(--navy)">View →</div></div><div class="metric" onclick="nav('impl')" style="cursor:pointer"><div class="metric-lbl">Implementation</div><div class="metric-val">'+impl.length+'</div><div class="metric-sub" style="color:var(--navy)">View →</div></div><div class="metric" onclick="nav('renewals')" style="cursor:pointer"><div class="metric-lbl">Renewing (30 days)</div><div class="metric-val '+(rs.length?'red':'')+'">'+rs.length+'</div><div class="metric-sub" style="color:'+(rs.length?'var(--danger)':'var(--navy)')+'">View →</div></div></div>'
+    // Alerts
+    +'<div class="card" style="overflow:hidden;margin-bottom:20px"><div class="card-hdr"><span class="card-title">Alerts</span></div>'+(alerts?alerts:'<div style="padding:14px 18px;font-size:13px;font-weight:600;color:var(--ok)">&#10003; All clear — no items need attention right now.</div>')+'</div>'
+    // Two column: pipeline breakdown + revenue snapshot
+    +'<div class="fg" style="gap:20px;align-items:start"><div><div class="card"><div class="card-hdr"><span class="card-title">Pipeline breakdown</span><button class="btn btn-sm btn-navy" onclick="nav('pipeline')">View all</button></div><div style="padding:16px 18px">'+pipeHTML+'</div></div></div>'
+    +'<div><div class="card"><div class="card-hdr"><span class="card-title">Revenue snapshot</span><button class="btn btn-sm btn-navy" onclick="nav('reports')">Full reports</button></div><div style="padding:16px 18px"><div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">'
+    +'<div style="background:var(--surface);border-radius:var(--r);padding:14px"><div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Hardware revenue</div><div style="font-size:22px;font-weight:800;color:var(--navy)">'+(hwRev?'$'+fmtC(hwRev):'—')+'</div></div>'
+    +'<div style="background:var(--surface);border-radius:var(--r);padding:14px"><div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Subscription revenue</div><div style="font-size:22px;font-weight:800;color:var(--navy)">'+(subRev?'$'+fmtC(subRev):'—')+'</div></div>'
+    +'<div style="background:var(--surface);border-radius:var(--r);padding:14px"><div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Pipeline value</div><div style="font-size:22px;font-weight:800;color:var(--navy)">'+(pipeVal?'$'+fmtC(pipeVal):'—')+'</div></div>'
+    +'<div style="background:var(--surface);border-radius:var(--r);padding:14px"><div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Kits deployed</div><div style="font-size:22px;font-weight:800;color:var(--navy)">'+totalKits+'</div></div>'
+    +'</div></div></div></div></div>';
 }
 
 function rPipe(el,act){
@@ -494,6 +519,23 @@ function toggleSrcDrill(btn,src){
   btn.textContent=btn.textContent==='Show'?'Hide':'Show';
 }
 
+
+function rActivity(el,act){
+  const allActivity=[];
+  accs.forEach(a=>{
+    const log=getActivity(a);
+    log.forEach(e=>allActivity.push({...e,accId:a.id,accName:a.name}));
+  });
+  allActivity.sort((a,b)=>new Date(b.ts)-new Date(a.ts));
+  const recent=allActivity.slice(0,50);
+  if(!recent.length){
+    el.innerHTML='<div class="empty">No activity recorded yet. Activity is logged automatically when you create accounts, change stages, add notes, and mark check-ins.</div>';
+    return;
+  }
+  el.innerHTML='<div class="card"><div style="padding:0">'
+    +recent.map(e=>'<div style="padding:13px 18px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:12px"><div style="flex:1"><div><span style="font-weight:700;color:var(--navy);cursor:pointer" onclick="openDetail(''+e.accId+'')">'+esc(e.accName)+'</span><span style="font-size:12px;color:var(--muted);margin-left:10px">'+fmtDT(e.ts)+'</span></div><div style="font-size:13px;color:var(--text);margin-top:3px">'+esc(e.what)+'</div><div style="font-size:11px;color:var(--muted);margin-top:2px">by '+esc(e.who||'Unknown')+'</div></div><button class="btn btn-sm btn-navy" onclick="openDetail(''+e.accId+'')">View</button></div>').join('')
+    +'</div></div>';
+}
 
 function rSettings(el,act){
   el.innerHTML='<div style="max-width:560px"><div class="card"><div class="card-hdr"><span class="card-title">Implementation managers</span><button class="btn btn-sm btn-primary" onclick="showAddMgr()">+ Add</button></div><div class="mgr-mgmt" id="mgr-list">'+implMgrs.map((m,i)=>'<div class="mgr-row"><span>'+esc(m)+'</span><button class="btn btn-sm btn-danger" onclick="removeMgr('+i+')">Remove</button></div>').join('')+'</div></div></div>';
