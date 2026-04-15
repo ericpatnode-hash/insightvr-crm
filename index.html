@@ -23,48 +23,36 @@
   --shadow-modal:0 20px 40px rgba(0,0,0,.15),0 8px 16px rgba(0,0,0,.08);
   --t-fast:all .12s ease;--t-base:all .18s ease;
 }
-
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Nunito Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;color:var(--text);background:var(--page);line-height:1.5;-webkit-font-smoothing:antialiased;}
-
-/* ── Layout ── */
+body{font-family:'Nunito Sans',-apple-system,sans-serif;font-size:14px;color:var(--text);background:var(--page);line-height:1.5;-webkit-font-smoothing:antialiased;}
 .app{display:flex;min-height:100vh;}
 .sidebar{width:var(--sw);background:linear-gradient(160deg,#1a4f84 0%,var(--navy) 100%);position:fixed;top:0;left:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column;z-index:100;box-shadow:2px 0 12px rgba(0,0,0,.15);}
 .main{margin-left:var(--sw);flex:1;}
-.topbar{background:var(--navy);padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:58px;position:sticky;top:0;z-index:50;box-shadow:0 1px 0 rgba(255,255,255,.08),0 2px 8px rgba(0,0,0,.15);}
+.topbar{background:var(--navy);padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:58px;position:sticky;top:0;z-index:50;box-shadow:0 2px 8px rgba(0,0,0,.15);}
 .content{padding:28px;}
-
-/* ── Sidebar ── */
 .brand{padding:20px 18px 16px;border-bottom:1px solid rgba(255,255,255,.1);}
 .brand-name{font-size:16px;font-weight:800;color:#fff;letter-spacing:-.01em;}
 .brand-sub{font-size:11px;color:var(--green);margin-top:3px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;}
 .nav-sec{padding:16px 16px 4px;font-size:10px;font-weight:700;color:rgba(255,255,255,.35);letter-spacing:.1em;text-transform:uppercase;}
 .nav-item{padding:9px 16px;font-size:13px;color:rgba(255,255,255,.65);cursor:pointer;display:flex;align-items:center;gap:10px;border-left:3px solid transparent;font-weight:600;transition:var(--t-fast);border-radius:0 6px 6px 0;margin-right:8px;}
-.nav-item:hover{background:rgba(255,255,255,.09);color:#fff;border-left-color:rgba(255,255,255,.2);}
+.nav-item:hover{background:rgba(255,255,255,.09);color:#fff;}
 .nav-item.active{background:rgba(255,255,255,.13);color:#fff;border-left-color:var(--green);font-weight:700;}
-.nav-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.25);flex-shrink:0;transition:var(--t-fast);}
+.nav-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.25);flex-shrink:0;}
 .nav-item.active .nav-dot{background:var(--green);box-shadow:0 0 6px rgba(0,254,162,.5);}
 .nav-badge{margin-left:auto;font-size:10px;background:#dc2626;color:#fff;border-radius:999px;padding:2px 7px;font-weight:700;}
 .sf{margin-top:auto;padding:14px 16px;border-top:1px solid rgba(255,255,255,.1);}
 .sf-user{font-size:12px;color:rgba(255,255,255,.85);font-weight:700;margin-bottom:4px;}
 .sf-text{font-size:11px;color:rgba(255,255,255,.35);margin-bottom:8px;}
-
-/* ── Typography ── */
 .page-title{font-size:16px;font-weight:800;color:#fff;letter-spacing:-.01em;}
-
-/* ── Buttons ── */
-.btn{padding:7px 16px;border-radius:var(--r);border:1px solid var(--border-mid);background:var(--bg);color:var(--text);cursor:pointer;font-size:13px;font-family:inherit;font-weight:700;transition:var(--t-fast);box-shadow:var(--shadow-xs);letter-spacing:.01em;}
+.btn{padding:7px 16px;border-radius:var(--r);border:1px solid var(--border-mid);background:var(--bg);color:var(--text);cursor:pointer;font-size:13px;font-family:inherit;font-weight:700;transition:var(--t-fast);box-shadow:var(--shadow-xs);}
 .btn:hover{background:var(--surface);box-shadow:var(--shadow-sm);transform:translateY(-1px);}
-.btn:active{transform:translateY(0);box-shadow:var(--shadow-xs);}
-.btn-primary{background:var(--green);color:#000;border-color:var(--green);box-shadow:0 1px 3px rgba(0,254,162,.3);}
-.btn-primary:hover{background:var(--green-dark);box-shadow:0 4px 12px rgba(0,254,162,.35);}
-.btn-navy{background:var(--navy);color:#fff;border-color:var(--navy);box-shadow:0 1px 3px rgba(31,94,156,.3);}
-.btn-navy:hover{background:var(--navy-dark);box-shadow:0 4px 12px rgba(31,94,156,.35);}
+.btn:active{transform:translateY(0);}
+.btn-primary{background:var(--green);color:#000;border-color:var(--green);}
+.btn-primary:hover{background:var(--green-dark);}
+.btn-navy{background:var(--navy);color:#fff;border-color:var(--navy);}
+.btn-navy:hover{background:var(--navy-dark);}
 .btn-danger{color:var(--danger);border-color:var(--danger-border);background:var(--danger-bg);}
-.btn-danger:hover{background:#fee2e2;}
 .btn-sm{padding:4px 11px;font-size:12px;}
-
-/* ── Metric cards ── */
 .metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:28px;}
 .metric{background:var(--bg);border-radius:var(--rx);padding:20px 20px 16px;border:1px solid var(--border);transition:var(--t-base);box-shadow:var(--shadow-sm);}
 .metric:hover{border-color:var(--navy);background:var(--navy-lighter);box-shadow:var(--shadow-md);transform:translateY(-2px);}
@@ -72,13 +60,9 @@ body{font-family:'Nunito Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-
 .metric-val{font-size:32px;font-weight:800;color:var(--navy);letter-spacing:-.02em;line-height:1;}
 .metric-val.red{color:var(--danger);}
 .metric-sub{font-size:11px;color:var(--muted);margin-top:6px;font-weight:600;}
-
-/* ── Cards ── */
 .card{background:var(--bg);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:20px;box-shadow:var(--shadow-sm);}
 .card-hdr{padding:14px 20px;border-bottom:1px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:space-between;}
 .card-title{font-size:13px;font-weight:700;color:var(--navy);letter-spacing:.01em;}
-
-/* ── Tables ── */
 table{width:100%;border-collapse:collapse;}
 th{padding:10px 16px;text-align:left;font-size:10px;font-weight:700;color:var(--muted);border-bottom:1px solid var(--border);background:var(--surface);white-space:nowrap;text-transform:uppercase;letter-spacing:.06em;}
 td{padding:12px 16px;font-size:13px;border-bottom:1px solid var(--border);vertical-align:middle;font-weight:600;}
@@ -87,9 +71,7 @@ tbody tr{cursor:pointer;transition:background .1s;}
 tbody tr:hover td{background:var(--navy-lighter);}
 .an{font-weight:700;color:var(--navy);}
 .as{font-size:11px;color:var(--muted-light);margin-top:2px;}
-
-/* ── Badges ── */
-.badge{font-size:11px;padding:3px 10px;border-radius:999px;font-weight:700;display:inline-block;white-space:nowrap;letter-spacing:.01em;}
+.badge{font-size:11px;padding:3px 10px;border-radius:999px;font-weight:700;display:inline-block;white-space:nowrap;}
 .b-prospect{background:#dbeafe;color:#1e40af;}
 .b-intro{background:var(--ok-bg);color:var(--ok);border:1px solid var(--ok-border);}
 .b-early{background:var(--warn-bg);color:var(--warn-text);border:1px solid var(--warn-border);}
@@ -104,30 +86,22 @@ tbody tr:hover td{background:var(--navy-lighter);}
 .b-active{background:#d1fae5;color:#065f46;border:1px solid var(--ok-border);}
 .b-monthly{background:#dbeafe;color:#1e40af;border:1px solid #bfdbfe;}
 .b-yearly{background:var(--navy);color:#fff;}
-
-/* ── Alerts ── */
 .alert-row{padding:12px 20px;font-size:12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);font-weight:600;}
 .alert-warn{background:var(--warn-bg);color:var(--warn-text);border-left:3px solid #f59e0b;}
 .alert-danger{background:var(--danger-bg);color:var(--danger);border-left:3px solid #ef4444;}
 .warn{color:#b45309;font-weight:700;}
 .danger{color:var(--danger);font-weight:700;}
-
-/* ── Filter bar ── */
 .fbar{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:center;}
-input[type=text].search{padding:9px 14px;border:1px solid var(--border-mid);border-radius:var(--r);background:var(--bg);color:var(--text);font-size:13px;font-family:inherit;width:250px;font-weight:600;transition:var(--t-fast);box-shadow:var(--shadow-xs);}
+input[type=text].search{padding:9px 14px;border:1px solid var(--border-mid);border-radius:var(--r);background:var(--bg);color:var(--text);font-size:13px;font-family:inherit;width:250px;font-weight:600;box-shadow:var(--shadow-xs);}
 input[type=text].search:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 3px rgba(31,94,156,.12);}
-
-/* ── Modal ── */
 .overlay{position:fixed;inset:0;background:rgba(15,23,42,.5);backdrop-filter:blur(2px);z-index:200;display:flex;align-items:flex-start;justify-content:center;padding:32px 16px;overflow-y:auto;}
 .modal{background:var(--bg);border-radius:var(--rx);width:100%;max-width:680px;border:1px solid var(--border);box-shadow:var(--shadow-modal);}
-.modal-hdr{padding:18px 22px;border-bottom:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,var(--navy-dark) 0%,var(--navy) 100%);border-radius:var(--rx) var(--rx) 0 0;}
-.modal-title{font-size:15px;font-weight:800;color:#fff;letter-spacing:-.01em;}
+.modal-hdr{padding:18px 22px;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,var(--navy-dark) 0%,var(--navy) 100%);border-radius:var(--rx) var(--rx) 0 0;}
+.modal-title{font-size:15px;font-weight:800;color:#fff;}
 .modal-body{padding:22px;max-height:72vh;overflow-y:auto;}
 .modal-foot{padding:16px 22px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;background:var(--surface);}
 .xbtn{background:none;border:none;font-size:22px;cursor:pointer;color:rgba(255,255,255,.6);line-height:1;transition:var(--t-fast);}
 .xbtn:hover{color:#fff;transform:rotate(90deg);}
-
-/* ── Forms ── */
 .fg{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
 .fg3{display:grid;grid-template-columns:2fr 1fr 1fr;gap:16px;}
 .fgrp{display:flex;flex-direction:column;gap:6px;}
@@ -135,17 +109,13 @@ input[type=text].search:focus{outline:none;border-color:var(--navy);box-shadow:0
 .flbl{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
 .finput{padding:9px 12px;border:1px solid var(--border-mid);border-radius:var(--r);background:var(--bg);color:var(--text);font-size:13px;font-family:inherit;font-weight:600;transition:var(--t-fast);box-shadow:var(--shadow-xs);}
 .finput:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 3px rgba(31,94,156,.12);}
-.finput:hover{border-color:var(--border-strong);}
-.fsec{font-size:11px;font-weight:800;color:var(--navy);margin:22px 0 12px;padding-bottom:8px;border-bottom:2px solid var(--navy-light);text-transform:uppercase;letter-spacing:.07em;display:flex;align-items:center;gap:8px;}
+.fsec{font-size:11px;font-weight:800;color:var(--navy);margin:22px 0 12px;padding-bottom:8px;border-bottom:2px solid var(--navy-light);text-transform:uppercase;letter-spacing:.07em;}
 textarea.finput{resize:vertical;min-height:60px;}
 .cblock{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:10px;position:relative;}
 .cblock-title{font-size:11px;font-weight:800;color:var(--navy);text-transform:uppercase;letter-spacing:.05em;margin-bottom:14px;}
-.cbtn-remove{position:absolute;top:12px;right:12px;background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;line-height:1;transition:var(--t-fast);}
-.cbtn-remove:hover{color:var(--danger);}
-.add-c-btn{width:100%;padding:10px;border:1.5px dashed var(--border-mid);border-radius:var(--r);background:none;color:var(--navy);font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:6px;transition:var(--t-fast);}
-.add-c-btn:hover{background:var(--navy-lighter);border-color:var(--navy);}
-
-/* ── Detail tabs ── */
+.cbtn-remove{position:absolute;top:12px;right:12px;background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;line-height:1;}
+.add-c-btn{width:100%;padding:10px;border:1.5px dashed var(--border-mid);border-radius:var(--r);background:none;color:var(--navy);font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:6px;}
+.add-c-btn:hover{background:var(--navy-lighter);}
 .tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:20px;gap:2px;}
 .tab{padding:10px 16px;font-size:13px;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-2px;font-weight:700;transition:var(--t-fast);border-radius:6px 6px 0 0;}
 .tab:hover{color:var(--navy);background:var(--navy-lighter);}
@@ -153,16 +123,13 @@ textarea.finput{resize:vertical;min-height:60px;}
 .dgrid{display:grid;grid-template-columns:150px 1fr;gap:10px 16px;font-size:13px;}
 .dlbl{color:var(--muted);font-weight:700;font-size:12px;}
 .dval{font-weight:600;}
-
-/* ── Misc ── */
 .blbl{font-size:10px;font-weight:800;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.08em;}
 .empty{text-align:center;padding:56px 20px;color:var(--muted-light);font-size:13px;font-weight:600;}
-.note-entry{background:var(--surface);border-radius:var(--r);padding:14px 16px;margin-bottom:10px;border:1px solid var(--border);box-shadow:var(--shadow-xs);}
+.note-entry{background:var(--surface);border-radius:var(--r);padding:14px 16px;margin-bottom:10px;border:1px solid var(--border);}
 .note-meta{font-size:11px;color:var(--muted);font-weight:700;margin-bottom:6px;}
 .note-text{font-size:13px;font-weight:600;white-space:pre-wrap;line-height:1.6;}
-.note-input-area{border:1px solid var(--border-mid);border-radius:var(--r);overflow:hidden;margin-bottom:12px;box-shadow:var(--shadow-xs);}
-.note-input-area textarea{width:100%;padding:12px 14px;border:none;font-size:13px;font-family:inherit;font-weight:600;resize:none;outline:none;min-height:70px;background:var(--bg);}
-.note-input-area textarea:focus{background:var(--bg);}
+.note-input-area{border:1px solid var(--border-mid);border-radius:var(--r);overflow:hidden;margin-bottom:12px;}
+.note-input-area textarea{width:100%;padding:12px 14px;border:none;font-size:13px;font-family:inherit;font-weight:600;resize:none;outline:none;min-height:70px;}
 .note-input-area-foot{padding:8px 12px;background:var(--surface);border-top:1px solid var(--border);display:flex;justify-content:flex-end;}
 .activity-entry{padding:11px 0;border-bottom:1px solid var(--border);font-size:12px;}
 .activity-entry:last-child{border-bottom:none;}
@@ -170,27 +137,27 @@ textarea.finput{resize:vertical;min-height:60px;}
 .report-card{background:var(--bg);border-radius:var(--rl);padding:18px 20px;border:1px solid var(--border);box-shadow:var(--shadow-sm);cursor:pointer;transition:var(--t-base);}
 .report-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px);border-color:var(--navy);}
 .report-lbl{font-size:10px;color:var(--muted);margin-bottom:6px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;}
-.report-val{font-size:26px;font-weight:800;color:var(--navy);letter-spacing:-.01em;}
+.report-val{font-size:26px;font-weight:800;color:var(--navy);}
 .report-sub{font-size:11px;color:var(--muted);margin-top:4px;font-weight:600;}
 .snap-box{background:var(--surface);border-radius:var(--r);padding:16px;cursor:pointer;transition:var(--t-base);border:1px solid transparent;}
-.snap-box:hover{background:var(--navy-lighter);border-color:var(--navy);box-shadow:var(--shadow-sm);}
+.snap-box:hover{background:var(--navy-lighter);border-color:var(--navy);}
 .snap-lbl{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;}
-.snap-val{font-size:24px;font-weight:800;color:var(--navy);letter-spacing:-.01em;}
+.snap-val{font-size:24px;font-weight:800;color:var(--navy);}
 .pipe-row{display:flex;align-items:center;gap:12px;padding:16px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:var(--t-fast);}
 .pipe-row:last-child{border-bottom:none;}
 .pipe-row:hover{padding-left:4px;}
 .pipe-row:hover .pipe-label{color:var(--navy);font-weight:700;}
 .pipe-label{width:130px;font-size:12px;font-weight:600;color:var(--muted);flex-shrink:0;transition:var(--t-fast);}
 .pipe-bar-wrap{flex:1;background:var(--surface);border-radius:999px;height:8px;overflow:hidden;}
-.pipe-bar{background:linear-gradient(90deg,var(--navy-dark),var(--navy));height:8px;border-radius:999px;transition:width .4s ease;}
+.pipe-bar{background:linear-gradient(90deg,var(--navy-dark),var(--navy));height:8px;border-radius:999px;}
 .pipe-count{width:28px;text-align:right;font-size:14px;font-weight:800;color:var(--navy);}
 .welcome-screen{position:fixed;inset:0;background:linear-gradient(135deg,#e8f0f9 0%,var(--page) 100%);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px;}
 .welcome-box{background:var(--bg);border-radius:var(--rx);width:100%;max-width:460px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow-lg);}
 .welcome-hdr{background:linear-gradient(135deg,var(--navy-dark) 0%,var(--navy) 100%);padding:32px 34px;}
-.welcome-title{font-size:24px;font-weight:800;color:#fff;margin-bottom:6px;letter-spacing:-.02em;}
+.welcome-title{font-size:24px;font-weight:800;color:#fff;margin-bottom:6px;}
 .welcome-sub{font-size:13px;color:rgba(255,255,255,.75);font-weight:600;line-height:1.7;}
 .welcome-body{padding:30px 34px;}
-.welcome-note{font-size:12px;color:var(--muted);background:var(--surface);border-radius:var(--r);padding:14px 16px;margin-bottom:22px;line-height:1.7;font-weight:600;border-left:3px solid var(--navy);box-shadow:var(--shadow-xs);}
+.welcome-note{font-size:12px;color:var(--muted);background:var(--surface);border-radius:var(--r);padding:14px 16px;margin-bottom:22px;line-height:1.7;font-weight:600;border-left:3px solid var(--navy);}
 .ring-wrap{position:relative;width:40px;height:40px;flex-shrink:0;}
 .ring-svg{animation:spinRing 8s linear infinite;}
 @keyframes spinRing{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
@@ -239,24 +206,14 @@ textarea.finput{resize:vertical;min-height:60px;}
       </div>
     </div>
     <div class="main">
-      <div class="topbar" style="display:flex;align-items:center;justify-content:space-between">
+      <div class="topbar">
         <div style="display:flex;align-items:center;gap:14px">
           <span class="page-title" id="ptitle">Dashboard</span>
           <div id="ring-container" class="ring-wrap" style="display:none">
             <svg class="ring-svg" viewBox="0 0 40 40" width="40" height="40" xmlns="http://www.w3.org/2000/svg">
               <rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.30)" transform="rotate(0 20 20)"/>
-              <rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.35)" transform="rotate(25.7 20 20)"/>
-              <rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.40)" transform="rotate(51.4 20 20)"/>
-              <rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.45)" transform="rotate(77.1 20 20)"/>
               <rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.50)" transform="rotate(102.8 20 20)"/>
-              <rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.55)" transform="rotate(128.5 20 20)"/>
-              <rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.60)" transform="rotate(154.2 20 20)"/>
-              <rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.65)" transform="rotate(180 20 20)"/>
               <rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.70)" transform="rotate(205.7 20 20)"/>
-              <rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.75)" transform="rotate(231.4 20 20)"/>
-              <rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.80)" transform="rotate(257.1 20 20)"/>
-              <rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.85)" transform="rotate(282.8 20 20)"/>
-              <rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.90)" transform="rotate(308.5 20 20)"/>
               <rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.97)" transform="rotate(334.2 20 20)"/>
             </svg>
           </div>
@@ -282,8 +239,8 @@ let accs=[],view='dashboard',q='',fs='all',ccount=1,sortCol='',sortDir=1,implMgr
 
 function getUser(){return localStorage.getItem('crm_user_name')||'Unknown';}
 function saveName(){
-  const f=(document.getElementById('w-first').value||'').trim();
-  const l=(document.getElementById('w-last').value||'').trim();
+  var f=(document.getElementById('w-first').value||'').trim();
+  var l=(document.getElementById('w-last').value||'').trim();
   if(!f||!l){document.getElementById('w-err').style.display='block';return;}
   localStorage.setItem('crm_user_name',f+' '+l);
   document.getElementById('welcome-screen').style.display='none';
@@ -294,89 +251,120 @@ function saveName(){
 function changeName(){
   localStorage.removeItem('crm_user_name');
   document.getElementById('app').style.display='none';
-  document.getElementById('w-first').value='';document.getElementById('w-last').value='';
+  document.getElementById('w-first').value='';
+  document.getElementById('w-last').value='';
   document.getElementById('welcome-screen').style.display='flex';
 }
-
 async function req(method,table,body,filters,order){
-  let url=SB_URL+'/rest/v1/'+table+'?select=*';
+  var url=SB_URL+'/rest/v1/'+table+'?select=*';
   if(order)url+='&order='+order;
-  if(filters)filters.forEach(f=>url+='&'+f);
-  const h={'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'};
+  if(filters)filters.forEach(function(f){url+='&'+f;});
+  var h={'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'};
   if(method==='POST')h.Prefer='resolution=merge-duplicates,return=minimal';
   if(method==='DELETE')h.Prefer='return=minimal';
-  const o={method,headers:h};
+  var o={method:method,headers:h};
   if(body)o.body=JSON.stringify(body);
-  const r=await fetch(url,o);const t=await r.text();
+  var r=await fetch(url,o);
+  var t=await r.text();
   if(!r.ok)throw new Error(t||r.statusText);
   return t?JSON.parse(t):[];
 }
 async function loadAll(){
   try{
-    const [a,m]=await Promise.all([req('GET','accounts',null,null,'updated_at.desc'),req('GET','impl_managers',null,null,'name.asc').catch(()=>[])]);
-    accs=a;implMgrs=m.length?m.map(x=>x.name):['Leah Orr','Chris Morgan'];
+    var res=await Promise.all([
+      req('GET','accounts',null,null,'updated_at.desc'),
+      req('GET','impl_managers',null,null,'name.asc').catch(function(){return[];})
+    ]);
+    accs=res[0];
+    implMgrs=res[1].length?res[1].map(function(x){return x.name;}):['Leah Orr','Chris Morgan'];
     updRnb();render();
-  }catch(e){document.getElementById('pcontent').innerHTML='<div class="empty">Could not load data.<br><small style="color:#e53e3e;display:block;margin-top:8px">'+e.message+'</small><br><button class="btn btn-navy" onclick="loadAll()" style="margin-top:12px">Retry</button></div>';}
+  }catch(e){
+    document.getElementById('pcontent').innerHTML='<div class="empty">Could not load data.<br><small style="color:#e53e3e;display:block;margin-top:8px">'+e.message+'</small><br><button class="btn btn-navy" onclick="loadAll()" style="margin-top:12px">Retry</button></div>';
+  }
 }
 async function upsertAcc(a){await req('POST','accounts',Array.isArray(a)?a:[a],null,null);await loadAll();}
 async function deleteAcc(id){
   if(!confirm('Delete this account? This cannot be undone.'))return;
-  await req('DELETE','accounts',null,['id=eq.'+id],null);closeModal();await loadAll();
+  await req('DELETE','accounts',null,['id=eq.'+id],null);
+  closeModal();await loadAll();
 }
-
 function uid(){return 'a'+Date.now()+Math.random().toString(36).slice(2,7);}
 function sortBy(col){if(sortCol===col){sortDir*=-1;}else{sortCol=col;sortDir=1;}render();}
-function srt(list,getters){if(!sortCol||!getters[sortCol])return list;const g=getters[sortCol];return [...list].sort((a,b)=>{let av=g(a),bv=g(b);if(av===null||av===undefined||av==='')return 1;if(bv===null||bv===undefined||bv==='')return -1;if(typeof av==='string')return sortDir*av.localeCompare(bv);return sortDir*(av-bv);});}
-function th(col,label,w){const a=sortCol===col;const arr=a?(sortDir===1?' ▲':' ▼'):'';return '<th style="cursor:pointer;width:'+w+'" onclick="sortBy(\''+col+'\')">'+(a?'<span style="color:var(--navy)">'+label+arr+'</span>':label)+'</th>';}
+function srt(list,getters){
+  if(!sortCol||!getters[sortCol])return list;
+  var g=getters[sortCol];
+  return list.slice().sort(function(a,b){
+    var av=g(a),bv=g(b);
+    if(av===null||av===undefined||av==='')return 1;
+    if(bv===null||bv===undefined||bv==='')return -1;
+    if(typeof av==='string')return sortDir*av.localeCompare(bv);
+    return sortDir*(av-bv);
+  });
+}
+function th(col,label,w){
+  var a=sortCol===col;
+  var arr=a?(sortDir===1?' ▲':' ▼'):'';
+  var inner=a?('<span style="color:var(--navy)">'+label+arr+'</span>'):label;
+  return '<th style="cursor:pointer;width:'+w+'" onclick="sortBy(\''+col+'\')">'+inner+'</th>';
+}
 function daysFrom(d){if(!d)return null;return Math.round((new Date(d)-new Date())/86400000);}
-function addDays(s,n){if(!s)return'';const d=new Date(s);d.setDate(d.getDate()+n);return d.toISOString().split('T')[0];}
-function fmt(d){if(!d)return'—';return new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
-function fmtDT(d){if(!d)return'';const dt=new Date(d);return dt.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+' at '+dt.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});}
-function badge(s){return'<span class="badge '+(SBADGE[s]||'b-prospect')+'">'+s+'</span>';}
+function addDays(s,n){if(!s)return'';var d=new Date(s);d.setDate(d.getDate()+n);return d.toISOString().split('T')[0];}
+function fmt(d){if(!d)return'\u2014';return new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
+function fmtDT(d){if(!d)return'';var dt=new Date(d);return dt.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+' at '+dt.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});}
+function badge(s){return'<span class="badge '+(SBADGE[s]||'b-prospect')+'">'+esc(s)+'</span>';}
 function dl(d){if(d===null)return'';return d<0?'('+Math.abs(d)+'d overdue)':'('+d+'d)';}
 function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function fmtC(v){if(!v&&v!==0)return'';return Number(v).toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:2});}
-function parseC(s){if(!s)return null;const n=parseFloat(String(s).replace(/,/g,''));return isNaN(n)?null:n;}
-function pcon(a){try{const c=JSON.parse(a.contacts_json||'[]');return c.length?c[0]:{}}catch{return{};}}
-function cname(a){const c=pcon(a);return((c.first||'')+' '+(c.last||'')).trim()||c.name||'—';}
-function updRnb(){const n=accs.filter(a=>a.stage==='Active'&&daysFrom(a.renewal_date)!==null&&daysFrom(a.renewal_date)<=30&&daysFrom(a.renewal_date)>=0).length;const el=document.getElementById('rnb');if(el){el.textContent=n;el.style.display=n?'':'none';}}
-function getNotes(a){try{return JSON.parse(a.notes_log||'[]');}catch{return[];}}
-function getActivity(a){try{return JSON.parse(a.activity_log||'[]');}catch{return[];}}
-function logActivity(acc,what){const log=getActivity(acc);log.unshift({who:getUser(),what,ts:new Date().toISOString()});return JSON.stringify(log.slice(0,50));}
-
+function parseC(s){if(!s)return null;var n=parseFloat(String(s).replace(/,/g,''));return isNaN(n)?null:n;}
+function pcon(a){try{var c=JSON.parse(a.contacts_json||'[]');return c.length?c[0]:{}}catch(e){return{};}}
+function cname(a){var c=pcon(a);return((c.first||'')+' '+(c.last||'')).trim()||c.name||'\u2014';}
+function updRnb(){
+  var n=accs.filter(function(a){return a.stage==='Active'&&daysFrom(a.renewal_date)!==null&&daysFrom(a.renewal_date)<=30&&daysFrom(a.renewal_date)>=0;}).length;
+  var el=document.getElementById('rnb');
+  if(el){el.textContent=n;el.style.display=n?'':'none';}
+}
+function getNotes(a){try{return JSON.parse(a.notes_log||'[]');}catch(e){return[];}}
+function getActivity(a){try{return JSON.parse(a.activity_log||'[]');}catch(e){return[];}}
+function logActivity(acc,what){
+  var log=getActivity(acc);
+  log.unshift({who:getUser(),what:what,ts:new Date().toISOString()});
+  return JSON.stringify(log.slice(0,50));
+}
 function ciStatus(a){
-  if(!a.checkin_30_date)return'—';
-  const d=daysFrom(a.checkin_30_date);
+  if(!a.checkin_30_date)return'\u2014';
+  var d=daysFrom(a.checkin_30_date);
   if(a.checkin_30_done)return'<span style="color:#0a7c4e;font-weight:700">&#10003; Done</span>';
   if(d<0)return'<span style="color:#9c1f1f;font-weight:700">Missed ('+fmt(a.checkin_30_date)+')</span>';
   if(d<=7)return'<span style="color:#7c5a0a;font-weight:700">Due in '+d+'d</span>';
   return fmt(a.checkin_30_date);
 }
 async function toggleCI(id){
-  const a=accs.find(x=>x.id===id);if(!a)return;
-  const done=!a.checkin_30_done;
+  var a=accs.find(function(x){return x.id===id;});
+  if(!a)return;
+  var done=!a.checkin_30_done;
   await upsertAcc(Object.assign({},a,{checkin_30_done:done,activity_log:logActivity(a,done?'Marked 30-day check-in complete':'Undid 30-day check-in'),updated_at:new Date().toISOString()}));
 }
-
 function nav(v){
-  view=v;q='';fs='all';sortCol='';sortDir=1;window._rpt_lostFilter='all';window._rpt_srcFilter='all';
-  document.querySelectorAll('.nav-item').forEach(e=>e.classList.remove('active'));
-  const el=document.getElementById('nav-'+v);if(el)el.classList.add('active');
+  view=v;q='';fs='all';sortCol='';sortDir=1;
+  window._lf='all';window._sf='all';
+  document.querySelectorAll('.nav-item').forEach(function(e){e.classList.remove('active');});
+  var el=document.getElementById('nav-'+v);if(el)el.classList.add('active');
   document.getElementById('ptitle').textContent=TITLES[v]||'';
-  const rc=document.getElementById('ring-container');if(rc)rc.style.display=v==='dashboard'?'block':'none';
+  var rc=document.getElementById('ring-container');if(rc)rc.style.display=v==='dashboard'?'block':'none';
   render();
 }
 function navFilter(v,stage){
-  view=v;q='';fs=stage;sortCol='';sortDir=1;window._rpt_lostFilter='all';window._rpt_srcFilter='all';
-  document.querySelectorAll('.nav-item').forEach(e=>e.classList.remove('active'));
-  const el=document.getElementById('nav-'+v);if(el)el.classList.add('active');
+  view=v;q='';fs=stage;sortCol='';sortDir=1;
+  window._lf='all';window._sf='all';
+  document.querySelectorAll('.nav-item').forEach(function(e){e.classList.remove('active');});
+  var el=document.getElementById('nav-'+v);if(el)el.classList.add('active');
   document.getElementById('ptitle').textContent=TITLES[v]||'';
-  const rc=document.getElementById('ring-container');if(rc)rc.style.display='none';
+  var rc=document.getElementById('ring-container');if(rc)rc.style.display='none';
   render();
 }
 function render(){
-  const c=document.getElementById('pcontent');
-  const a=document.getElementById('pactions');
+  var c=document.getElementById('pcontent');
+  var a=document.getElementById('pactions');
   a.innerHTML='';
   if(view==='dashboard')rDash(c,a);
   else if(view==='pipeline')rPipe(c,a);
@@ -388,50 +376,68 @@ function render(){
   else if(view==='settings')rSettings(c,a);
 }
 function exportCSV(rows,cols,filename){
-  const header=cols.map(c=>c.label).join(',');
-  const data=rows.map(r=>cols.map(c=>{const v=c.fn(r)||'';return'"'+String(v).replace(/"/g,'""')+'"';}).join(','));
-  const csv=[header,...data].join('\n');
-  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download=filename;a.click();
+  var header=cols.map(function(c){return c.label;}).join(',');
+  var data=rows.map(function(r){return cols.map(function(c){var v=c.fn(r)||'';return'"'+String(v).replace(/"/g,'""')+'"';}).join(',');});
+  var csv=[header].concat(data).join('\n');
+  var a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download=filename;a.click();
 }
+// Safe button builders — avoid all quote escaping in HTML templates
+function vBtn(id){return '<button class="btn btn-sm" data-id="'+id+'" onclick="openDetail(this.dataset.id)">View</button>';}
+function eBtn(id){return '<button class="btn btn-sm btn-navy" data-id="'+id+'" onclick="event.stopPropagation();openEdit(this.dataset.id)">Edit</button>';}
+function trO(id){return '<tr data-id="'+id+'" onclick="openDetail(this.dataset.id)">';}
 
 function rDash(el,act){
   act.innerHTML='<button class="btn btn-primary" onclick="openAdd()">+ Add account</button>';
-  const pipe=accs.filter(a=>SALES.includes(a.stage)&&a.stage!=='Deal won'&&a.stage!=='Deal lost');
-  const impl=accs.filter(a=>IMPL.includes(a.stage));
-  const active=accs.filter(a=>a.stage==='Active');
-  const rs=active.filter(a=>{const d=daysFrom(a.renewal_date);return d!==null&&d<=30&&d>=0;});
-  const hwRev=active.reduce((s,a)=>s+(parseC(a.hardware_cost)||0),0);
-  const subRev=active.reduce((s,a)=>s+(parseC(a.sub_amount)||0),0);
-  const pipeVal=pipe.reduce((s,a)=>s+(parseC(a.deal_value)||0),0);
-  const totalKits=active.reduce((s,a)=>s+(a.kit_count||0),0);
-  let alerts='';
-  rs.forEach(a=>{const d=daysFrom(a.renewal_date);alerts+='<div class="alert-row '+(d<=7?'alert-danger':'alert-warn')+'"><span><strong>'+esc(a.name)+'</strong> — renewal in '+d+' day'+(d===1?'':'s')+' ('+fmt(a.renewal_date)+')</span><button class="btn btn-sm" onclick="openDetail('\''+a.id+''\'')">View</button></div>';});
-  impl.filter(a=>a.stage==='60-day evaluation'&&daysFrom(a.checkin_30_date)!==null&&daysFrom(a.checkin_30_date)<0&&!a.checkin_30_done).forEach(a=>{alerts+='<div class="alert-row alert-danger"><span><strong>'+esc(a.name)+'</strong> — 30-day check-in missed (due '+fmt(a.checkin_30_date)+')</span><button class="btn btn-sm" onclick="openDetail('\''+a.id+''\'')">View</button></div>';});
-  impl.filter(a=>a.stage==='60-day evaluation'&&daysFrom(a.checkin_30_date)!==null&&daysFrom(a.checkin_30_date)>=0&&daysFrom(a.checkin_30_date)<=7&&!a.checkin_30_done).forEach(a=>{const d=daysFrom(a.checkin_30_date);alerts+='<div class="alert-row alert-warn"><span><strong>'+esc(a.name)+'</strong> — 30-day check-in due in '+d+'d</span><button class="btn btn-sm" onclick="openDetail('\''+a.id+''\'')">View</button></div>';});
-  impl.filter(a=>a.stage==='Overdue').forEach(a=>{alerts+='<div class="alert-row alert-danger"><span><strong>'+esc(a.name)+'</strong> — 60-day evaluation overdue</span><button class="btn btn-sm" onclick="openDetail('\''+a.id+''\'')">View</button></div>';});
-  impl.filter(a=>a.stage==='60-day evaluation'&&daysFrom(a.eval_end_date)!==null&&daysFrom(a.eval_end_date)<=10&&daysFrom(a.eval_end_date)>=0).forEach(a=>{const d=daysFrom(a.eval_end_date);alerts+='<div class="alert-row alert-warn"><span><strong>'+esc(a.name)+'</strong> — 60-day evaluation ends in '+d+'d</span><button class="btn btn-sm" onclick="openDetail('\''+a.id+''\'')">View</button></div>';});
-  const stageBreakdown=SALES.filter(s=>s!=='Deal won'&&s!=='Deal lost').map(s=>{const n=pipe.filter(a=>a.stage===s).length;return{s,n};}).filter(x=>x.n>0);
-  const maxN=Math.max(...stageBreakdown.map(x=>x.n),1);
-  const pipeRows=stageBreakdown.map(x=>{
-    const pct=Math.round(x.n/maxN*100);
-    return '<div class="pipe-row" onclick="navFilter(\'pipeline\',\''+x.s+'\')"><div class="pipe-label">'+x.s+'</div><div class="pipe-bar-wrap"><div class="pipe-bar" style="width:'+pct+'%"></div></div><div class="pipe-count">'+x.n+'</div></div>';
-  }).join('');
-  const pipeHTML=stageBreakdown.length?pipeRows:'<div style="color:var(--muted);font-size:13px">No open pipeline deals.</div>';
+  var pipe=accs.filter(function(a){return SALES.includes(a.stage)&&a.stage!=='Deal won'&&a.stage!=='Deal lost';});
+  var impl=accs.filter(function(a){return IMPL.includes(a.stage);});
+  var active=accs.filter(function(a){return a.stage==='Active';});
+  var rs=active.filter(function(a){var d=daysFrom(a.renewal_date);return d!==null&&d<=30&&d>=0;});
+  var hwRev=active.reduce(function(s,a){return s+(parseC(a.hardware_cost)||0);},0);
+  var subRev=active.reduce(function(s,a){return s+(parseC(a.sub_amount)||0);},0);
+  var pipeVal=pipe.reduce(function(s,a){return s+(parseC(a.deal_value)||0);},0);
+  var totalKits=active.reduce(function(s,a){return s+(a.kit_count||0);},0);
+  var alerts='';
+  rs.forEach(function(a){
+    var d=daysFrom(a.renewal_date);
+    alerts+='<div class="alert-row '+(d<=7?'alert-danger':'alert-warn')+'"><span><strong>'+esc(a.name)+'</strong> \u2014 renewal in '+d+' day'+(d===1?'':'s')+' ('+fmt(a.renewal_date)+')</span>'+vBtn(a.id)+'</div>';
+  });
+  impl.filter(function(a){return a.stage==='60-day evaluation'&&daysFrom(a.checkin_30_date)!==null&&daysFrom(a.checkin_30_date)<0&&!a.checkin_30_done;}).forEach(function(a){
+    alerts+='<div class="alert-row alert-danger"><span><strong>'+esc(a.name)+'</strong> \u2014 30-day check-in missed (due '+fmt(a.checkin_30_date)+')</span>'+vBtn(a.id)+'</div>';
+  });
+  impl.filter(function(a){return a.stage==='60-day evaluation'&&daysFrom(a.checkin_30_date)!==null&&daysFrom(a.checkin_30_date)>=0&&daysFrom(a.checkin_30_date)<=7&&!a.checkin_30_done;}).forEach(function(a){
+    var d=daysFrom(a.checkin_30_date);
+    alerts+='<div class="alert-row alert-warn"><span><strong>'+esc(a.name)+'</strong> \u2014 30-day check-in due in '+d+'d</span>'+vBtn(a.id)+'</div>';
+  });
+  impl.filter(function(a){return a.stage==='Overdue';}).forEach(function(a){
+    alerts+='<div class="alert-row alert-danger"><span><strong>'+esc(a.name)+'</strong> \u2014 60-day evaluation overdue</span>'+vBtn(a.id)+'</div>';
+  });
+  impl.filter(function(a){return a.stage==='60-day evaluation'&&daysFrom(a.eval_end_date)!==null&&daysFrom(a.eval_end_date)<=10&&daysFrom(a.eval_end_date)>=0;}).forEach(function(a){
+    var d=daysFrom(a.eval_end_date);
+    alerts+='<div class="alert-row alert-warn"><span><strong>'+esc(a.name)+'</strong> \u2014 60-day evaluation ends in '+d+'d</span>'+vBtn(a.id)+'</div>';
+  });
+  var bd=SALES.filter(function(s){return s!=='Deal won'&&s!=='Deal lost';}).map(function(s){return{s:s,n:pipe.filter(function(a){return a.stage===s;}).length};}).filter(function(x){return x.n>0;});
+  var maxN=Math.max.apply(null,bd.map(function(x){return x.n;}).concat([1]));
+  var pipeHTML=bd.length?bd.map(function(x){
+    var pct=Math.round(x.n/maxN*100);
+    return '<div class="pipe-row" data-stage="'+esc(x.s)+'" onclick="navFilter(\'pipeline\',this.dataset.stage)"><div class="pipe-label">'+esc(x.s)+'</div><div class="pipe-bar-wrap"><div class="pipe-bar" style="width:'+pct+'%"></div></div><div class="pipe-count">'+x.n+'</div></div>';
+  }).join(''):'<div style="color:var(--muted);font-size:13px">No open pipeline deals.</div>';
   el.innerHTML=
     '<div class="metrics">'+
-    '<div class="metric" onclick="nav(\'active\')" style="cursor:pointer"><div class="metric-lbl">Active Accounts</div><div class="metric-val">'+active.length+'</div><div class="metric-sub" style="color:var(--navy)">View →</div></div>'+
-    '<div class="metric" onclick="nav(\'pipeline\')" style="cursor:pointer"><div class="metric-lbl">Sales Pipeline</div><div class="metric-val">'+pipe.length+'</div><div class="metric-sub" style="color:var(--navy)">View →</div></div>'+
-    '<div class="metric" onclick="nav(\'impl\')" style="cursor:pointer"><div class="metric-lbl">Implementation</div><div class="metric-val">'+impl.length+'</div><div class="metric-sub" style="color:var(--navy)">View →</div></div>'+
-    '<div class="metric" onclick="nav(\'renewals\')" style="cursor:pointer"><div class="metric-lbl">Renewing (30 days)</div><div class="metric-val '+(rs.length?'red':'')+'">'+rs.length+'</div><div class="metric-sub" style="color:'+(rs.length?'var(--danger)':'var(--navy)')+'">View →</div></div>'+
+    '<div class="metric" onclick="nav(\'active\')" style="cursor:pointer"><div class="metric-lbl">Active Accounts</div><div class="metric-val">'+active.length+'</div><div class="metric-sub" style="color:var(--navy)">View \u2192</div></div>'+
+    '<div class="metric" onclick="nav(\'pipeline\')" style="cursor:pointer"><div class="metric-lbl">Sales Pipeline</div><div class="metric-val">'+pipe.length+'</div><div class="metric-sub" style="color:var(--navy)">View \u2192</div></div>'+
+    '<div class="metric" onclick="nav(\'impl\')" style="cursor:pointer"><div class="metric-lbl">Implementation</div><div class="metric-val">'+impl.length+'</div><div class="metric-sub" style="color:var(--navy)">View \u2192</div></div>'+
+    '<div class="metric" onclick="nav(\'renewals\')" style="cursor:pointer"><div class="metric-lbl">Renewing (30 days)</div><div class="metric-val '+(rs.length?'red':'')+'">'+rs.length+'</div><div class="metric-sub" style="color:'+(rs.length?'var(--danger)':'var(--navy)')+'">View \u2192</div></div>'+
     '</div>'+
-    '<div class="card" style="overflow:hidden;margin-bottom:20px"><div class="card-hdr"><span class="card-title">Alerts</span></div>'+(alerts?alerts:'<div style="padding:14px 18px;font-size:13px;font-weight:600;color:var(--ok)">&#10003; All clear — no items need attention right now.</div>')+'</div>'+
+    '<div class="card" style="overflow:hidden;margin-bottom:20px"><div class="card-hdr"><span class="card-title">Alerts</span></div>'+(alerts?alerts:'<div style="padding:14px 18px;font-size:13px;font-weight:600;color:var(--ok)">&#10003; All clear \u2014 no items need attention right now.</div>')+'</div>'+
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">'+
     '<div style="display:flex;flex-direction:column"><div class="card" style="flex:1;margin-bottom:0"><div class="card-hdr"><span class="card-title">Pipeline Breakdown</span><button class="btn btn-sm btn-navy" onclick="nav(\'pipeline\')">View all</button></div><div style="padding:8px 18px">'+pipeHTML+'</div></div></div>'+
     '<div style="display:flex;flex-direction:column"><div class="card" style="flex:1;margin-bottom:0"><div class="card-hdr"><span class="card-title">Revenue Snapshot</span><button class="btn btn-sm btn-navy" onclick="nav(\'reports\')">Full reports</button></div>'+
     '<div style="padding:16px 18px"><div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">'+
-    '<div class="snap-box" onclick="nav(\'active\')"><div class="snap-lbl">Hardware revenue</div><div class="snap-val">'+(hwRev?'$'+fmtC(hwRev):'—')+'</div></div>'+
-    '<div class="snap-box" onclick="nav(\'active\')"><div class="snap-lbl">Subscription revenue</div><div class="snap-val">'+(subRev?'$'+fmtC(subRev):'—')+'</div></div>'+
-    '<div class="snap-box" onclick="nav(\'pipeline\')"><div class="snap-lbl">Pipeline value</div><div class="snap-val">'+(pipeVal?'$'+fmtC(pipeVal):'—')+'</div></div>'+
+    '<div class="snap-box" onclick="nav(\'active\')"><div class="snap-lbl">Hardware revenue</div><div class="snap-val">'+(hwRev?'$'+fmtC(hwRev):'\u2014')+'</div></div>'+
+    '<div class="snap-box" onclick="nav(\'active\')"><div class="snap-lbl">Subscription revenue</div><div class="snap-val">'+(subRev?'$'+fmtC(subRev):'\u2014')+'</div></div>'+
+    '<div class="snap-box" onclick="nav(\'pipeline\')"><div class="snap-lbl">Pipeline value</div><div class="snap-val">'+(pipeVal?'$'+fmtC(pipeVal):'\u2014')+'</div></div>'+
     '<div class="snap-box" onclick="nav(\'active\')"><div class="snap-lbl">Kits deployed</div><div class="snap-val">'+totalKits+'</div></div>'+
     '</div></div></div></div>'+
     '</div>';
@@ -439,197 +445,308 @@ function rDash(el,act){
 
 function rPipe(el,act){
   act.innerHTML='<button class="btn btn-navy" onclick="exportPipeline()" style="margin-right:8px">Export CSV</button><button class="btn btn-primary" onclick="openAdd()">+ Add account</button>';
-  let list=accs.filter(a=>SALES.includes(a.stage));
-  if(q)list=list.filter(a=>a.name.toLowerCase().includes(q.toLowerCase())||(a.city||'').toLowerCase().includes(q.toLowerCase()));
-  if(fs!=='all')list=list.filter(a=>a.stage===fs);
-  const getters={name:a=>a.name,stage:a=>a.stage,contact:a=>cname(a),deal_value:a=>parseC(a.deal_value)||0,updated:a=>a.updated_at};
-  list=srt(list,getters);
-  const totalVal=list.reduce((s,a)=>s+(parseC(a.deal_value)||0),0);
-  el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search..." value="'+esc(q)+'" oninput="q=this.value;render()"><select class="finput" style="width:190px" onchange="fs=this.value;render()"><option value="all">All stages</option>'+SALES.map(s=>'<option value="'+s+'"'+(fs===s?' selected':'')+'>'+s+'</option>').join('')+'</select>'+(totalVal?'<span style="margin-left:auto;font-size:13px;font-weight:700;color:var(--navy)">Total pipeline: $'+fmtC(totalVal)+'</span>':'')+'</div><div class="card"><div style="overflow-x:auto"><table><thead><tr>'+th('name','Account','28%')+th('stage','Stage','16%')+th('contact','Contact','22%')+th('deal_value','Deal value','14%')+th('updated','Updated','12%')+'<th style="width:8%"></th></tr></thead><tbody>'+(list.length?list.map(a=>{const pc=pcon(a);return'<tr onclick="openDetail('\''+a.id+''\'')"><td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' &middot; '+esc(a.state):'')+'</div></td><td>'+badge(a.stage)+'</td><td><div>'+esc(cname(a))+'</div>'+(pc.email?'<div class="as"><a href="mailto:'+esc(pc.email)+'" style="color:var(--navy)" onclick="event.stopPropagation()">'+esc(pc.email)+'</a></div>':'')+'</td><td>'+(a.deal_value?'$'+fmtC(a.deal_value):'—')+'</td><td style="color:var(--muted)">'+fmt(a.updated_at)+'</td><td><button class="btn btn-sm btn-navy" onclick="event.stopPropagation();openEdit('\''+a.id+''\'')">Edit</button></td></tr>';}).join(''):'<tr><td colspan="6" class="empty">No accounts found.</td></tr>')+'</tbody></table></div></div>';
+  var list=accs.filter(function(a){return SALES.includes(a.stage);});
+  if(q)list=list.filter(function(a){return a.name.toLowerCase().includes(q.toLowerCase())||(a.city||'').toLowerCase().includes(q.toLowerCase());});
+  if(fs!=='all')list=list.filter(function(a){return a.stage===fs;});
+  list=srt(list,{name:function(a){return a.name;},stage:function(a){return a.stage;},contact:function(a){return cname(a);},deal_value:function(a){return parseC(a.deal_value)||0;},updated:function(a){return a.updated_at;}});
+  var totalVal=list.reduce(function(s,a){return s+(parseC(a.deal_value)||0);},0);
+  var rows='';
+  list.forEach(function(a){
+    var pc=pcon(a);
+    var emailHTML=pc.email?'<div class="as"><a href="mailto:'+esc(pc.email)+'" style="color:var(--navy)" onclick="event.stopPropagation()">'+esc(pc.email)+'</a></div>':'';
+    rows+=trO(a.id)+'<td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' &middot; '+esc(a.state):'')+'</div></td><td>'+badge(a.stage)+'</td><td><div>'+esc(cname(a))+'</div>'+emailHTML+'</td><td>'+(a.deal_value?'$'+fmtC(a.deal_value):'\u2014')+'</td><td style="color:var(--muted)">'+fmt(a.updated_at)+'</td><td>'+eBtn(a.id)+'</td></tr>';
+  });
+  var stageOpts=SALES.map(function(s){return '<option value="'+s+'"'+(fs===s?' selected':'')+'>'+s+'</option>';}).join('');
+  var totalSpan=totalVal?'<span style="margin-left:auto;font-size:13px;font-weight:700;color:var(--navy)">Total pipeline: $'+fmtC(totalVal)+'</span>':'';
+  el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search..." value="'+esc(q)+'" oninput="q=this.value;render()"><select class="finput" style="width:190px" onchange="fs=this.value;render()"><option value="all">All stages</option>'+stageOpts+'</select>'+totalSpan+'</div><div class="card"><div style="overflow-x:auto"><table><thead><tr>'+th('name','Account','28%')+th('stage','Stage','16%')+th('contact','Contact','22%')+th('deal_value','Deal value','14%')+th('updated','Updated','12%')+'<th style="width:8%"></th></tr></thead><tbody>'+(list.length?rows:'<tr><td colspan="6" class="empty">No accounts found.</td></tr>')+'</tbody></table></div></div>';
 }
 function exportPipeline(){
-  exportCSV(accs.filter(a=>SALES.includes(a.stage)),[
-    {label:'Account',fn:a=>a.name},{label:'Stage',fn:a=>a.stage},{label:'Source',fn:a=>a.source},
-    {label:'Deal Value',fn:a=>a.deal_value},{label:'City',fn:a=>a.city},{label:'State',fn:a=>a.state},
-    {label:'Contact',fn:a=>cname(a)},{label:'Lost Reason',fn:a=>a.lost_reason},{label:'Updated',fn:a=>fmt(a.updated_at)}
-  ],'pipeline.csv');
+  exportCSV(accs.filter(function(a){return SALES.includes(a.stage);}),
+    [{label:'Account',fn:function(a){return a.name;}},{label:'Stage',fn:function(a){return a.stage;}},{label:'Source',fn:function(a){return a.source;}},
+     {label:'Deal Value',fn:function(a){return a.deal_value;}},{label:'City',fn:function(a){return a.city;}},{label:'State',fn:function(a){return a.state;}},
+     {label:'Contact',fn:function(a){return cname(a);}},{label:'Lost Reason',fn:function(a){return a.lost_reason;}},{label:'Updated',fn:function(a){return fmt(a.updated_at);}}],
+    'pipeline.csv');
 }
 
 function rImpl(el,act){
-  let list=accs.filter(a=>IMPL.includes(a.stage));
-  if(q)list=list.filter(a=>a.name.toLowerCase().includes(q.toLowerCase()));
-  if(fs!=='all')list=list.filter(a=>a.stage===fs);
-  list=srt(list,{name:a=>a.name,stage:a=>a.stage,go_live:a=>a.go_live_date||'',checkin:a=>a.checkin_30_date||'',eval_end:a=>a.eval_end_date||'',impl_manager:a=>a.impl_manager||'',kit_count:a=>a.kit_count||0});
-  el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search..." value="'+esc(q)+'" oninput="q=this.value;render()"><select class="finput" style="width:200px" onchange="fs=this.value;render()"><option value="all">All stages</option>'+IMPL.map(s=>'<option value="'+s+'"'+(fs===s?' selected':'')+'>'+s+'</option>').join('')+'</select></div><div class="card"><div style="overflow-x:auto"><table><thead><tr>'+th('name','Account','20%')+th('stage','Stage','13%')+th('go_live','Go-live','10%')+th('checkin','30-day check-in','18%')+th('eval_end','60-day end','13%')+th('impl_manager','Impl. mgr','11%')+th('kit_count','Kits','6%')+'<th style="width:9%"></th></tr></thead><tbody>'+(list.length?list.map(a=>{const ed=daysFrom(a.eval_end_date);const ciBtn=a.stage==='60-day evaluation'?'<button class="btn btn-sm" style="margin-left:8px;'+(a.checkin_30_done?'background:#e6f7f0;color:#0a7c4e;border-color:#0a7c4e':'')+'" onclick="event.stopPropagation();toggleCI(\''+a.id+'\')">'+(a.checkin_30_done?'Undo check-in':'Check-in done')+'</button>':'';return'<tr onclick="openDetail('\''+a.id+''\'')"><td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' &middot; '+esc(a.state):'')+'</div></td><td>'+badge(a.stage)+'</td><td>'+fmt(a.go_live_date)+'</td><td>'+ciStatus(a)+ciBtn+'</td><td>'+(a.eval_end_date?'<span class="'+(ed!==null&&ed<=10?'warn':'')+'">'+fmt(a.eval_end_date)+' '+dl(ed)+'</span>':'—')+'</td><td>'+esc(a.impl_manager||'—')+'</td><td>'+(a.kit_count||'—')+'</td><td><button class="btn btn-sm btn-navy" onclick="event.stopPropagation();openEdit('\''+a.id+''\'')">Edit</button></td></tr>';}).join(''):'<tr><td colspan="8" class="empty">No accounts in implementation.</td></tr>')+'</tbody></table></div></div>';
+  var list=accs.filter(function(a){return IMPL.includes(a.stage);});
+  if(q)list=list.filter(function(a){return a.name.toLowerCase().includes(q.toLowerCase());});
+  if(fs!=='all')list=list.filter(function(a){return a.stage===fs;});
+  list=srt(list,{name:function(a){return a.name;},stage:function(a){return a.stage;},go_live:function(a){return a.go_live_date||'';},checkin:function(a){return a.checkin_30_date||'';},eval_end:function(a){return a.eval_end_date||'';},impl_manager:function(a){return a.impl_manager||'';},kit_count:function(a){return a.kit_count||0;}});
+  var rows='';
+  list.forEach(function(a){
+    var ed=daysFrom(a.eval_end_date);
+    var ciBtn=a.stage==='60-day evaluation'?'<button class="btn btn-sm" style="margin-left:8px;'+(a.checkin_30_done?'background:#e6f7f0;color:#0a7c4e;border-color:#0a7c4e':'')+'" data-id="'+a.id+'" onclick="event.stopPropagation();toggleCI(this.dataset.id)">'+(a.checkin_30_done?'Undo check-in':'Check-in done')+'</button>':'';
+    rows+=trO(a.id)+'<td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' &middot; '+esc(a.state):'')+'</div></td><td>'+badge(a.stage)+'</td><td>'+fmt(a.go_live_date)+'</td><td>'+ciStatus(a)+ciBtn+'</td><td>'+(a.eval_end_date?'<span class="'+(ed!==null&&ed<=10?'warn':'')+'">'+fmt(a.eval_end_date)+' '+dl(ed)+'</span>':'\u2014')+'</td><td>'+esc(a.impl_manager||'\u2014')+'</td><td>'+(a.kit_count||'\u2014')+'</td><td>'+eBtn(a.id)+'</td></tr>';
+  });
+  var stageOpts=IMPL.map(function(s){return '<option value="'+s+'"'+(fs===s?' selected':'')+'>'+s+'</option>';}).join('');
+  el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search..." value="'+esc(q)+'" oninput="q=this.value;render()"><select class="finput" style="width:200px" onchange="fs=this.value;render()"><option value="all">All stages</option>'+stageOpts+'</select></div><div class="card"><div style="overflow-x:auto"><table><thead><tr>'+th('name','Account','20%')+th('stage','Stage','13%')+th('go_live','Go-live','10%')+th('checkin','30-day check-in','18%')+th('eval_end','60-day end','13%')+th('impl_manager','Impl. mgr','11%')+th('kit_count','Kits','6%')+'<th style="width:9%"></th></tr></thead><tbody>'+(list.length?rows:'<tr><td colspan="8" class="empty">No accounts in implementation.</td></tr>')+'</tbody></table></div></div>';
 }
 
 function rActive(el,act){
   act.innerHTML='<button class="btn btn-navy" onclick="exportActive()">Export CSV</button>';
-  let list=accs.filter(a=>a.stage==='Active');
-  if(q)list=list.filter(a=>a.name.toLowerCase().includes(q.toLowerCase()));
-  list=srt(list,{name:a=>a.name,city:a=>a.city||'',state:a=>a.state||'',sub_type:a=>a.sub_type||'',renewal_date:a=>a.renewal_date||'',kit_count:a=>a.kit_count||0,hardware_cost:a=>parseC(a.hardware_cost)||0,sub_amount:a=>parseC(a.sub_amount)||0,contact:a=>cname(a)});
-  el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search..." value="'+esc(q)+'" oninput="q=this.value;render()"></div><div class="card"><div style="overflow-x:auto"><table><thead><tr>'+th('name','Account','18%')+th('city','City','9%')+th('state','State','7%')+th('sub_type','Sub type','9%')+th('renewal_date','Renewal','12%')+th('kit_count','Kits','6%')+th('hardware_cost','HW cost','9%')+th('sub_amount','Sub amt','9%')+th('contact','Contact','12%')+'<th style="width:9%"></th></tr></thead><tbody>'+(list.length?list.map(a=>{const d=daysFrom(a.renewal_date);return'<tr onclick="openDetail('\''+a.id+''\'')"><td><div class="an">'+esc(a.name)+'</div></td><td style="color:var(--muted)">'+esc(a.city||'—')+'</td><td style="color:var(--muted)">'+esc(a.state||'—')+'</td><td>'+(a.sub_type?'<span class="badge '+(a.sub_type==='Monthly'?'b-monthly':'b-yearly')+'">'+a.sub_type+'</span>':'—')+'</td><td>'+(a.renewal_date?'<span class="'+(d!==null&&d<=30?d<=7?'danger':'warn':'')+'">'+fmt(a.renewal_date)+' '+dl(d)+'</span>':'—')+'</td><td>'+(a.kit_count||'—')+'</td><td>'+(a.hardware_cost?'$'+fmtC(a.hardware_cost):'—')+'</td><td>'+(a.sub_amount?'$'+fmtC(a.sub_amount)+(a.sub_type==='Monthly'?'/mo':'/yr'):'—')+'</td><td>'+esc(cname(a))+'</td><td><button class="btn btn-sm btn-navy" onclick="event.stopPropagation();openEdit('\''+a.id+''\'')">Edit</button></td></tr>';}).join(''):'<tr><td colspan="10" class="empty">No active accounts.</td></tr>')+'</tbody></table></div></div>';
+  var list=accs.filter(function(a){return a.stage==='Active';});
+  if(q)list=list.filter(function(a){return a.name.toLowerCase().includes(q.toLowerCase());});
+  list=srt(list,{name:function(a){return a.name;},city:function(a){return a.city||'';},state:function(a){return a.state||'';},sub_type:function(a){return a.sub_type||'';},renewal_date:function(a){return a.renewal_date||'';},kit_count:function(a){return a.kit_count||0;},hardware_cost:function(a){return parseC(a.hardware_cost)||0;},sub_amount:function(a){return parseC(a.sub_amount)||0;},contact:function(a){return cname(a);}});
+  var rows='';
+  list.forEach(function(a){
+    var d=daysFrom(a.renewal_date);
+    var subBadge=a.sub_type?'<span class="badge '+(a.sub_type==='Monthly'?'b-monthly':'b-yearly')+'">'+a.sub_type+'</span>':'\u2014';
+    var renewCell=a.renewal_date?'<span class="'+(d!==null&&d<=30?d<=7?'danger':'warn':'')+'">'+fmt(a.renewal_date)+' '+dl(d)+'</span>':'\u2014';
+    rows+=trO(a.id)+'<td><div class="an">'+esc(a.name)+'</div></td><td style="color:var(--muted)">'+esc(a.city||'\u2014')+'</td><td style="color:var(--muted)">'+esc(a.state||'\u2014')+'</td><td>'+subBadge+'</td><td>'+renewCell+'</td><td>'+(a.kit_count||'\u2014')+'</td><td>'+(a.hardware_cost?'$'+fmtC(a.hardware_cost):'\u2014')+'</td><td>'+(a.sub_amount?'$'+fmtC(a.sub_amount)+(a.sub_type==='Monthly'?'/mo':'/yr'):'\u2014')+'</td><td>'+esc(cname(a))+'</td><td>'+eBtn(a.id)+'</td></tr>';
+  });
+  el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search..." value="'+esc(q)+'" oninput="q=this.value;render()"></div><div class="card"><div style="overflow-x:auto"><table><thead><tr>'+th('name','Account','18%')+th('city','City','9%')+th('state','State','7%')+th('sub_type','Sub type','9%')+th('renewal_date','Renewal','12%')+th('kit_count','Kits','6%')+th('hardware_cost','HW cost','9%')+th('sub_amount','Sub amt','9%')+th('contact','Contact','12%')+'<th style="width:9%"></th></tr></thead><tbody>'+(list.length?rows:'<tr><td colspan="10" class="empty">No active accounts.</td></tr>')+'</tbody></table></div></div>';
 }
 function exportActive(){
-  exportCSV(accs.filter(a=>a.stage==='Active'),[
-    {label:'Account',fn:a=>a.name},{label:'City',fn:a=>a.city},{label:'State',fn:a=>a.state},
-    {label:'Sub Type',fn:a=>a.sub_type},{label:'Sub Start',fn:a=>fmt(a.sub_start_date)},
-    {label:'Renewal Date',fn:a=>fmt(a.renewal_date)},{label:'Kits',fn:a=>a.kit_count},
-    {label:'Hardware Cost',fn:a=>a.hardware_cost},{label:'Sub Amount',fn:a=>a.sub_amount},
-    {label:'Contact',fn:a=>cname(a)}
-  ],'active-accounts.csv');
+  exportCSV(accs.filter(function(a){return a.stage==='Active';}),
+    [{label:'Account',fn:function(a){return a.name;}},{label:'City',fn:function(a){return a.city;}},{label:'State',fn:function(a){return a.state;}},
+     {label:'Sub Type',fn:function(a){return a.sub_type;}},{label:'Sub Start',fn:function(a){return fmt(a.sub_start_date);}},
+     {label:'Renewal Date',fn:function(a){return fmt(a.renewal_date);}},{label:'Kits',fn:function(a){return a.kit_count;}},
+     {label:'Hardware Cost',fn:function(a){return a.hardware_cost;}},{label:'Sub Amount',fn:function(a){return a.sub_amount;}},
+     {label:'Contact',fn:function(a){return cname(a);}}],
+    'active-accounts.csv');
 }
 
 function rRenewals(el,act){
-  const active=accs.filter(a=>a.stage==='Active');
-  const bkts=[{l:'Overdue',f:a=>{const d=daysFrom(a.renewal_date);return d!==null&&d<0;}},{l:'Next 7 days',f:a=>{const d=daysFrom(a.renewal_date);return d!==null&&d>=0&&d<=7;}},{l:'Next 30 days',f:a=>{const d=daysFrom(a.renewal_date);return d!==null&&d>7&&d<=30;}},{l:'Next 90 days',f:a=>{const d=daysFrom(a.renewal_date);return d!==null&&d>30&&d<=90;}},{l:'90+ days',f:a=>{const d=daysFrom(a.renewal_date);return d!==null&&d>90;}}];
-  const getters={name:a=>a.name,renewal_date:a=>a.renewal_date||'',sub_type:a=>a.sub_type||'',sub_amount:a=>parseC(a.sub_amount)||0,contact:a=>cname(a)};
-  const html=bkts.map(b=>{let list=active.filter(b.f);if(!list.length)return'';list=srt(list,getters);return'<div class="blbl">'+b.l+' ('+list.length+')</div><div class="card" style="margin-bottom:20px"><table><thead><tr>'+th('name','Account','24%')+th('renewal_date','Renewal date','16%')+th('sub_type','Sub type','12%')+th('sub_amount','Amount','12%')+th('contact','Contact','14%')+'<th style="width:22%">Latest note</th></tr></thead><tbody>'+list.map(a=>{const d=daysFrom(a.renewal_date);const notes=getNotes(a);const ln=notes.length?notes[0]:'';return'<tr onclick="openDetail('\''+a.id+''\'')"><td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' &middot; '+esc(a.state):'')+'</div></td><td><span class="'+(d!==null&&d<=7?'danger':d!==null&&d<=30?'warn':'')+'">'+fmt(a.renewal_date)+' '+dl(d)+'</span></td><td>'+(a.sub_type?'<span class="badge '+(a.sub_type==='Monthly'?'b-monthly':'b-yearly')+'">'+a.sub_type+'</span>':'—')+'</td><td>'+(a.sub_amount?'$'+fmtC(a.sub_amount):'—')+'</td><td>'+esc(cname(a))+'</td><td style="color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px">'+(ln?esc(ln.text):'—')+'</td></tr>';}).join('')+'</tbody></table></div>';}).join('');
+  var active=accs.filter(function(a){return a.stage==='Active';});
+  var bkts=[
+    {l:'Overdue',f:function(a){var d=daysFrom(a.renewal_date);return d!==null&&d<0;}},
+    {l:'Next 7 days',f:function(a){var d=daysFrom(a.renewal_date);return d!==null&&d>=0&&d<=7;}},
+    {l:'Next 30 days',f:function(a){var d=daysFrom(a.renewal_date);return d!==null&&d>7&&d<=30;}},
+    {l:'Next 90 days',f:function(a){var d=daysFrom(a.renewal_date);return d!==null&&d>30&&d<=90;}},
+    {l:'90+ days',f:function(a){var d=daysFrom(a.renewal_date);return d!==null&&d>90;}}
+  ];
+  var getters={name:function(a){return a.name;},renewal_date:function(a){return a.renewal_date||'';},sub_type:function(a){return a.sub_type||'';},sub_amount:function(a){return parseC(a.sub_amount)||0;},contact:function(a){return cname(a);}};
+  var html='';
+  bkts.forEach(function(b){
+    var list=active.filter(b.f);
+    if(!list.length)return;
+    list=srt(list,getters);
+    var rows='';
+    list.forEach(function(a){
+      var d=daysFrom(a.renewal_date);
+      var notes=getNotes(a);
+      var ln=notes.length?notes[0]:'';
+      var subBadge=a.sub_type?'<span class="badge '+(a.sub_type==='Monthly'?'b-monthly':'b-yearly')+'">'+a.sub_type+'</span>':'\u2014';
+      rows+=trO(a.id)+'<td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' &middot; '+esc(a.state):'')+'</div></td><td><span class="'+(d!==null&&d<=7?'danger':d!==null&&d<=30?'warn':'')+'">'+fmt(a.renewal_date)+' '+dl(d)+'</span></td><td>'+subBadge+'</td><td>'+(a.sub_amount?'$'+fmtC(a.sub_amount):'\u2014')+'</td><td>'+esc(cname(a))+'</td><td style="color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px">'+(ln?esc(ln.text):'\u2014')+'</td></tr>';
+    });
+    html+='<div class="blbl">'+b.l+' ('+list.length+')</div><div class="card" style="margin-bottom:20px"><table><thead><tr>'+th('name','Account','24%')+th('renewal_date','Renewal date','16%')+th('sub_type','Sub type','12%')+th('sub_amount','Amount','12%')+th('contact','Contact','14%')+'<th style="width:22%">Latest note</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
+  });
   el.innerHTML=html||'<div class="empty">No active accounts to track.</div>';
 }
 
 function rReports(el,act){
   act.innerHTML='<button class="btn btn-navy" onclick="exportReports()">Export CSV</button>';
-  const active=accs.filter(a=>a.stage==='Active');
-  const pipe=accs.filter(a=>SALES.includes(a.stage)&&a.stage!=='Deal won'&&a.stage!=='Deal lost');
-  const lost=accs.filter(a=>a.stage==='Deal lost');
-  const hwRev=active.reduce((s,a)=>s+(parseC(a.hardware_cost)||0),0);
-  const subRev=active.reduce((s,a)=>s+(parseC(a.sub_amount)||0),0);
-  const pipeVal=pipe.reduce((s,a)=>s+(parseC(a.deal_value)||0),0);
-  const monthly=active.filter(a=>a.sub_type==='Monthly');
-  const yearly=active.filter(a=>a.sub_type==='Yearly');
-  const totalKits=active.reduce((s,a)=>s+(a.kit_count||0),0);
+  var active=accs.filter(function(a){return a.stage==='Active';});
+  var pipe=accs.filter(function(a){return SALES.includes(a.stage)&&a.stage!=='Deal won'&&a.stage!=='Deal lost';});
+  var lost=accs.filter(function(a){return a.stage==='Deal lost';});
+  var hwRev=active.reduce(function(s,a){return s+(parseC(a.hardware_cost)||0);},0);
+  var subRev=active.reduce(function(s,a){return s+(parseC(a.sub_amount)||0);},0);
+  var pipeVal=pipe.reduce(function(s,a){return s+(parseC(a.deal_value)||0);},0);
+  var monthly=active.filter(function(a){return a.sub_type==='Monthly';});
+  var yearly=active.filter(function(a){return a.sub_type==='Yearly';});
+  var totalKits=active.reduce(function(s,a){return s+(a.kit_count||0);},0);
+  var lf=window._lf||'all';
+  var sf=window._sf||'all';
+  var lostReasons=[];
+  lost.forEach(function(a){var r=a.lost_reason||'Unknown';if(!lostReasons.includes(r))lostReasons.push(r);});
+  lostReasons.sort();
+  var sources=[];
+  accs.forEach(function(a){if(a.source&&!sources.includes(a.source))sources.push(a.source);});
+  sources.sort();
+  var filteredLost=lf==='all'?lost:lost.filter(function(a){return (a.lost_reason||'Unknown')===lf;});
+  var filteredSrc=sf==='all'?accs.filter(function(a){return a.source;}):accs.filter(function(a){return a.source===sf;});
 
   function drillTable(rows,cols){
-    return '<div style="margin-top:12px;background:var(--surface);border-radius:var(--r);overflow:hidden;border:1px solid var(--border)"><table style="width:100%"><thead><tr>'+cols.map(c=>'<th>'+c.label+'</th>').join('')+'</tr></thead><tbody>'+rows.map(r=>'<tr onclick="openDetail('\''+r.id+'\'')" style="cursor:pointer">'+cols.map(c=>'<td>'+(c.fn(r)||'—')+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>';
+    var trs='';
+    rows.forEach(function(r){trs+=trO(r.id)+cols.map(function(c){return '<td>'+(c.fn(r)||'\u2014')+'</td>';}).join('')+'</tr>';});
+    return '<div style="margin-top:12px;background:var(--surface);border-radius:var(--r);overflow:hidden;border:1px solid var(--border)"><table style="width:100%"><thead><tr>'+cols.map(function(c){return '<th>'+c.label+'</th>';}).join('')+'</tr></thead><tbody>'+trs+'</tbody></table></div>';
   }
-  function metricCard(lbl,val,sub,drillId){
-    return '<div class="report-card" onclick="toggleDrill('\''+drillId+'\'')" title="Click to expand"><div class="report-lbl">'+lbl+'</div><div class="report-val">'+val+'</div><div class="report-sub">'+sub+' <span style="color:var(--navy);font-size:10px">▼</span></div><div id="'+drillId+'" style="display:none"></div></div>';
+  function mCard(lbl,val,sub,did){
+    return '<div class="report-card" data-did="'+did+'" onclick="toggleDrill(this.dataset.did)" title="Click to expand"><div class="report-lbl">'+lbl+'</div><div class="report-val">'+val+'</div><div class="report-sub">'+sub+' &#9660;</div><div id="'+did+'" style="display:none"></div></div>';
   }
 
-  // Lost accounts filter state
-  const lostFilter=window._rpt_lostFilter||'all';
-  const srcFilter=window._rpt_srcFilter||'all';
-  const lostReasons=[...new Set(lost.map(a=>a.lost_reason||'Unknown'))].sort();
-  const sources=[...new Set(accs.filter(a=>a.source).map(a=>a.source))].sort();
-  const filteredLost=lostFilter==='all'?lost:lost.filter(a=>(a.lost_reason||'Unknown')===lostFilter);
-  const filteredSrc=srcFilter==='all'?accs.filter(a=>a.source):accs.filter(a=>a.source===srcFilter);
+  var lostRows='';
+  filteredLost.forEach(function(a){
+    lostRows+=trO(a.id)+'<td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.state||'')+'</div></td><td style="color:var(--muted)">'+esc(a.city||'\u2014')+'</td><td>'+badge('Deal lost')+'<div class="as">'+esc(a.lost_reason||'\u2014')+'</div></td><td>'+esc(cname(a))+'</td><td style="color:var(--muted);font-size:12px">'+esc(a.source||'\u2014')+'</td><td>'+eBtn(a.id)+'</td></tr>';
+  });
+  var lrOpts=lostReasons.map(function(r){return '<option value="'+esc(r)+'"'+(lf===r?' selected':'')+'>'+esc(r)+'</option>';}).join('');
+
+  var srcRows='';
+  filteredSrc.forEach(function(a){
+    srcRows+=trO(a.id)+'<td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' &middot; '+esc(a.state):'')+'</div></td><td>'+badge(a.stage)+'</td><td style="font-size:12px;color:var(--muted)">'+esc(a.source)+'</td><td>'+esc(cname(a))+'</td><td style="color:var(--muted);font-size:12px">'+fmt(a.updated_at)+'</td><td>'+eBtn(a.id)+'</td></tr>';
+  });
+  var srcOpts=sources.map(function(s){return '<option value="'+esc(s)+'"'+(sf===s?' selected':'')+'>'+esc(s)+'</option>';}).join('');
 
   el.innerHTML=
     '<div class="report-grid">'+
-    metricCard('Total hardware revenue',hwRev?'$'+fmtC(hwRev):'$0','All active accounts','drill-hw')+
-    metricCard('Annual subscription revenue',subRev?'$'+fmtC(subRev):'$0','Active accounts combined','drill-sub')+
-    metricCard('Pipeline value',pipeVal?'$'+fmtC(pipeVal):'$0',pipe.length+' open deals','drill-pipe')+
-    metricCard('Monthly subscribers',monthly.length,'of '+active.length+' active','drill-monthly')+
-    metricCard('Yearly subscribers',yearly.length,'of '+active.length+' active','drill-yearly')+
-    metricCard('Total kits deployed',totalKits,'Across active accounts','drill-kits')+
+    mCard('Total hardware revenue',hwRev?'$'+fmtC(hwRev):'$0','All active accounts','drill-hw')+
+    mCard('Annual subscription revenue',subRev?'$'+fmtC(subRev):'$0','Active accounts combined','drill-sub')+
+    mCard('Pipeline value',pipeVal?'$'+fmtC(pipeVal):'$0',pipe.length+' open deals','drill-pipe')+
+    mCard('Monthly subscribers',monthly.length,'of '+active.length+' active','drill-monthly')+
+    mCard('Yearly subscribers',yearly.length,'of '+active.length+' active','drill-yearly')+
+    mCard('Total kits deployed',totalKits,'Across active accounts','drill-kits')+
     '</div>'+
     '<div class="fg" style="gap:20px">'+
-    // Deal lost reasons
     '<div><div class="card"><div class="card-hdr"><span class="card-title">Deal Lost Accounts</span><span style="font-size:12px;color:var(--muted);font-weight:600">'+lost.length+' total</span></div>'+
     '<div style="padding:12px 16px;border-bottom:1px solid var(--border);background:var(--surface);display:flex;gap:8px;align-items:center">'+
-    '<select class="finput" style="width:200px;font-size:12px" onchange="window._rpt_lostFilter=this.value;rReports(document.getElementById('pcontent'),document.getElementById('pactions'))">'+
-    '<option value="all"'+(lostFilter==='all'?' selected':'')+'>All lost reasons</option>'+
-    lostReasons.map(r=>'<option value="'+esc(r)+'"'+(lostFilter===r?' selected':'')+'>'+esc(r)+'</option>').join('')+
-    '</select>'+
-    '<span style="font-size:12px;color:var(--muted)">'+filteredLost.length+' account'+(filteredLost.length===1?'':'s')+'</span>'+
-    '</div>'+
+    '<select class="finput" style="width:200px;font-size:12px" onchange="window._lf=this.value;rReports(document.getElementById(\'pcontent\'),document.getElementById(\'pactions\'))">'+
+    '<option value="all"'+(lf==='all'?' selected':'')+'>All lost reasons</option>'+lrOpts+'</select>'+
+    '<span style="font-size:12px;color:var(--muted)">'+filteredLost.length+' account'+(filteredLost.length===1?'':'s')+'</span></div>'+
     '<div style="overflow-x:auto"><table><thead><tr><th style="width:28%">Account</th><th style="width:14%">City</th><th style="width:14%">Lost reason</th><th style="width:16%">Contact</th><th style="width:14%">Source</th><th style="width:14%"></th></tr></thead><tbody>'+
-    (filteredLost.length?filteredLost.map(a=>'<tr onclick="openDetail('\''+a.id+'\'')"><td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.state||'')+'</div></td><td style="color:var(--muted)">'+esc(a.city||'—')+'</td><td>'+badge('Deal lost')+'<div class="as">'+esc(a.lost_reason||'—')+'</div></td><td>'+esc(cname(a))+'</td><td style="color:var(--muted);font-size:12px">'+esc(a.source||'—')+'</td><td><button class="btn btn-sm btn-navy" onclick="event.stopPropagation();openEdit('\''+a.id+'\'')">Edit</button></td></tr>').join(''):
-    '<tr><td colspan="6" class="empty" style="padding:24px">No lost accounts'+(lostFilter!=='all'?' for this reason':'')+'.</td></tr>')+
+    (lostRows||'<tr><td colspan="6" class="empty" style="padding:24px">No lost accounts'+(lf!=='all'?' for this reason':'')+'.</td></tr>')+
     '</tbody></table></div></div></div>'+
-    // Lead sources
-    '<div><div class="card"><div class="card-hdr"><span class="card-title">Lead Sources</span><span style="font-size:12px;color:var(--muted);font-weight:600">'+accs.filter(a=>a.source).length+' with source</span></div>'+
+    '<div><div class="card"><div class="card-hdr"><span class="card-title">Lead Sources</span><span style="font-size:12px;color:var(--muted);font-weight:600">'+accs.filter(function(a){return a.source;}).length+' with source</span></div>'+
     '<div style="padding:12px 16px;border-bottom:1px solid var(--border);background:var(--surface);display:flex;gap:8px;align-items:center">'+
-    '<select class="finput" style="width:220px;font-size:12px" onchange="window._rpt_srcFilter=this.value;rReports(document.getElementById('pcontent'),document.getElementById('pactions'))">'+
-    '<option value="all"'+(srcFilter==='all'?' selected':'')+'>All sources</option>'+
-    sources.map(s=>'<option value="'+esc(s)+'"'+(srcFilter===s?' selected':'')+'>'+esc(s)+'</option>').join('')+
-    '</select>'+
-    '<span style="font-size:12px;color:var(--muted)">'+filteredSrc.length+' account'+(filteredSrc.length===1?'':'s')+'</span>'+
-    '</div>'+
+    '<select class="finput" style="width:220px;font-size:12px" onchange="window._sf=this.value;rReports(document.getElementById(\'pcontent\'),document.getElementById(\'pactions\'))">'+
+    '<option value="all"'+(sf==='all'?' selected':'')+'>All sources</option>'+srcOpts+'</select>'+
+    '<span style="font-size:12px;color:var(--muted)">'+filteredSrc.length+' account'+(filteredSrc.length===1?'':'s')+'</span></div>'+
     '<div style="overflow-x:auto"><table><thead><tr><th style="width:28%">Account</th><th style="width:16%">Stage</th><th style="width:18%">Source</th><th style="width:18%">Contact</th><th style="width:14%">Updated</th><th style="width:6%"></th></tr></thead><tbody>'+
-    (filteredSrc.length?filteredSrc.map(a=>'<tr onclick="openDetail('\''+a.id+'\'')"><td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' &middot; '+esc(a.state):'')+'</div></td><td>'+badge(a.stage)+'</td><td style="font-size:12px;color:var(--muted)">'+esc(a.source)+'</td><td>'+esc(cname(a))+'</td><td style="color:var(--muted);font-size:12px">'+fmt(a.updated_at)+'</td><td><button class="btn btn-sm btn-navy" onclick="event.stopPropagation();openEdit('\''+a.id+'\'')">Edit</button></td></tr>').join(''):
-    '<tr><td colspan="6" class="empty" style="padding:24px">No accounts with source data yet.</td></tr>')+
+    (srcRows||'<tr><td colspan="6" class="empty" style="padding:24px">No accounts with source data yet.</td></tr>')+
     '</tbody></table></div></div></div>'+
     '</div>';
 
-  // Populate metric drilldowns
-  setTimeout(()=>{
-    const drills={
-      'drill-hw':{rows:active.filter(a=>a.hardware_cost).sort((a,b)=>(parseC(b.hardware_cost)||0)-(parseC(a.hardware_cost)||0)),cols:[{label:'Account',fn:a=>esc(a.name)},{label:'City',fn:a=>esc(a.city||'')},{label:'Hardware cost',fn:a=>a.hardware_cost?'$'+fmtC(a.hardware_cost):'—'}]},
-      'drill-sub':{rows:active.filter(a=>a.sub_amount).sort((a,b)=>(parseC(b.sub_amount)||0)-(parseC(a.sub_amount)||0)),cols:[{label:'Account',fn:a=>esc(a.name)},{label:'Sub type',fn:a=>a.sub_type||'—'},{label:'Amount',fn:a=>a.sub_amount?'$'+fmtC(a.sub_amount)+(a.sub_type==='Monthly'?'/mo':'/yr'):'—'}]},
-      'drill-pipe':{rows:pipe.filter(a=>a.deal_value).sort((a,b)=>(parseC(b.deal_value)||0)-(parseC(a.deal_value)||0)),cols:[{label:'Account',fn:a=>esc(a.name)},{label:'Stage',fn:a=>a.stage},{label:'Deal value',fn:a=>a.deal_value?'$'+fmtC(a.deal_value):'—'}]},
-      'drill-monthly':{rows:monthly,cols:[{label:'Account',fn:a=>esc(a.name)},{label:'Amount',fn:a=>a.sub_amount?'$'+fmtC(a.sub_amount)+'/mo':'—'},{label:'Renewal',fn:a=>fmt(a.renewal_date)}]},
-      'drill-yearly':{rows:yearly,cols:[{label:'Account',fn:a=>esc(a.name)},{label:'Amount',fn:a=>a.sub_amount?'$'+fmtC(a.sub_amount)+'/yr':'—'},{label:'Renewal',fn:a=>fmt(a.renewal_date)}]},
-      'drill-kits':{rows:active.filter(a=>a.kit_count).sort((a,b)=>(b.kit_count||0)-(a.kit_count||0)),cols:[{label:'Account',fn:a=>esc(a.name)},{label:'City',fn:a=>esc(a.city||'')},{label:'Kits',fn:a=>String(a.kit_count||0)}]},
+  setTimeout(function(){
+    var drills={
+      'drill-hw':{rows:active.filter(function(a){return a.hardware_cost;}).sort(function(a,b){return (parseC(b.hardware_cost)||0)-(parseC(a.hardware_cost)||0);}),cols:[{label:'Account',fn:function(a){return esc(a.name);}},{label:'City',fn:function(a){return esc(a.city||'');}},{label:'HW cost',fn:function(a){return a.hardware_cost?'$'+fmtC(a.hardware_cost):'\u2014';}}]},
+      'drill-sub':{rows:active.filter(function(a){return a.sub_amount;}).sort(function(a,b){return (parseC(b.sub_amount)||0)-(parseC(a.sub_amount)||0);}),cols:[{label:'Account',fn:function(a){return esc(a.name);}},{label:'Sub type',fn:function(a){return a.sub_type||'\u2014';}},{label:'Amount',fn:function(a){return a.sub_amount?'$'+fmtC(a.sub_amount)+(a.sub_type==='Monthly'?'/mo':'/yr'):'\u2014';}}]},
+      'drill-pipe':{rows:pipe.filter(function(a){return a.deal_value;}).sort(function(a,b){return (parseC(b.deal_value)||0)-(parseC(a.deal_value)||0);}),cols:[{label:'Account',fn:function(a){return esc(a.name);}},{label:'Stage',fn:function(a){return a.stage;}},{label:'Deal value',fn:function(a){return a.deal_value?'$'+fmtC(a.deal_value):'\u2014';}}]},
+      'drill-monthly':{rows:monthly,cols:[{label:'Account',fn:function(a){return esc(a.name);}},{label:'Amount',fn:function(a){return a.sub_amount?'$'+fmtC(a.sub_amount)+'/mo':'\u2014';}},{label:'Renewal',fn:function(a){return fmt(a.renewal_date);}}]},
+      'drill-yearly':{rows:yearly,cols:[{label:'Account',fn:function(a){return esc(a.name);}},{label:'Amount',fn:function(a){return a.sub_amount?'$'+fmtC(a.sub_amount)+'/yr':'\u2014';}},{label:'Renewal',fn:function(a){return fmt(a.renewal_date);}}]},
+      'drill-kits':{rows:active.filter(function(a){return a.kit_count;}).sort(function(a,b){return (b.kit_count||0)-(a.kit_count||0);}),cols:[{label:'Account',fn:function(a){return esc(a.name);}},{label:'City',fn:function(a){return esc(a.city||'');}},{label:'Kits',fn:function(a){return String(a.kit_count||0);}}]}
     };
-    Object.entries(drills).forEach(([id,{rows,cols}])=>{const el2=document.getElementById(id);if(el2)el2.innerHTML=drillTable(rows,cols);});
+    Object.keys(drills).forEach(function(id){
+      var d=drills[id];var e2=document.getElementById(id);
+      if(e2)e2.innerHTML=drillTable(d.rows,d.cols);
+    });
   },50);
 }
-
 function exportReports(){
-  const active=accs.filter(a=>a.stage==='Active');
-  exportCSV(active,[
-    {label:'Account',fn:a=>a.name},{label:'Sub Type',fn:a=>a.sub_type},
-    {label:'Sub Amount',fn:a=>a.sub_amount},{label:'HW Cost',fn:a=>a.hardware_cost},
-    {label:'Kits',fn:a=>a.kit_count},{label:'Sub Start',fn:a=>fmt(a.sub_start_date)},
-    {label:'Renewal',fn:a=>fmt(a.renewal_date)}
-  ],'revenue-report.csv');
+  var active=accs.filter(function(a){return a.stage==='Active';});
+  exportCSV(active,
+    [{label:'Account',fn:function(a){return a.name;}},{label:'Sub Type',fn:function(a){return a.sub_type;}},
+     {label:'Sub Amount',fn:function(a){return a.sub_amount;}},{label:'HW Cost',fn:function(a){return a.hardware_cost;}},
+     {label:'Kits',fn:function(a){return a.kit_count;}},{label:'Sub Start',fn:function(a){return fmt(a.sub_start_date);}},
+     {label:'Renewal',fn:function(a){return fmt(a.renewal_date);}}],
+    'revenue-report.csv');
 }
-function toggleDrill(id){const el=document.getElementById(id);if(el)el.style.display=el.style.display==='none'?'block':'none';}
-function toggleLostDrill(btn,reason){const cls='lost-drill-'+btoa(reason).replace(/=/g,'');document.querySelectorAll('.'+cls).forEach(r=>{r.style.display=r.style.display==='none'?'table-row':'none';});btn.textContent=btn.textContent==='Show'?'Hide':'Show';}
-function toggleSrcDrill(btn,src){const cls='src-drill-'+btoa(src).replace(/=/g,'');document.querySelectorAll('.'+cls).forEach(r=>{r.style.display=r.style.display==='none'?'table-row':'none';});btn.textContent=btn.textContent==='Show'?'Hide':'Show';}
+function toggleDrill(id){var el=document.getElementById(id);if(el)el.style.display=el.style.display==='none'?'block':'none';}
 
 function rActivity(el,act){
-  const all=[];accs.forEach(a=>{getActivity(a).forEach(e=>all.push({who:e.who,what:e.what,ts:e.ts,accId:a.id,accName:a.name}));});
-  all.sort((a,b)=>new Date(b.ts)-new Date(a.ts));
-  const recent=all.slice(0,50);
+  var all=[];
+  accs.forEach(function(a){
+    getActivity(a).forEach(function(e){all.push({who:e.who,what:e.what,ts:e.ts,accId:a.id,accName:a.name});});
+  });
+  all.sort(function(a,b){return new Date(b.ts)-new Date(a.ts);});
+  var recent=all.slice(0,50);
   if(!recent.length){el.innerHTML='<div class="empty">No activity recorded yet.</div>';return;}
-  el.innerHTML='<div class="card"><div style="padding:0">'+recent.map(e=>'<div style="padding:13px 18px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:12px"><div style="flex:1"><div><span style="font-weight:700;color:var(--navy);cursor:pointer" onclick="openDetail(\''+e.accId+'\')">'+esc(e.accName)+'</span><span style="font-size:12px;color:var(--muted);margin-left:10px">'+fmtDT(e.ts)+'</span></div><div style="font-size:13px;color:var(--text);margin-top:3px">'+esc(e.what)+'</div><div style="font-size:11px;color:var(--muted);margin-top:2px">by '+esc(e.who||'Unknown')+'</div></div><button class="btn btn-sm btn-navy" onclick="openDetail(\''+e.accId+'\')">View</button></div>').join('')+'</div></div>';
+  var items='';
+  recent.forEach(function(e){
+    items+='<div style="padding:13px 18px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:12px"><div style="flex:1"><div><span style="font-weight:700;color:var(--navy);cursor:pointer" data-id="'+e.accId+'" onclick="openDetail(this.dataset.id)">'+esc(e.accName)+'</span><span style="font-size:12px;color:var(--muted);margin-left:10px">'+fmtDT(e.ts)+'</span></div><div style="font-size:13px;color:var(--text);margin-top:3px">'+esc(e.what)+'</div><div style="font-size:11px;color:var(--muted);margin-top:2px">by '+esc(e.who||'Unknown')+'</div></div>'+vBtn(e.accId)+'</div>';
+  });
+  el.innerHTML='<div class="card"><div style="padding:0">'+items+'</div></div>';
 }
 
 function rSettings(el,act){
-  el.innerHTML='<div style="max-width:560px"><div class="card"><div class="card-hdr"><span class="card-title">Implementation managers</span><button class="btn btn-sm btn-primary" onclick="showAddMgr()">+ Add</button></div><div class="mgr-mgmt" id="mgr-list">'+implMgrs.map((m,i)=>'<div class="mgr-row"><span>'+esc(m)+'</span><button class="btn btn-sm btn-danger" onclick="removeMgr('+i+')">Remove</button></div>').join('')+'</div></div></div>';
+  var mgrs='';
+  implMgrs.forEach(function(m,i){
+    mgrs+='<div class="mgr-row"><span>'+esc(m)+'</span><button class="btn btn-sm btn-danger" data-i="'+i+'" onclick="removeMgr(parseInt(this.dataset.i))">Remove</button></div>';
+  });
+  el.innerHTML='<div style="max-width:560px"><div class="card"><div class="card-hdr"><span class="card-title">Implementation managers</span><button class="btn btn-sm btn-primary" onclick="showAddMgr()">+ Add</button></div><div class="mgr-mgmt" id="mgr-list">'+mgrs+'</div></div></div>';
 }
-function showAddMgr(){const name=prompt('Enter implementation manager name:');if(!name||!name.trim())return;implMgrs.push(name.trim());localStorage.setItem('crm_impl_mgrs',JSON.stringify(implMgrs));render();}
+function showAddMgr(){var name=prompt('Enter implementation manager name:');if(!name||!name.trim())return;implMgrs.push(name.trim());localStorage.setItem('crm_impl_mgrs',JSON.stringify(implMgrs));render();}
 function removeMgr(i){if(!confirm('Remove '+implMgrs[i]+'?'))return;implMgrs.splice(i,1);localStorage.setItem('crm_impl_mgrs',JSON.stringify(implMgrs));render();}
 
 function closeModal(){document.getElementById('mc').innerHTML='';}
 function openAdd(){showForm(null);}
-function openEdit(id){showForm(accs.find(a=>a.id===id));}
-function cbHTML(c,i){return'<div class="cblock" id="cb-'+i+'"><div class="cblock-title">'+(i===0?'Primary contact':'Additional contact')+'</div>'+(i>0?'<button class="cbtn-remove" onclick="rmC('+i+')">&times;</button>':'')+'<div class="fg"><div class="fgrp"><label class="flbl">First name</label><input class="finput" id="cfn-'+i+'" value="'+esc(c.first||c.name||'')+'"></div><div class="fgrp"><label class="flbl">Last name</label><input class="finput" id="cln-'+i+'" value="'+esc(c.last||'')+'"></div><div class="fgrp"><label class="flbl">Title</label><input class="finput" id="ct-'+i+'" value="'+esc(c.title||'')+'"></div><div class="fgrp"><label class="flbl">Email</label><input class="finput" id="ce-'+i+'" value="'+esc(c.email||'')+'"></div><div class="fgrp full"><label class="flbl">Phone</label><input class="finput" id="cp-'+i+'" value="'+esc(c.phone||'')+'"></div></div></div>';}
-function addC(){const i=ccount++;const d=document.createElement('div');d.innerHTML=cbHTML({},i);document.getElementById('cc').appendChild(d.firstElementChild);}
-function rmC(i){const e=document.getElementById('cb-'+i);if(e)e.remove();}
-function gatherC(){const r=[];document.querySelectorAll('[id^="cb-"]').forEach(b=>{const i=b.id.split('-').pop();const f=(document.getElementById('cfn-'+i)||{}).value||'';const l=(document.getElementById('cln-'+i)||{}).value||'';const t=(document.getElementById('ct-'+i)||{}).value||'';const e=(document.getElementById('ce-'+i)||{}).value||'';const p=(document.getElementById('cp-'+i)||{}).value||'';if(f||l||e||p)r.push({first:f,last:l,title:t,email:e,phone:p});});return r;}
-function mgrsOpts(sel){return'<option value="">— Select —</option>'+implMgrs.map(m=>'<option value="'+esc(m)+'"'+(sel===m?' selected':'')+'>'+esc(m)+'</option>').join('');}
+function openEdit(id){showForm(accs.find(function(a){return a.id===id;}));}
 
+function cbHTML(c,i){
+  return '<div class="cblock" id="cb-'+i+'"><div class="cblock-title">'+(i===0?'Primary contact':'Additional contact')+'</div>'+(i>0?'<button class="cbtn-remove" data-i="'+i+'" onclick="rmC(parseInt(this.dataset.i))">&times;</button>':'')+'<div class="fg"><div class="fgrp"><label class="flbl">First name</label><input class="finput" id="cfn-'+i+'" value="'+esc(c.first||c.name||'')+'"></div><div class="fgrp"><label class="flbl">Last name</label><input class="finput" id="cln-'+i+'" value="'+esc(c.last||'')+'"></div><div class="fgrp"><label class="flbl">Title</label><input class="finput" id="ct-'+i+'" value="'+esc(c.title||'')+'"></div><div class="fgrp"><label class="flbl">Email</label><input class="finput" id="ce-'+i+'" value="'+esc(c.email||'')+'"></div><div class="fgrp full"><label class="flbl">Phone</label><input class="finput" id="cp-'+i+'" value="'+esc(c.phone||'')+'"></div></div></div>';
+}
+function addC(){var i=ccount++;var d=document.createElement('div');d.innerHTML=cbHTML({},i);document.getElementById('cc').appendChild(d.firstElementChild);}
+function rmC(i){var e=document.getElementById('cb-'+i);if(e)e.remove();}
+function gatherC(){
+  var r=[];
+  document.querySelectorAll('[id^="cb-"]').forEach(function(b){
+    var i=b.id.split('-').pop();
+    var f=(document.getElementById('cfn-'+i)||{}).value||'';
+    var l=(document.getElementById('cln-'+i)||{}).value||'';
+    var t=(document.getElementById('ct-'+i)||{}).value||'';
+    var e=(document.getElementById('ce-'+i)||{}).value||'';
+    var p=(document.getElementById('cp-'+i)||{}).value||'';
+    if(f||l||e||p)r.push({first:f,last:l,title:t,email:e,phone:p});
+  });
+  return r;
+}
+function mgrsOpts(sel){
+  return '<option value="">— Select —</option>'+implMgrs.map(function(m){return '<option value="'+esc(m)+'"'+(sel===m?' selected':'')+'>'+esc(m)+'</option>';}).join('');
+}
 function showForm(acc){
-  const a=acc||{};const isEdit=!!acc;
-  const isImpl=a.stage&&IMPL.includes(a.stage);const isActive=a.stage==='Active';
-  const pt=isActive?'active':isImpl?'impl':'sales';
-  let contacts=[];try{contacts=JSON.parse(a.contacts_json||'[]');}catch{}
+  var a=acc||{};var isEdit=!!acc;
+  var isImpl=a.stage&&IMPL.includes(a.stage);var isActive=a.stage==='Active';
+  var pt=isActive?'active':isImpl?'impl':'sales';
+  var contacts=[];try{contacts=JSON.parse(a.contacts_json||'[]');}catch(e){}
   if(!contacts.length)contacts.push({});
   ccount=contacts.length;
-  const stageOpts=pt==='impl'?IMPL.map(s=>'<option value="'+s+'"'+(a.stage===s?' selected':'')+'>'+s+'</option>').join(''):pt==='active'?'<option value="Active" selected>Active</option>':SALES.map(s=>'<option value="'+s+'"'+(a.stage===s?' selected':'')+'>'+s+'</option>').join('');
-  document.getElementById('mc').innerHTML='<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-hdr"><span class="modal-title">'+(isEdit?'Edit account':'Add account')+'</span><button class="xbtn" onclick="closeModal()">&times;</button></div><div class="modal-body"><div class="fsec">Account info</div><div class="fg"><div class="fgrp full"><label class="flbl">Account name *</label><input class="finput" id="fn" value="'+esc(a.name||'')+'"></div><div class="fgrp"><label class="flbl">Type</label><select class="finput" id="ft"><option value="">— Select type —</option>'+TYPES.map(t=>'<option value="'+t+'"'+(a.acct_type===t?' selected':'')+'>'+t+'</option>').join('')+'</select></div><div class="fgrp"><label class="flbl">Source</label><select class="finput" id="fsrc"><option value="">— Select source —</option>'+SOURCES.map(s=>'<option value="'+s+'"'+(a.source===s?' selected':'')+'>'+s+'</option>').join('')+'</select></div></div><div class="fgrp full" style="margin-top:14px"><label class="flbl">Street address</label><input class="finput" id="faddr" value="'+esc(a.address||'')+'"></div><div class="fg3" style="margin-top:14px"><div class="fgrp"><label class="flbl">City</label><input class="finput" id="fci" value="'+esc(a.city||'')+'"></div><div class="fgrp"><label class="flbl">State</label><input class="finput" id="fst" value="'+esc(a.state||'')+'"></div><div class="fgrp"><label class="flbl">Zip</label><input class="finput" id="fzp" value="'+esc(a.zip||'')+'"></div></div><div class="fg" style="margin-top:14px"><div class="fgrp"><label class="flbl">Phone</label><input class="finput" id="fph" value="'+esc(a.phone||'')+'"></div><div class="fgrp"><label class="flbl">Website</label><input class="finput" id="fwb" value="'+esc(a.website||'')+'"></div></div><div class="fsec">Pipeline stage</div><div class="fg"><div class="fgrp"><label class="flbl">Pipeline type</label><select class="finput" id="fpt" onchange="updStage()"><option value="sales"'+(pt==='sales'?' selected':'')+'>Sales Pipeline</option><option value="impl"'+(pt==='impl'?' selected':'')+'>Implementation</option><option value="active"'+(pt==='active'?' selected':'')+'>Active account</option></select></div><div class="fgrp"><label class="flbl">Stage</label><select class="finput" id="fsg">'+stageOpts+'</select></div><div class="fgrp"><label class="flbl">Deal value ($)</label><input class="finput" id="fdv" type="text" placeholder="e.g. 25,000" value="'+(a.deal_value?fmtC(a.deal_value):'')+'"></div><div class="fgrp"><label class="flbl">Lost reason</label><select class="finput" id="flr" onchange="autoLostStage()"><option value="">—</option>'+LOST_REASONS.map(r=>'<option value="'+r+'"'+(a.lost_reason===r?' selected':'')+'>'+r+'</option>').join('')+'</select></div></div><div class="fsec">Contacts</div><div id="cc">'+contacts.map((c,i)=>cbHTML(c,i)).join('')+'</div><button class="add-c-btn" onclick="addC()">+ Add another contact</button><div class="fsec">Implementation &amp; hardware</div><div class="fg"><div class="fgrp"><label class="flbl">Implementation manager</label><select class="finput" id="fim">'+mgrsOpts(a.impl_manager)+'</select></div><div class="fgrp"><label class="flbl">Signed / close date</label><input class="finput" id="fsd" type="date" value="'+(a.signed_date||'')+'"></div><div class="fgrp"><label class="flbl">Go-live date</label><input class="finput" id="fgl" type="date" value="'+(a.go_live_date||'')+'" onchange="autoD()"></div><div class="fgrp"><label class="flbl">30-day check-in <span style="color:var(--green-dark);font-size:10px">(auto)</span></label><input class="finput" id="fc3" type="date" value="'+(a.checkin_30_date||'')+'"></div><div class="fgrp"><label class="flbl">60-day eval end <span style="color:var(--green-dark);font-size:10px">(auto)</span></label><input class="finput" id="fe6" type="date" value="'+(a.eval_end_date||'')+'"></div><div class="fgrp"></div><div class="fgrp"><label class="flbl">Number of kits</label><input class="finput" id="fkc" type="text" value="'+(a.kit_count||'')+'"></div><div class="fgrp"><label class="flbl">Hardware cost ($)</label><input class="finput" id="fhc" type="text" placeholder="e.g. 5,000" value="'+(a.hardware_cost?fmtC(a.hardware_cost):'')+'"></div></div><div class="fsec">Subscription</div><div class="fg"><div class="fgrp"><label class="flbl">Subscription type</label><select class="finput" id="fst2"><option value=""'+((!a.sub_type)?' selected':'')+'>—</option><option value="Monthly"'+(a.sub_type==='Monthly'?' selected':'')+'>Monthly</option><option value="Yearly"'+(a.sub_type==='Yearly'?' selected':'')+'>Yearly</option></select></div><div class="fgrp"><label class="flbl">Subscription amount ($)</label><input class="finput" id="fsa" type="text" placeholder="e.g. 1,200" value="'+(a.sub_amount?fmtC(a.sub_amount):'')+'"></div><div class="fgrp full"><label class="flbl">Subscription start date <span style="color:var(--green-dark);font-size:10px">(auto-fills renewal)</span></label><input class="finput" id="fssd" type="date" value="'+(a.sub_start_date||'')+'" onchange="autoRenewal()"></div><div class="fgrp"><label class="flbl">Renewal date <span style="color:var(--green-dark);font-size:10px">(auto)</span></label><input class="finput" id="frd" type="date" value="'+(a.renewal_date||'')+'"></div></div></div><div class="modal-foot">'+(isEdit?'<button class="btn btn-danger" onclick="deleteAcc(\''+a.id+'\')" style="margin-right:auto">Delete</button>':'')+'<button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveAcc(\''+(a.id||'')+'\')">Save account</button></div></div></div>';
+  var stageOpts=pt==='impl'?IMPL.map(function(s){return '<option value="'+s+'"'+(a.stage===s?' selected':'')+'>'+s+'</option>';}).join(''):pt==='active'?'<option value="Active" selected>Active</option>':SALES.map(function(s){return '<option value="'+s+'"'+(a.stage===s?' selected':'')+'>'+s+'</option>';}).join('');
+  var typeOpts=TYPES.map(function(t){return '<option value="'+t+'"'+(a.acct_type===t?' selected':'')+'>'+t+'</option>';}).join('');
+  var srcOpts=SOURCES.map(function(s){return '<option value="'+s+'"'+(a.source===s?' selected':'')+'>'+s+'</option>';}).join('');
+  var lostOpts=LOST_REASONS.map(function(r){return '<option value="'+r+'"'+(a.lost_reason===r?' selected':'')+'>'+r+'</option>';}).join('');
+  var contactsHTML=contacts.map(function(c,i){return cbHTML(c,i);}).join('');
+  var delBtn=isEdit?'<button class="btn btn-danger" data-id="'+a.id+'" onclick="deleteAcc(this.dataset.id)" style="margin-right:auto">Delete</button>':'';
+  document.getElementById('mc').innerHTML=
+    '<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal">'+
+    '<div class="modal-hdr"><span class="modal-title">'+(isEdit?'Edit account':'Add account')+'</span><button class="xbtn" onclick="closeModal()">&times;</button></div>'+
+    '<div class="modal-body">'+
+    '<div class="fsec">Account info</div>'+
+    '<div class="fg"><div class="fgrp full"><label class="flbl">Account name *</label><input class="finput" id="fn" value="'+esc(a.name||'')+'"></div>'+
+    '<div class="fgrp"><label class="flbl">Type</label><select class="finput" id="ft"><option value="">— Select type —</option>'+typeOpts+'</select></div>'+
+    '<div class="fgrp"><label class="flbl">Source</label><select class="finput" id="fsrc"><option value="">— Select source —</option>'+srcOpts+'</select></div></div>'+
+    '<div class="fgrp full" style="margin-top:14px"><label class="flbl">Street address</label><input class="finput" id="faddr" value="'+esc(a.address||'')+'"></div>'+
+    '<div class="fg3" style="margin-top:14px"><div class="fgrp"><label class="flbl">City</label><input class="finput" id="fci" value="'+esc(a.city||'')+'"></div><div class="fgrp"><label class="flbl">State</label><input class="finput" id="fst" value="'+esc(a.state||'')+'"></div><div class="fgrp"><label class="flbl">Zip</label><input class="finput" id="fzp" value="'+esc(a.zip||'')+'"></div></div>'+
+    '<div class="fg" style="margin-top:14px"><div class="fgrp"><label class="flbl">Phone</label><input class="finput" id="fph" value="'+esc(a.phone||'')+'"></div><div class="fgrp"><label class="flbl">Website</label><input class="finput" id="fwb" value="'+esc(a.website||'')+'"></div></div>'+
+    '<div class="fsec">Pipeline stage</div>'+
+    '<div class="fg"><div class="fgrp"><label class="flbl">Pipeline type</label><select class="finput" id="fpt" onchange="updStage()"><option value="sales"'+(pt==='sales'?' selected':'')+'>Sales Pipeline</option><option value="impl"'+(pt==='impl'?' selected':'')+'>Implementation</option><option value="active"'+(pt==='active'?' selected':'')+'>Active account</option></select></div>'+
+    '<div class="fgrp"><label class="flbl">Stage</label><select class="finput" id="fsg">'+stageOpts+'</select></div>'+
+    '<div class="fgrp"><label class="flbl">Deal value ($)</label><input class="finput" id="fdv" type="text" placeholder="e.g. 25,000" value="'+(a.deal_value?fmtC(a.deal_value):'')+'"></div>'+
+    '<div class="fgrp"><label class="flbl">Lost reason</label><select class="finput" id="flr" onchange="autoLostStage()"><option value="">—</option>'+lostOpts+'</select></div></div>'+
+    '<div class="fsec">Contacts</div><div id="cc">'+contactsHTML+'</div><button class="add-c-btn" onclick="addC()">+ Add another contact</button>'+
+    '<div class="fsec">Implementation &amp; hardware</div>'+
+    '<div class="fg"><div class="fgrp"><label class="flbl">Implementation manager</label><select class="finput" id="fim">'+mgrsOpts(a.impl_manager)+'</select></div>'+
+    '<div class="fgrp"><label class="flbl">Signed / close date</label><input class="finput" id="fsd" type="date" value="'+(a.signed_date||'')+'"></div>'+
+    '<div class="fgrp"><label class="flbl">Go-live date</label><input class="finput" id="fgl" type="date" value="'+(a.go_live_date||'')+'" onchange="autoD()"></div>'+
+    '<div class="fgrp"><label class="flbl">30-day check-in <span style="color:var(--green-dark);font-size:10px">(auto)</span></label><input class="finput" id="fc3" type="date" value="'+(a.checkin_30_date||'')+'"></div>'+
+    '<div class="fgrp"><label class="flbl">60-day eval end <span style="color:var(--green-dark);font-size:10px">(auto)</span></label><input class="finput" id="fe6" type="date" value="'+(a.eval_end_date||'')+'"></div>'+
+    '<div class="fgrp"></div>'+
+    '<div class="fgrp"><label class="flbl">Number of kits</label><input class="finput" id="fkc" type="text" value="'+(a.kit_count||'')+'"></div>'+
+    '<div class="fgrp"><label class="flbl">Hardware cost ($)</label><input class="finput" id="fhc" type="text" placeholder="e.g. 5,000" value="'+(a.hardware_cost?fmtC(a.hardware_cost):'')+'"></div></div>'+
+    '<div class="fsec">Subscription</div>'+
+    '<div class="fg"><div class="fgrp"><label class="flbl">Subscription type</label><select class="finput" id="fst2"><option value=""'+((!a.sub_type)?' selected':'')+'>—</option><option value="Monthly"'+(a.sub_type==='Monthly'?' selected':'')+'>Monthly</option><option value="Yearly"'+(a.sub_type==='Yearly'?' selected':'')+'>Yearly</option></select></div>'+
+    '<div class="fgrp"><label class="flbl">Subscription amount ($)</label><input class="finput" id="fsa" type="text" placeholder="e.g. 1,200" value="'+(a.sub_amount?fmtC(a.sub_amount):'')+'"></div>'+
+    '<div class="fgrp full"><label class="flbl">Subscription start date <span style="color:var(--green-dark);font-size:10px">(auto-fills renewal)</span></label><input class="finput" id="fssd" type="date" value="'+(a.sub_start_date||'')+'" onchange="autoRenewal()"></div>'+
+    '<div class="fgrp"><label class="flbl">Renewal date <span style="color:var(--green-dark);font-size:10px">(auto)</span></label><input class="finput" id="frd" type="date" value="'+(a.renewal_date||'')+'"></div></div>'+
+    '</div>'+
+    '<div class="modal-foot">'+delBtn+'<button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" data-eid="'+(a.id||'')+'" onclick="saveAcc(this.dataset.eid)">Save account</button></div>'+
+    '</div></div>';
 }
-function autoD(){const g=document.getElementById('fgl').value;if(g){document.getElementById('fc3').value=addDays(g,30);document.getElementById('fe6').value=addDays(g,60);}}
-function autoRenewal(){const s=document.getElementById('fssd').value;if(s){const d=new Date(s);d.setFullYear(d.getFullYear()+1);document.getElementById('frd').value=d.toISOString().split('T')[0];}}
-function autoLostStage(){const r=document.getElementById('flr').value;if(r){const pt=document.getElementById('fpt');const sg=document.getElementById('fsg');if(pt&&sg&&pt.value!=='sales'){pt.value='sales';updStage();}if(sg)sg.value='Deal lost';}}
-function updStage(){const pt=document.getElementById('fpt').value;const s=document.getElementById('fsg');if(pt==='sales')s.innerHTML=SALES.map(x=>'<option>'+x+'</option>').join('');else if(pt==='impl')s.innerHTML=IMPL.map(x=>'<option>'+x+'</option>').join('');else s.innerHTML='<option value="Active">Active</option>';}
+function autoD(){var g=document.getElementById('fgl').value;if(g){document.getElementById('fc3').value=addDays(g,30);document.getElementById('fe6').value=addDays(g,60);}}
+function autoRenewal(){var s=document.getElementById('fssd').value;if(s){var d=new Date(s);d.setFullYear(d.getFullYear()+1);document.getElementById('frd').value=d.toISOString().split('T')[0];}}
+function autoLostStage(){var r=document.getElementById('flr').value;if(r){var pt=document.getElementById('fpt');var sg=document.getElementById('fsg');if(pt&&sg&&pt.value!=='sales'){pt.value='sales';updStage();}if(sg)sg.value='Deal lost';}}
+function updStage(){var pt=document.getElementById('fpt').value;var s=document.getElementById('fsg');if(pt==='sales')s.innerHTML=SALES.map(function(x){return '<option>'+x+'</option>';}).join('');else if(pt==='impl')s.innerHTML=IMPL.map(function(x){return '<option>'+x+'</option>';}).join('');else s.innerHTML='<option value="Active">Active</option>';}
 
 async function saveAcc(eid){
-  const name=(document.getElementById('fn').value||'').trim();
+  var name=(document.getElementById('fn').value||'').trim();
   if(!name){alert('Account name is required.');return;}
-  const now=new Date().toISOString();
-  const prev=accs.find(a=>a.id===eid)||{};
-  const newStage=document.getElementById('fsg').value;
-  const stageChanged=prev.stage&&prev.stage!==newStage;
-  let activity=prev.activity_log||'[]';
+  var now=new Date().toISOString();
+  var prev=accs.find(function(a){return a.id===eid;})||{};
+  var newStage=document.getElementById('fsg').value;
+  var stageChanged=prev.stage&&prev.stage!==newStage;
+  var activity=prev.activity_log||'[]';
   if(stageChanged)activity=logActivity(prev,'Stage changed from '+prev.stage+' to '+newStage);
   else if(!eid)activity=logActivity({activity_log:'[]'},'Account created');
-  const acc={
-    id:eid||uid(),name,
+  var acc={
+    id:eid||uid(),name:name,
     acct_type:document.getElementById('ft').value||null,
     source:document.getElementById('fsrc').value||null,
     address:document.getElementById('faddr').value.trim()||null,
@@ -656,50 +773,98 @@ async function saveAcc(eid){
     notes_log:prev.notes_log||'[]',
     activity_log:activity,
     updated_at:now,
-    created_at:eid?prev.created_at||now:now,
+    created_at:eid?prev.created_at||now:now
   };
   try{
-    const btn=document.querySelector('.modal-foot .btn-primary');
+    var btn=document.querySelector('.modal-foot .btn-primary');
     if(btn){btn.textContent='Saving...';btn.disabled=true;}
     await upsertAcc(acc);closeModal();
   }catch(e){alert('Error: '+e.message);}
 }
 
 async function addNote(id){
-  const text=(document.getElementById('note-input').value||'').trim();
+  var text=(document.getElementById('note-input').value||'').trim();
   if(!text)return;
-  const a=accs.find(x=>x.id===id);if(!a)return;
-  const notes=getNotes(a);
-  notes.unshift({text,author:getUser(),ts:new Date().toISOString()});
-  const updated=Object.assign({},a,{notes_log:JSON.stringify(notes),activity_log:logActivity(a,'Added a note'),updated_at:new Date().toISOString()});
+  var a=accs.find(function(x){return x.id===id;});
+  if(!a)return;
+  var notes=getNotes(a);
+  notes.unshift({text:text,author:getUser(),ts:new Date().toISOString()});
+  var updated=Object.assign({},a,{notes_log:JSON.stringify(notes),activity_log:logActivity(a,'Added a note'),updated_at:new Date().toISOString()});
   try{
-    const btn=document.getElementById('note-save-btn');
+    var btn=document.getElementById('note-save-btn');
     if(btn){btn.textContent='Saving...';btn.disabled=true;}
     await upsertAcc(updated);openDetail(id);stab('n');
   }catch(e){alert('Error: '+e.message);}
 }
 
 function openDetail(id){
-  const a=accs.find(x=>x.id===id);if(!a)return;
-  let contacts=[];try{contacts=JSON.parse(a.contacts_json||'[]');}catch{}
-  const d=daysFrom(a.renewal_date);const ed=daysFrom(a.eval_end_date);
-  const ch=contacts.length?contacts.map((c,i)=>{const cn=((c.first||'')+' '+(c.last||'')).trim()||c.name||'—';return'<div style="'+(i>0?'padding-top:14px;border-top:1px solid var(--border);margin-top:14px':'')+'"><div style="font-size:11px;font-weight:800;color:var(--navy);margin-bottom:8px;text-transform:uppercase">'+(i===0?'Primary contact':'Contact '+(i+1))+'</div><div class="dgrid"><div class="dlbl">Name</div><div class="dval">'+esc(cn)+'</div><div class="dlbl">Title</div><div class="dval">'+esc(c.title||'—')+'</div><div class="dlbl">Email</div><div class="dval">'+(c.email?'<a href="mailto:'+esc(c.email)+'" style="color:var(--navy);font-weight:700">'+esc(c.email)+'</a>':'—')+'</div><div class="dlbl">Phone</div><div class="dval">'+esc(c.phone||'—')+'</div></div></div>';}).join(''):'<div style="color:var(--muted);font-size:13px">No contacts added.</div>';
-  const notes=getNotes(a);const activity=getActivity(a);
-  const notesHTML='<div class="note-input-area"><textarea id="note-input" placeholder="Add a note..." rows="3"></textarea><div class="note-input-area-foot"><button class="btn btn-primary btn-sm" id="note-save-btn" onclick="addNote(\''+a.id+'\')">Add note</button></div></div>'+(notes.length?notes.map(n=>'<div class="note-entry"><div class="note-meta">'+esc(n.author||'Unknown')+' &middot; '+fmtDT(n.ts)+'</div><div class="note-text">'+esc(n.text)+'</div></div>').join(''):'<div style="color:var(--muted);font-size:13px;padding:8px 0">No notes yet.</div>');
-  const actHTML=activity.length?activity.map(e=>'<div class="activity-entry"><span style="font-weight:700;color:var(--navy)">'+esc(e.who||'Unknown')+'</span><span style="color:var(--muted);margin-left:6px">&middot; '+fmtDT(e.ts)+'</span><div style="color:var(--text);margin-top:2px;font-size:12px">'+esc(e.what)+'</div></div>').join(''):'<div style="color:var(--muted);font-size:13px;padding:8px 0">No activity recorded yet.</div>';
-  document.getElementById('mc').innerHTML='<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-hdr"><div><div class="modal-title">'+esc(a.name)+'</div><div style="font-size:11px;color:rgba(255,255,255,.6);margin-top:2px">'+esc(a.acct_type||'')+(a.source?' &middot; '+esc(a.source):'')+(a.city?' &middot; '+esc(a.city):'')+(a.state?' '+esc(a.state):'')+'</div></div><div style="display:flex;align-items:center;gap:10px">'+badge(a.stage)+'<button class="xbtn" onclick="closeModal()">&times;</button></div></div><div class="modal-body"><div class="tabs"><div class="tab active" id="dt-c" onclick="stab(\'c\')">Contacts</div><div class="tab" id="dt-i" onclick="stab(\'i\')">Implementation</div><div class="tab" id="dt-s" onclick="stab(\'s\')">Subscription</div><div class="tab" id="dt-n" onclick="stab(\'n\')">Notes</div><div class="tab" id="dt-a" onclick="stab(\'a\')">Activity</div></div><div id="dc-c">'+ch+'</div><div id="dc-i" style="display:none"><div class="dgrid"><div class="dlbl">Impl. manager</div><div class="dval">'+esc(a.impl_manager||'—')+'</div><div class="dlbl">Signed date</div><div class="dval">'+fmt(a.signed_date)+'</div><div class="dlbl">Go-live date</div><div class="dval">'+fmt(a.go_live_date)+'</div><div class="dlbl">30-day check-in</div><div class="dval">'+ciStatus(a)+'</div><div class="dlbl">60-day eval end</div><div class="dval">'+(a.eval_end_date?'<span class="'+(ed!==null&&ed<=10?'warn':'')+'">'+fmt(a.eval_end_date)+' '+dl(ed)+'</span>':'—')+'</div><div class="dlbl">Kits</div><div class="dval">'+(a.kit_count||'—')+'</div><div class="dlbl">Hardware cost</div><div class="dval">'+(a.hardware_cost?'$'+fmtC(a.hardware_cost):'—')+'</div><div class="dlbl">Phone</div><div class="dval">'+esc(a.phone||'—')+'</div><div class="dlbl">Website</div><div class="dval">'+esc(a.website||'—')+'</div>'+(a.deal_value?'<div class="dlbl">Deal value</div><div class="dval">$'+fmtC(a.deal_value)+'</div>':'')+(a.lost_reason?'<div class="dlbl">Lost reason</div><div class="dval">'+esc(a.lost_reason)+'</div>':'')+'</div></div><div id="dc-s" style="display:none"><div class="dgrid"><div class="dlbl">Start date</div><div class="dval">'+(a.sub_start_date?fmt(a.sub_start_date):'—')+'</div><div class="dlbl">Sub type</div><div class="dval">'+(a.sub_type?'<span class="badge '+(a.sub_type==='Monthly'?'b-monthly':'b-yearly')+'">'+a.sub_type+'</span>':'—')+'</div><div class="dlbl">Amount</div><div class="dval">'+(a.sub_amount?'$'+fmtC(a.sub_amount)+(a.sub_type==='Monthly'?'/mo':'/yr'):'—')+'</div><div class="dlbl">Renewal date</div><div class="dval">'+(a.renewal_date?'<span class="'+(d!==null&&d<=30?d<=7?'danger':'warn':'')+'">'+fmt(a.renewal_date)+' '+dl(d)+'</span>':'—')+'</div></div></div><div id="dc-n" style="display:none">'+notesHTML+'</div><div id="dc-a" style="display:none">'+actHTML+'</div></div><div class="modal-foot"><button class="btn" onclick="closeModal()">Close</button><button class="btn btn-primary" onclick="closeModal();openEdit('\''+a.id+''\'')">Edit account</button></div></div></div>';
+  var a=accs.find(function(x){return x.id===id;});
+  if(!a)return;
+  var contacts=[];try{contacts=JSON.parse(a.contacts_json||'[]');}catch(e){}
+  var d=daysFrom(a.renewal_date);var ed=daysFrom(a.eval_end_date);
+  var ch='';
+  if(contacts.length){
+    contacts.forEach(function(c,i){
+      var cn=((c.first||'')+' '+(c.last||'')).trim()||c.name||'\u2014';
+      var emailLink=c.email?'<a href="mailto:'+esc(c.email)+'" style="color:var(--navy);font-weight:700">'+esc(c.email)+'</a>':'\u2014';
+      ch+='<div style="'+(i>0?'padding-top:14px;border-top:1px solid var(--border);margin-top:14px':'')+'"><div style="font-size:11px;font-weight:800;color:var(--navy);margin-bottom:8px;text-transform:uppercase">'+(i===0?'Primary contact':'Contact '+(i+1))+'</div><div class="dgrid"><div class="dlbl">Name</div><div class="dval">'+esc(cn)+'</div><div class="dlbl">Title</div><div class="dval">'+esc(c.title||'\u2014')+'</div><div class="dlbl">Email</div><div class="dval">'+emailLink+'</div><div class="dlbl">Phone</div><div class="dval">'+esc(c.phone||'\u2014')+'</div></div></div>';
+    });
+  }else{ch='<div style="color:var(--muted);font-size:13px">No contacts added.</div>';}
+  var notes=getNotes(a);var activity=getActivity(a);
+  var notesItems='';
+  notes.forEach(function(n){notesItems+='<div class="note-entry"><div class="note-meta">'+esc(n.author||'Unknown')+' &middot; '+fmtDT(n.ts)+'</div><div class="note-text">'+esc(n.text)+'</div></div>';});
+  var notesHTML='<div class="note-input-area"><textarea id="note-input" placeholder="Add a note..." rows="3"></textarea><div class="note-input-area-foot"><button class="btn btn-primary btn-sm" data-id="'+a.id+'" id="note-save-btn" onclick="addNote(this.dataset.id)">Add note</button></div></div>'+(notesItems||'<div style="color:var(--muted);font-size:13px;padding:8px 0">No notes yet.</div>');
+  var actItems='';
+  activity.forEach(function(e){actItems+='<div class="activity-entry"><span style="font-weight:700;color:var(--navy)">'+esc(e.who||'Unknown')+'</span><span style="color:var(--muted);margin-left:6px">&middot; '+fmtDT(e.ts)+'</span><div style="color:var(--text);margin-top:2px;font-size:12px">'+esc(e.what)+'</div></div>';});
+  var actHTML=actItems||'<div style="color:var(--muted);font-size:13px;padding:8px 0">No activity recorded yet.</div>';
+  document.getElementById('mc').innerHTML=
+    '<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal">'+
+    '<div class="modal-hdr"><div><div class="modal-title">'+esc(a.name)+'</div><div style="font-size:11px;color:rgba(255,255,255,.6);margin-top:2px">'+esc(a.acct_type||'')+(a.source?' &middot; '+esc(a.source):'')+(a.city?' &middot; '+esc(a.city):'')+(a.state?' '+esc(a.state):'')+'</div></div><div style="display:flex;align-items:center;gap:10px">'+badge(a.stage)+'<button class="xbtn" onclick="closeModal()">&times;</button></div></div>'+
+    '<div class="modal-body"><div class="tabs"><div class="tab active" id="dt-c" onclick="stab(\'c\')">Contacts</div><div class="tab" id="dt-i" onclick="stab(\'i\')">Implementation</div><div class="tab" id="dt-s" onclick="stab(\'s\')">Subscription</div><div class="tab" id="dt-n" onclick="stab(\'n\')">Notes</div><div class="tab" id="dt-a" onclick="stab(\'a\')">Activity</div></div>'+
+    '<div id="dc-c">'+ch+'</div>'+
+    '<div id="dc-i" style="display:none"><div class="dgrid">'+
+    '<div class="dlbl">Impl. manager</div><div class="dval">'+esc(a.impl_manager||'\u2014')+'</div>'+
+    '<div class="dlbl">Signed date</div><div class="dval">'+fmt(a.signed_date)+'</div>'+
+    '<div class="dlbl">Go-live date</div><div class="dval">'+fmt(a.go_live_date)+'</div>'+
+    '<div class="dlbl">30-day check-in</div><div class="dval">'+ciStatus(a)+'</div>'+
+    '<div class="dlbl">60-day eval end</div><div class="dval">'+(a.eval_end_date?'<span class="'+(ed!==null&&ed<=10?'warn':'')+'">'+fmt(a.eval_end_date)+' '+dl(ed)+'</span>':'\u2014')+'</div>'+
+    '<div class="dlbl">Kits</div><div class="dval">'+(a.kit_count||'\u2014')+'</div>'+
+    '<div class="dlbl">Hardware cost</div><div class="dval">'+(a.hardware_cost?'$'+fmtC(a.hardware_cost):'\u2014')+'</div>'+
+    '<div class="dlbl">Phone</div><div class="dval">'+esc(a.phone||'\u2014')+'</div>'+
+    '<div class="dlbl">Website</div><div class="dval">'+esc(a.website||'\u2014')+'</div>'+
+    (a.deal_value?'<div class="dlbl">Deal value</div><div class="dval">$'+fmtC(a.deal_value)+'</div>':'')+
+    (a.lost_reason?'<div class="dlbl">Lost reason</div><div class="dval">'+esc(a.lost_reason)+'</div>':'')+
+    '</div></div>'+
+    '<div id="dc-s" style="display:none"><div class="dgrid">'+
+    '<div class="dlbl">Start date</div><div class="dval">'+(a.sub_start_date?fmt(a.sub_start_date):'\u2014')+'</div>'+
+    '<div class="dlbl">Sub type</div><div class="dval">'+(a.sub_type?'<span class="badge '+(a.sub_type==='Monthly'?'b-monthly':'b-yearly')+'">'+a.sub_type+'</span>':'\u2014')+'</div>'+
+    '<div class="dlbl">Amount</div><div class="dval">'+(a.sub_amount?'$'+fmtC(a.sub_amount)+(a.sub_type==='Monthly'?'/mo':'/yr'):'\u2014')+'</div>'+
+    '<div class="dlbl">Renewal date</div><div class="dval">'+(a.renewal_date?'<span class="'+(d!==null&&d<=30?d<=7?'danger':'warn':'')+'">'+fmt(a.renewal_date)+' '+dl(d)+'</span>':'\u2014')+'</div>'+
+    '</div></div>'+
+    '<div id="dc-n" style="display:none">'+notesHTML+'</div>'+
+    '<div id="dc-a" style="display:none">'+actHTML+'</div>'+
+    '</div>'+
+    '<div class="modal-foot"><button class="btn" onclick="closeModal()">Close</button><button class="btn btn-primary" data-id="'+a.id+'" onclick="closeModal();openEdit(this.dataset.id)">Edit account</button></div>'+
+    '</div></div>';
 }
-function stab(t){['c','i','s','n','a'].forEach(x=>{const dt=document.getElementById('dt-'+x);const dc=document.getElementById('dc-'+x);if(dt)dt.classList.toggle('active',x===t);if(dc)dc.style.display=x===t?'':'none';});}
+function stab(t){
+  ['c','i','s','n','a'].forEach(function(x){
+    var dt=document.getElementById('dt-'+x);
+    var dc=document.getElementById('dc-'+x);
+    if(dt)dt.classList.toggle('active',x===t);
+    if(dc)dc.style.display=x===t?'':'none';
+  });
+}
 
 document.addEventListener('DOMContentLoaded',function(){
-  const saved=localStorage.getItem('crm_impl_mgrs');
-  if(saved){try{implMgrs=JSON.parse(saved);}catch{}}
-  const name=getUser();
+  var saved=localStorage.getItem('crm_impl_mgrs');
+  if(saved){try{implMgrs=JSON.parse(saved);}catch(e){}}
+  var name=getUser();
   if(name&&name!=='Unknown'){
     document.getElementById('sf-name').textContent=name;
     document.getElementById('app').style.display='block';
     loadAll();
-  } else {
+  }else{
     document.getElementById('welcome-screen').style.display='flex';
   }
 });
