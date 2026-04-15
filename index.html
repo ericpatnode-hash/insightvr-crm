@@ -209,12 +209,30 @@ textarea.finput{resize:vertical;min-height:60px;}
       <div class="topbar">
         <div style="display:flex;align-items:center;gap:14px">
           <span class="page-title" id="ptitle">Dashboard</span>
-          <div id="ring-container" class="ring-wrap" style="display:none">
-            <svg class="ring-svg" viewBox="0 0 40 40" width="40" height="40" xmlns="http://www.w3.org/2000/svg">
-              <rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.30)" transform="rotate(0 20 20)"/>
-              <rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.50)" transform="rotate(102.8 20 20)"/>
-              <rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.70)" transform="rotate(205.7 20 20)"/>
-              <rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.97)" transform="rotate(334.2 20 20)"/>
+          <div id="ring-container" style="display:none;width:32px;height:48px;flex-shrink:0">
+            <svg viewBox="0 0 62 100" width="32" height="48" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="topGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#B5FF5A"/>
+                  <stop offset="100%" stop-color="#00FEA2"/>
+                </linearGradient>
+                <linearGradient id="midGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#00FEA2"/>
+                  <stop offset="100%" stop-color="#00C9B1"/>
+                </linearGradient>
+                <linearGradient id="botGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#00A8C8"/>
+                  <stop offset="100%" stop-color="#1F5E9C"/>
+                </linearGradient>
+              </defs>
+              <!-- Vertical bar (full height) -->
+              <rect x="42" y="0" width="20" height="100" rx="4" fill="url(#topGrad)"/>
+              <!-- Top half-circle -->
+              <path d="M42,0 A31,31 0 0,0 42,62 L42,0 Z" fill="url(#midGrad)"/>
+              <!-- Middle overlap arc -->
+              <path d="M42,38 A24,24 0 0,0 42,86 L42,38 Z" fill="url(#midGrad)" opacity="0.85"/>
+              <!-- Bottom D shape -->
+              <path d="M42,60 A31,38 0 0,1 42,100 L42,60 Z" fill="url(#botGrad)"/>
             </svg>
           </div>
         </div>
@@ -231,7 +249,7 @@ const SB_KEY='sb_publishable_i4w5l5cDDr9tmjNKvYlVlg_REgHxGOg';
 const SALES=['Prospect','Intro meeting','Early diligence','Late diligence','Proposal sent','Deal won','Deal lost'];
 const IMPL=['Discovery & planning','Go-live scheduled','60-day evaluation','Overdue'];
 const TYPES=['Practice','Private equity group','Industry partner','Other'];
-const SOURCES=['Website / inbound','Referral','Outbound / cold outreach','Conference / event','Industry partner','Other'];
+const SOURCES=['Website / inbound','Referral','Outbound / cold outreach','Conference / event','Industry partner','Alcon - Field','B&L - Field','J&J - Field','Other'];
 const LOST_REASONS=['Price','Timing','Competition','No decision / went silent','Returned during eval','Budget cut','Other'];
 const SBADGE={Prospect:'b-prospect','Intro meeting':'b-intro','Early diligence':'b-early','Late diligence':'b-late','Proposal sent':'b-proposal','Deal won':'b-won','Deal lost':'b-lost','Discovery & planning':'b-discovery','Go-live scheduled':'b-golive','60-day evaluation':'b-60day',Overdue:'b-overdue',Active:'b-active'};
 const TITLES={dashboard:'Dashboard',pipeline:'Sales Pipeline',impl:'Implementation',active:'Active Accounts',renewals:'Renewals',reports:'Reports',activity:'Activity',settings:'Settings'};
@@ -345,7 +363,7 @@ async function toggleCI(id){
   await upsertAcc(Object.assign({},a,{checkin_30_done:done,activity_log:logActivity(a,done?'Marked 30-day check-in complete':'Undid 30-day check-in'),updated_at:new Date().toISOString()}));
 }
 function nav(v){
-  view=v;q='';fs='all';sortCol='';sortDir=1;
+  view=v;q='';fs=(v==='pipeline'?'active':'all');sortCol='';sortDir=1;
   window._lf='all';window._sf='all';
   document.querySelectorAll('.nav-item').forEach(function(e){e.classList.remove('active');});
   var el=document.getElementById('nav-'+v);if(el)el.classList.add('active');
@@ -354,7 +372,7 @@ function nav(v){
   render();
 }
 function navFilter(v,stage){
-  view=v;q='';fs=stage;sortCol='';sortDir=1;
+  view=v;q='';fs=stage||'active';sortCol='';sortDir=1;
   window._lf='all';window._sf='all';
   document.querySelectorAll('.nav-item').forEach(function(e){e.classList.remove('active');});
   var el=document.getElementById('nav-'+v);if(el)el.classList.add('active');
@@ -447,7 +465,8 @@ function rPipe(el,act){
   act.innerHTML='<button class="btn btn-navy" onclick="exportPipeline()" style="margin-right:8px">Export CSV</button><button class="btn btn-primary" onclick="openAdd()">+ Add account</button>';
   var list=accs.filter(function(a){return SALES.includes(a.stage);});
   if(q)list=list.filter(function(a){return a.name.toLowerCase().includes(q.toLowerCase())||(a.city||'').toLowerCase().includes(q.toLowerCase());});
-  if(fs!=='all')list=list.filter(function(a){return a.stage===fs;});
+  if(fs==='active')list=list.filter(function(a){return a.stage!=='Deal won'&&a.stage!=='Deal lost';});
+  else if(fs!=='all')list=list.filter(function(a){return a.stage===fs;});
   list=srt(list,{name:function(a){return a.name;},stage:function(a){return a.stage;},contact:function(a){return cname(a);},deal_value:function(a){return parseC(a.deal_value)||0;},updated:function(a){return a.updated_at;}});
   var totalVal=list.reduce(function(s,a){return s+(parseC(a.deal_value)||0);},0);
   var rows='';
@@ -456,9 +475,9 @@ function rPipe(el,act){
     var emailHTML=pc.email?'<div class="as"><a href="mailto:'+esc(pc.email)+'" style="color:var(--navy)" onclick="event.stopPropagation()">'+esc(pc.email)+'</a></div>':'';
     rows+=trO(a.id)+'<td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' &middot; '+esc(a.state):'')+'</div></td><td>'+badge(a.stage)+'</td><td><div>'+esc(cname(a))+'</div>'+emailHTML+'</td><td>'+(a.deal_value?'$'+fmtC(a.deal_value):'\u2014')+'</td><td style="color:var(--muted)">'+fmt(a.updated_at)+'</td><td>'+eBtn(a.id)+'</td></tr>';
   });
-  var stageOpts=SALES.map(function(s){return '<option value="'+s+'"'+(fs===s?' selected':'')+'>'+s+'</option>';}).join('');
+  var stageOpts='<option value="active"'+(fs==='active'?' selected':'')+'>All active</option><option value="all"'+(fs==='all'?' selected':'')+'>All stages</option><option disabled>──────────</option>'+SALES.map(function(s){return '<option value="'+s+'"'+(fs===s?' selected':'')+'>'+s+'</option>';}).join('');
   var totalSpan=totalVal?'<span style="margin-left:auto;font-size:13px;font-weight:700;color:var(--navy)">Total pipeline: $'+fmtC(totalVal)+'</span>':'';
-  el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search..." value="'+esc(q)+'" oninput="q=this.value;render()"><select class="finput" style="width:190px" onchange="fs=this.value;render()"><option value="all">All stages</option>'+stageOpts+'</select>'+totalSpan+'</div><div class="card"><div style="overflow-x:auto"><table><thead><tr>'+th('name','Account','28%')+th('stage','Stage','16%')+th('contact','Contact','22%')+th('deal_value','Deal value','14%')+th('updated','Updated','12%')+'<th style="width:8%"></th></tr></thead><tbody>'+(list.length?rows:'<tr><td colspan="6" class="empty">No accounts found.</td></tr>')+'</tbody></table></div></div>';
+  el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search..." value="'+esc(q)+'" oninput="q=this.value;render()"><select class="finput" style="width:190px" onchange="fs=this.value;render()">'+stageOpts+'</select>'+totalSpan+'</div>'+'<div class="card"><div style="overflow-x:auto"><table><thead><tr>'+th('name','Account','28%')+th('stage','Stage','16%')+th('contact','Contact','22%')+th('deal_value','Deal value','14%')+th('updated','Updated','12%')+'<th style="width:8%"></th></tr></thead><tbody>'+(list.length?rows:'<tr><td colspan="6" class="empty">No accounts found.</td></tr>')+'</tbody></table></div></div>';
 }
 function exportPipeline(){
   exportCSV(accs.filter(function(a){return SALES.includes(a.stage);}),
@@ -701,15 +720,15 @@ function showForm(acc){
     '<div class="modal-body">'+
     '<div class="fsec">Account info</div>'+
     '<div class="fg"><div class="fgrp full"><label class="flbl">Account name *</label><input class="finput" id="fn" value="'+esc(a.name||'')+'"></div>'+
-    '<div class="fgrp"><label class="flbl">Type</label><select class="finput" id="ft"><option value="">— Select type —</option>'+typeOpts+'</select></div>'+
+    '<div class="fgrp"><label class="flbl">Type</label><select class="finput" id="ft" onchange="updPEField()"><option value="">— Select type —</option>'+typeOpts+'</select></div>'+
     '<div class="fgrp"><label class="flbl">Source</label><select class="finput" id="fsrc"><option value="">— Select source —</option>'+srcOpts+'</select></div></div>'+
-    '<div class="fgrp full" style="margin-top:14px"><label class="flbl">Street address</label><input class="finput" id="faddr" value="'+esc(a.address||'')+'"></div>'+
+    '<div id="pe-group-field" style="display:'+(a.acct_type==="Private equity group"?"block":"none")+';margin-top:14px"><div class="fgrp"><label class="flbl">PE Group name</label><input class="finput" id="fpe" placeholder="e.g. Warburg Pincus" value="'+(a.pe_group||'')+'" ></div></div>'+'<div class="fgrp full" style="margin-top:14px"><label class="flbl">Street address</label><input class="finput" id="faddr" value="'+esc(a.address||'')+'"></div>'+
     '<div class="fg3" style="margin-top:14px"><div class="fgrp"><label class="flbl">City</label><input class="finput" id="fci" value="'+esc(a.city||'')+'"></div><div class="fgrp"><label class="flbl">State</label><input class="finput" id="fst" value="'+esc(a.state||'')+'"></div><div class="fgrp"><label class="flbl">Zip</label><input class="finput" id="fzp" value="'+esc(a.zip||'')+'"></div></div>'+
     '<div class="fg" style="margin-top:14px"><div class="fgrp"><label class="flbl">Phone</label><input class="finput" id="fph" value="'+esc(a.phone||'')+'"></div><div class="fgrp"><label class="flbl">Website</label><input class="finput" id="fwb" value="'+esc(a.website||'')+'"></div></div>'+
     '<div class="fsec">Pipeline stage</div>'+
     '<div class="fg"><div class="fgrp"><label class="flbl">Pipeline type</label><select class="finput" id="fpt" onchange="updStage()"><option value="sales"'+(pt==='sales'?' selected':'')+'>Sales Pipeline</option><option value="impl"'+(pt==='impl'?' selected':'')+'>Implementation</option><option value="active"'+(pt==='active'?' selected':'')+'>Active account</option></select></div>'+
     '<div class="fgrp"><label class="flbl">Stage</label><select class="finput" id="fsg">'+stageOpts+'</select></div>'+
-    '<div class="fgrp"><label class="flbl">Deal value ($)</label><input class="finput" id="fdv" type="text" placeholder="e.g. 25,000" value="'+(a.deal_value?fmtC(a.deal_value):'')+'"></div>'+
+    '<div class="fgrp"><label class="flbl">Deal value ($)</label><input class="finput" id="fdv" type="text" placeholder="e.g. 25,000" value="'+(a.deal_value?fmtC(a.deal_value):'')+'"><div style="font-size:11px;color:var(--muted);margin-top:4px;font-weight:600">e.g. hardware cost + first year subscription</div></div>'+
     '<div class="fgrp"><label class="flbl">Lost reason</label><select class="finput" id="flr" onchange="autoLostStage()"><option value="">—</option>'+lostOpts+'</select></div></div>'+
     '<div class="fsec">Contacts</div><div id="cc">'+contactsHTML+'</div><button class="add-c-btn" onclick="addC()">+ Add another contact</button>'+
     '<div class="fsec">Implementation &amp; hardware</div>'+
@@ -735,6 +754,11 @@ function autoRenewal(){var s=document.getElementById('fssd').value;if(s){var d=n
 function autoLostStage(){var r=document.getElementById('flr').value;if(r){var pt=document.getElementById('fpt');var sg=document.getElementById('fsg');if(pt&&sg&&pt.value!=='sales'){pt.value='sales';updStage();}if(sg)sg.value='Deal lost';}}
 function updStage(){var pt=document.getElementById('fpt').value;var s=document.getElementById('fsg');if(pt==='sales')s.innerHTML=SALES.map(function(x){return '<option>'+x+'</option>';}).join('');else if(pt==='impl')s.innerHTML=IMPL.map(function(x){return '<option>'+x+'</option>';}).join('');else s.innerHTML='<option value="Active">Active</option>';}
 
+function updPEField(){
+  var v=document.getElementById('ft').value;
+  var f=document.getElementById('pe-group-field');
+  if(f)f.style.display=v==='Private equity group'?'block':'none';
+}
 async function saveAcc(eid){
   var name=(document.getElementById('fn').value||'').trim();
   if(!name){alert('Account name is required.');return;}
@@ -748,6 +772,7 @@ async function saveAcc(eid){
   var acc={
     id:eid||uid(),name:name,
     acct_type:document.getElementById('ft').value||null,
+    pe_group:document.getElementById('fpe')?document.getElementById('fpe').value.trim()||null:null,
     source:document.getElementById('fsrc').value||null,
     address:document.getElementById('faddr').value.trim()||null,
     city:document.getElementById('fci').value.trim()||null,
