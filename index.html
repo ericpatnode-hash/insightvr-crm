@@ -253,10 +253,14 @@ function resetConfig() {
   location.reload();
 }
 function initSupabase(url, key) {
-  supabase = window.supabase.createClient(url, key);
-  document.getElementById('config-screen').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
-  loadAccounts();
+  try {
+    supabase = window.supabase.createClient(url, key);
+    document.getElementById('config-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    loadAccounts();
+  } catch(e) {
+    alert('Connection error: ' + e.message);
+  }
 }
 
 // ── Data ─────────────────────────────────────────────────────────────────────
@@ -268,6 +272,7 @@ async function loadAccounts() {
     updateRenewalBadge();
     render();
   } catch (e) {
+    alert('Database error: ' + e.message);
     document.getElementById('page-content').innerHTML = `<div class="empty"><div class="empty-icon">⚠</div>Could not load data.<br><small style="margin-top:8px;display:block">${e.message}</small><br><button class="btn" onclick="loadAccounts()">Retry</button></div>`;
   }
 }
