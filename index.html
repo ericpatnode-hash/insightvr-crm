@@ -453,7 +453,21 @@ function switchDetailTab(t){
   });
 }
 
-function boot(){const cfgBtn=document.getElementById('cfg-btn');if(cfgBtn)cfgBtn.addEventListener('click',saveConfig);
+function boot(){
+  const SUPABASE_URL='https://zqfctprzbcqxrbvgslkh.supabase.co';
+  const SUPABASE_KEY='sb_publishable_i4w5l5cDDr9tmjNKvYlVlg_REgHxGOg';
+  const cfgBtn=document.getElementById('cfg-btn');
+  if(cfgBtn)cfgBtn.addEventListener('click',saveConfig);
+  const cfgUrl=document.getElementById('cfg-url');
+  const cfgKey=document.getElementById('cfg-key');
+  if(cfgUrl)cfgUrl.addEventListener('keydown',function(e){if(e.key==='Enter')saveConfig();});
+  if(cfgKey)cfgKey.addEventListener('keydown',function(e){if(e.key==='Enter')saveConfig();});
+  const savedUrl=localStorage.getItem('sb_url')||SUPABASE_URL;
+  const savedKey=localStorage.getItem('sb_key')||SUPABASE_KEY;
+  localStorage.setItem('sb_url',savedUrl);
+  localStorage.setItem('sb_key',savedKey);
+  initCRM(savedUrl,savedKey);
+const cfgBtn=document.getElementById('cfg-btn');if(cfgBtn)cfgBtn.addEventListener('click',saveConfig);const cfgUrl=document.getElementById('cfg-url');const cfgKey=document.getElementById('cfg-key');if(cfgUrl)cfgUrl.addEventListener('keydown',function(e){if(e.key==='Enter')saveConfig();});if(cfgKey)cfgKey.addEventListener('keydown',function(e){if(e.key==='Enter')saveConfig();});const cfgBtn=document.getElementById('cfg-btn');if(cfgBtn)cfgBtn.addEventListener('click',saveConfig);
   const url=localStorage.getItem('sb_url');const key=localStorage.getItem('sb_key');
   if(url&&key)initCRM(url,key);
 }
