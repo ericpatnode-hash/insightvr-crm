@@ -328,7 +328,7 @@ function rDash(el,act){
   impl.filter(a=>a.stage==='Overdue').forEach(a=>{alerts+='<div class="alert-row alert-danger"><span><strong>'+esc(a.name)+'</strong> — 60-day evaluation overdue</span><button class="btn btn-sm" onclick="openDetail(\''+a.id+'\')">View</button></div>';});
   impl.filter(a=>a.stage==='60-day evaluation'&&daysFrom(a.eval_end_date)!==null&&daysFrom(a.eval_end_date)<=10&&daysFrom(a.eval_end_date)>=0).forEach(a=>{const d=daysFrom(a.eval_end_date);alerts+='<div class="alert-row alert-warn"><span><strong>'+esc(a.name)+'</strong> — 60-day evaluation ends in '+d+'d</span><button class="btn btn-sm" onclick="openDetail(\''+a.id+'\')">View</button></div>';});
   const rec=accs.slice(0,8);
-  el.innerHTML='<div class="metrics"><div class="metric" onclick="nav(\'active\')" style="cursor:pointer"><div class="metric-lbl">Active Accounts</div><div class="metric-val">'+active.length+'</div><div class="metric-sub" style="color:var(--navy)">View →</div></div><div class="metric" onclick="nav(\'pipeline\')" style="cursor:pointer"><div class="metric-lbl">Sales Pipeline</div><div class="metric-val">'+pipe.length+'</div><div class="metric-sub" style="color:var(--navy)">View →</div></div><div class="metric" onclick="nav(\'impl\')" style="cursor:pointer"><div class="metric-lbl">Implementation</div><div class="metric-val">'+impl.length+'</div><div class="metric-sub" style="color:var(--navy)">View →</div></div><div class="metric" onclick="nav(\'renewals\')" style="cursor:pointer"><div class="metric-lbl">Renewing (30 days)</div><div class="metric-val '+(rs.length?'red':'')+'">'+rs.length+'</div><div class="metric-sub" style="color:'+(rs.length?'var(--danger)':'var(--navy)')+'">View →</div></div></div>'+(alerts?'<div class="card" style="overflow:hidden;margin-bottom:20px">'+alerts+'</div>':'')+'<div class="card"><div class="card-hdr"><span class="card-title">Recent activity</span></div><div style="overflow-x:auto"><table><thead><tr><th style="width:24%">Account</th><th style="width:15%">Stage</th><th style="width:16%">Key date</th><th style="width:9%">Kits</th><th style="width:15%">Contact</th><th style="width:12%">Source</th><th style="width:9%"></th></tr></thead><tbody>'+(rec.length?rec.map(a=>{let kd='—';if(a.stage==='Active'&&a.renewal_date){const d=daysFrom(a.renewal_date);kd='<span class="'+(d<=30?d<=7?'danger':'warn':'')+'">Renews '+fmt(a.renewal_date)+'</span>';}else if(a.stage==='60-day evaluation'&&a.eval_end_date){const d=daysFrom(a.eval_end_date);kd='<span class="'+(d<=10?'warn':'')+'">Eval ends '+fmt(a.eval_end_date)+'</span>';}else if(a.go_live_date)kd='Go-live '+fmt(a.go_live_date);return'<tr onclick="openDetail(\''+a.id+'\')"><td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' &middot; '+esc(a.state):'')+'</div></td><td>'+badge(a.stage)+'</td><td>'+kd+'</td><td>'+(a.kit_count||'—')+'</td><td>'+esc(cname(a))+'</td><td style="font-size:12px;color:var(--muted)">'+esc(a.source||'—')+'</td><td><button class="btn btn-sm btn-navy" onclick="event.stopPropagation();openEdit(\''+a.id+'\')">Edit</button></td></tr>';}).join(''):'<tr><td colspan="7" class="empty">No accounts yet — click "+ Add account" to start.</td></tr>')+'</tbody></table></div></div>';
+  el.innerHTML='<div class="metrics"><div class="metric" onclick="nav(\'active\')" style="cursor:pointer"><div class="metric-lbl">Active Accounts</div><div class="metric-val">'+active.length+'</div><div class="metric-sub" style="color:var(--navy)">View →</div></div><div class="metric" onclick="nav(\'pipeline\')" style="cursor:pointer"><div class="metric-lbl">Sales Pipeline</div><div class="metric-val">'+pipe.length+'</div><div class="metric-sub" style="color:var(--navy)">View →</div></div><div class="metric" onclick="nav(\'impl\')" style="cursor:pointer"><div class="metric-lbl">Implementation</div><div class="metric-val">'+impl.length+'</div><div class="metric-sub" style="color:var(--navy)">View →</div></div><div class="metric" onclick="nav(\'renewals\')" style="cursor:pointer"><div class="metric-lbl">Renewing (30 days)</div><div class="metric-val '+(rs.length?'red':'')+'">'+rs.length+'</div><div class="metric-sub" style="color:'+(rs.length?'var(--danger)':'var(--navy)')+'">View →</div></div></div>'+(alerts?'<div class="card" style="overflow:hidden;margin-bottom:20px">'+alerts+'</div>':'')+'<div class="card"><div class="card-hdr"><span class="card-title">Recent activity</span></div><div style="padding:0">'+(function(){const allActivity=[];accs.forEach(a=>{const log=getActivity(a);log.forEach(e=>allActivity.push({...e,accId:a.id,accName:a.name,accStage:a.stage}));});allActivity.sort((a,b)=>new Date(b.ts)-new Date(a.ts));const recent=allActivity.slice(0,20);if(!recent.length)return'<div class="empty">No activity yet — start adding and editing accounts.</div>';return recent.map(e=>'<div style="padding:12px 18px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:12px"><div style="flex:1"><span style="font-weight:700;color:var(--navy)">'+esc(e.accName)+'</span><span style="font-size:12px;color:var(--muted);margin-left:8px">'+fmtDT(e.ts)+'</span><div style="font-size:12px;color:var(--text);margin-top:2px">'+esc(e.what)+'</div><div style="font-size:11px;color:var(--muted);margin-top:1px">by '+esc(e.who||'Unknown')+'</div></div><button class="btn btn-sm btn-navy" onclick="openDetail(\''+e.accId+'\')" style="flex-shrink:0">View</button></div>').join('');})()+'</div></div>';
 }
 
 function rPipe(el,act){
@@ -360,7 +360,7 @@ function rActive(el,act){
   act.innerHTML='<button class="btn btn-navy" onclick="exportActive()">Export CSV</button>';
   let list=accs.filter(a=>a.stage==='Active');
   if(q)list=list.filter(a=>a.name.toLowerCase().includes(q.toLowerCase()));
-  el.innerHTML+='<div class="fbar"><input type="text" class="search" placeholder="Search..." value="'+esc(q)+'" oninput="q=this.value;render()"></div><div class="card"><div style="overflow-x:auto"><table><thead><tr><th style="width:18%">Account</th><th style="width:9%">City</th><th style="width:7%">State</th><th style="width:10%">Sub type</th><th style="width:13%">Renewal</th><th style="width:7%">Kits</th><th style="width:10%">HW cost</th><th style="width:10%">Sub amt</th><th style="width:12%">Contact</th><th style="width:4%"></th></tr></thead><tbody>'+(list.length?list.map(a=>{const d=daysFrom(a.renewal_date);return'<tr onclick="openDetail(\''+a.id+'\')"><td><div class="an">'+esc(a.name)+'</div></td><td style="color:var(--muted)">'+esc(a.city||'—')+'</td><td style="color:var(--muted)">'+esc(a.state||'—')+'</td><td>'+(a.sub_type?'<span class="badge '+(a.sub_type==='Monthly'?'b-monthly':'b-yearly')+'">'+a.sub_type+'</span>':'—')+'</td><td>'+(a.renewal_date?'<span class="'+(d!==null&&d<=30?d<=7?'danger':'warn':'')+'">'+fmt(a.renewal_date)+' '+dl(d)+'</span>':'—')+'</td><td>'+(a.kit_count||'—')+'</td><td>'+(a.hardware_cost?'$'+fmtC(a.hardware_cost):'—')+'</td><td>'+(a.sub_amount?'$'+fmtC(a.sub_amount)+(a.sub_type==='Monthly'?'/mo':'/yr'):'—')+'</td><td>'+esc(cname(a))+'</td><td><button class="btn btn-sm btn-navy" onclick="event.stopPropagation();openEdit(\''+a.id+'\')">Edit</button></td></tr>';}).join(''):'<tr><td colspan="10" class="empty">No active accounts.</td></tr>')+'</tbody></table></div></div>';
+  el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search..." value="'+esc(q)+'" oninput="q=this.value;render()"></div><div class="card"><div style="overflow-x:auto"><table><thead><tr><th style="width:18%">Account</th><th style="width:9%">City</th><th style="width:7%">State</th><th style="width:10%">Sub type</th><th style="width:13%">Renewal</th><th style="width:7%">Kits</th><th style="width:10%">HW cost</th><th style="width:10%">Sub amt</th><th style="width:12%">Contact</th><th style="width:4%"></th></tr></thead><tbody>'+(list.length?list.map(a=>{const d=daysFrom(a.renewal_date);return'<tr onclick="openDetail(\''+a.id+'\')"><td><div class="an">'+esc(a.name)+'</div></td><td style="color:var(--muted)">'+esc(a.city||'—')+'</td><td style="color:var(--muted)">'+esc(a.state||'—')+'</td><td>'+(a.sub_type?'<span class="badge '+(a.sub_type==='Monthly'?'b-monthly':'b-yearly')+'">'+a.sub_type+'</span>':'—')+'</td><td>'+(a.renewal_date?'<span class="'+(d!==null&&d<=30?d<=7?'danger':'warn':'')+'">'+fmt(a.renewal_date)+' '+dl(d)+'</span>':'—')+'</td><td>'+(a.kit_count||'—')+'</td><td>'+(a.hardware_cost?'$'+fmtC(a.hardware_cost):'—')+'</td><td>'+(a.sub_amount?'$'+fmtC(a.sub_amount)+(a.sub_type==='Monthly'?'/mo':'/yr'):'—')+'</td><td>'+esc(cname(a))+'</td><td><button class="btn btn-sm btn-navy" onclick="event.stopPropagation();openEdit(\''+a.id+'\')">Edit</button></td></tr>';}).join(''):'<tr><td colspan="10" class="empty">No active accounts.</td></tr>')+'</tbody></table></div></div>';
 }
 
 function exportActive(){
@@ -385,31 +385,103 @@ function rReports(el,act){
   act.innerHTML='<button class="btn btn-navy" onclick="exportReports()">Export CSV</button>';
   const active=accs.filter(a=>a.stage==='Active');
   const pipe=accs.filter(a=>SALES.includes(a.stage)&&a.stage!=='Deal won'&&a.stage!=='Deal lost');
-  const impl=accs.filter(a=>IMPL.includes(a.stage));
   const lost=accs.filter(a=>a.stage==='Deal lost');
   const hwRev=active.reduce((s,a)=>s+(parseC(a.hardware_cost)||0),0);
   const subRev=active.reduce((s,a)=>s+(parseC(a.sub_amount)||0),0);
   const pipeVal=pipe.reduce((s,a)=>s+(parseC(a.deal_value)||0),0);
-  const monthly=active.filter(a=>a.sub_type==='Monthly').length;
-  const yearly=active.filter(a=>a.sub_type==='Yearly').length;
+  const monthly=active.filter(a=>a.sub_type==='Monthly');
+  const yearly=active.filter(a=>a.sub_type==='Yearly');
   const totalKits=active.reduce((s,a)=>s+(a.kit_count||0),0);
   const lostByReason={};lost.forEach(a=>{const r=a.lost_reason||'Unknown';lostByReason[r]=(lostByReason[r]||0)+1;});
   const sourceBreakdown={};accs.forEach(a=>{if(a.source){sourceBreakdown[a.source]=(sourceBreakdown[a.source]||0)+1;}});
-  el.innerHTML='<div class="report-grid"><div class="report-card"><div class="report-lbl">Total hardware revenue</div><div class="report-val">'+(hwRev?'$'+fmtC(hwRev):'$0')+'</div><div class="report-sub">All active accounts</div></div><div class="report-card"><div class="report-lbl">Annual subscription revenue</div><div class="report-val">'+(subRev?'$'+fmtC(subRev):'$0')+'</div><div class="report-sub">Active Accounts combined</div></div><div class="report-card"><div class="report-lbl">Pipeline value</div><div class="report-val">'+(pipeVal?'$'+fmtC(pipeVal):'$0')+'</div><div class="report-sub">'+pipe.length+' open deals</div></div><div class="report-card"><div class="report-lbl">Monthly subscribers</div><div class="report-val">'+monthly+'</div><div class="report-sub">of '+active.length+' active accounts</div></div><div class="report-card"><div class="report-lbl">Yearly subscribers</div><div class="report-val">'+yearly+'</div><div class="report-sub">of '+active.length+' active accounts</div></div><div class="report-card"><div class="report-lbl">Total kits deployed</div><div class="report-val">'+totalKits+'</div><div class="report-sub">Across active accounts</div></div></div><div class="fg" style="gap:20px"><div><div class="card"><div class="card-hdr"><span class="card-title">Deal lost reasons</span></div><table><thead><tr><th>Reason</th><th>Count</th></tr></thead><tbody>'+(Object.keys(lostByReason).length?Object.entries(lostByReason).sort((a,b)=>b[1]-a[1]).map(([r,n])=>'<tr><td>'+esc(r)+'</td><td><strong>'+n+'</strong></td></tr>').join(''):'<tr><td colspan="2" class="empty" style="padding:20px">No lost deals yet</td></tr>')+'</tbody></table></div></div><div><div class="card"><div class="card-hdr"><span class="card-title">Lead sources</span></div><table><thead><tr><th>Source</th><th>Count</th></tr></thead><tbody>'+(Object.keys(sourceBreakdown).length?Object.entries(sourceBreakdown).sort((a,b)=>b[1]-a[1]).map(([s,n])=>'<tr><td>'+esc(s)+'</td><td><strong>'+n+'</strong></td></tr>').join(''):'<tr><td colspan="2" class="empty" style="padding:20px">No source data yet</td></tr>')+'</tbody></table></div></div></div>';
+
+  function drillTable(title,rows,cols){
+    return '<div style="margin-top:12px;background:var(--surface);border-radius:var(--r);overflow:hidden;border:1px solid var(--border)"><div style="padding:10px 14px;font-size:12px;font-weight:700;color:var(--navy);border-bottom:1px solid var(--border)">'+title+'</div><table style="width:100%"><thead><tr>'+cols.map(c=>'<th>'+c.label+'</th>').join('')+'</tr></thead><tbody>'+rows.map(r=>'<tr onclick="openDetail(\''+r.id+'\')" style="cursor:pointer">'+cols.map(c=>'<td>'+( c.fn(r)||'—')+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>';
+  }
+
+  function metricCard(lbl,val,sub,drillId){
+    return '<div class="report-card" style="cursor:pointer" onclick="toggleDrill(\''+drillId+'\')" title="Click to see accounts"><div class="report-lbl">'+lbl+'</div><div class="report-val">'+val+'</div><div class="report-sub">'+sub+' <span style="color:var(--navy);font-size:10px">&#9660;</span></div><div id="'+drillId+'" style="display:none"></div></div>';
+  }
+
+  el.innerHTML='<div class="report-grid">'
+    +metricCard('Total hardware revenue',hwRev?'$'+fmtC(hwRev):'$0','All active accounts','drill-hw')
+    +metricCard('Annual subscription revenue',subRev?'$'+fmtC(subRev):'$0','Active accounts combined','drill-sub')
+    +metricCard('Pipeline value',pipeVal?'$'+fmtC(pipeVal):'$0',pipe.length+' open deals','drill-pipe')
+    +metricCard('Monthly subscribers',monthly.length,'of '+active.length+' active','drill-monthly')
+    +metricCard('Yearly subscribers',yearly.length,'of '+active.length+' active','drill-yearly')
+    +metricCard('Total kits deployed',totalKits,'Across active accounts','drill-kits')
+    +'</div>'
+    +'<div class="fg" style="gap:20px">'
+    +'<div><div class="card"><div class="card-hdr"><span class="card-title">Deal lost reasons</span></div>'
+    +(Object.keys(lostByReason).length
+      ?'<table><thead><tr><th>Reason</th><th>Count</th><th></th></tr></thead><tbody>'
+        +Object.entries(lostByReason).sort((a,b)=>b[1]-a[1]).map(([r,n])=>{
+          const ids=lost.filter(a=>(a.lost_reason||'Unknown')===r).map(a=>a.id).join(',');
+          return '<tr><td>'+esc(r)+'</td><td><strong>'+n+'</strong></td><td><button class="btn btn-sm" onclick="toggleLostDrill(this,\''+esc(r)+'\')">Show</button></td></tr>'
+            +'<tr class="lost-drill-'+btoa(r).replace(/=/g,'')+'" style="display:none"><td colspan="3" style="padding:0"><div style="padding:8px 12px;background:var(--surface)">'
+            +lost.filter(a=>(a.lost_reason||'Unknown')===r).map(a=>'<div style="padding:4px 0;font-size:12px;cursor:pointer;color:var(--navy);font-weight:700" onclick="openDetail(\''+a.id+'\')">'+esc(a.name)+(a.city?' &middot; '+esc(a.city):'')+'</div>').join('')
+            +'</div></td></tr>';
+        }).join('')
+        +'</tbody></table>'
+      :'<div class="empty" style="padding:20px">No lost deals yet</div>')
+    +'</div></div>'
+    +'<div><div class="card"><div class="card-hdr"><span class="card-title">Lead sources</span></div>'
+    +(Object.keys(sourceBreakdown).length
+      ?'<table><thead><tr><th>Source</th><th>Count</th><th></th></tr></thead><tbody>'
+        +Object.entries(sourceBreakdown).sort((a,b)=>b[1]-a[1]).map(([s,n])=>{
+          const srcAccs=accs.filter(a=>a.source===s);
+          return '<tr><td>'+esc(s)+'</td><td><strong>'+n+'</strong></td><td><button class="btn btn-sm" onclick="toggleSrcDrill(this,\''+esc(s)+'\')">Show</button></td></tr>'
+            +'<tr class="src-drill-'+btoa(s).replace(/=/g,'')+'" style="display:none"><td colspan="3" style="padding:0"><div style="padding:8px 12px;background:var(--surface)">'
+            +srcAccs.map(a=>'<div style="padding:4px 0;font-size:12px;cursor:pointer;color:var(--navy);font-weight:700" onclick="openDetail(\''+a.id+'\')">'+esc(a.name)+' '+badge(a.stage)+'</div>').join('')
+            +'</div></td></tr>';
+        }).join('')
+        +'</tbody></table>'
+      :'<div class="empty" style="padding:20px">No source data yet</div>')
+    +'</div></div></div>';
+
+  // Populate drill data after render
+  setTimeout(()=>{
+    const hwRows=active.filter(a=>a.hardware_cost).sort((a,b)=>(parseC(b.hardware_cost)||0)-(parseC(a.hardware_cost)||0));
+    const subRows=active.filter(a=>a.sub_amount).sort((a,b)=>(parseC(b.sub_amount)||0)-(parseC(a.sub_amount)||0));
+    const pipeRows=pipe.filter(a=>a.deal_value).sort((a,b)=>(parseC(b.deal_value)||0)-(parseC(a.deal_value)||0));
+    const kitsRows=active.filter(a=>a.kit_count).sort((a,b)=>(b.kit_count||0)-(a.kit_count||0));
+    const drills={
+      'drill-hw':{rows:hwRows,cols:[{label:'Account',fn:a=>esc(a.name)},{label:'City',fn:a=>esc(a.city||'')},{label:'Hardware cost',fn:a=>a.hardware_cost?'$'+fmtC(a.hardware_cost):'—'}]},
+      'drill-sub':{rows:subRows,cols:[{label:'Account',fn:a=>esc(a.name)},{label:'Sub type',fn:a=>a.sub_type||'—'},{label:'Amount',fn:a=>a.sub_amount?'$'+fmtC(a.sub_amount)+(a.sub_type==='Monthly'?'/mo':'/yr'):'—'}]},
+      'drill-pipe':{rows:pipeRows,cols:[{label:'Account',fn:a=>esc(a.name)},{label:'Stage',fn:a=>a.stage},{label:'Deal value',fn:a=>a.deal_value?'$'+fmtC(a.deal_value):'—'}]},
+      'drill-monthly':{rows:monthly,cols:[{label:'Account',fn:a=>esc(a.name)},{label:'Amount',fn:a=>a.sub_amount?'$'+fmtC(a.sub_amount)+'/mo':'—'},{label:'Renewal',fn:a=>fmt(a.renewal_date)}]},
+      'drill-yearly':{rows:yearly,cols:[{label:'Account',fn:a=>esc(a.name)},{label:'Amount',fn:a=>a.sub_amount?'$'+fmtC(a.sub_amount)+'/yr':'—'},{label:'Renewal',fn:a=>fmt(a.renewal_date)}]},
+      'drill-kits':{rows:kitsRows,cols:[{label:'Account',fn:a=>esc(a.name)},{label:'City',fn:a=>esc(a.city||'')},{label:'Kits',fn:a=>String(a.kit_count||0)}]},
+    };
+    Object.entries(drills).forEach(([id,{rows,cols}])=>{
+      const el2=document.getElementById(id);
+      if(el2)el2.innerHTML=drillTable('',rows,cols);
+    });
+  },50);
 }
 
-function exportReports(){
-  const active=accs.filter(a=>a.stage==='Active');
-  exportCSV(active,[
-    {label:'Account',fn:a=>a.name},{label:'Sub Type',fn:a=>a.sub_type},
-    {label:'Sub Amount',fn:a=>a.sub_amount},{label:'HW Cost',fn:a=>a.hardware_cost},
-    {label:'Kits',fn:a=>a.kit_count},{label:'Sub Start',fn:a=>fmt(a.sub_start_date)},
-    {label:'Renewal',fn:a=>fmt(a.renewal_date)}
-  ],'revenue-report.csv');
+function toggleDrill(id){
+  const el=document.getElementById(id);
+  if(el)el.style.display=el.style.display==='none'?'block':'none';
 }
+function toggleLostDrill(btn,reason){
+  const cls='lost-drill-'+btoa(reason).replace(/=/g,'');
+  document.querySelectorAll('.'+cls).forEach(r=>{
+    r.style.display=r.style.display==='none'?'table-row':'none';
+  });
+  btn.textContent=btn.textContent==='Show'?'Hide':'Show';
+}
+function toggleSrcDrill(btn,src){
+  const cls='src-drill-'+btoa(src).replace(/=/g,'');
+  document.querySelectorAll('.'+cls).forEach(r=>{
+    r.style.display=r.style.display==='none'?'table-row':'none';
+  });
+  btn.textContent=btn.textContent==='Show'?'Hide':'Show';
+}
+
 
 function rSettings(el,act){
-  el.innerHTML='<div style="max-width:560px"><div class="card"><div class="card-hdr"><span class="card-title">Implementation managers</span><button class="btn btn-sm btn-primary" onclick="showAddMgr()">+ Add</button></div><div class="mgr-mgmt" id="mgr-list">'+implMgrs.map((m,i)=>'<div class="mgr-row"><span>'+esc(m)+'</span><button class="btn btn-sm btn-danger" onclick="removeMgr('+i+')">Remove</button></div>').join('')+'</div></div><div class="card" style="margin-top:0"><div class="card-hdr"><span class="card-title">About this CRM</span></div><div style="padding:16px;font-size:13px;color:var(--muted);line-height:1.8"><div>Built for <strong style="color:var(--text)">InSightVR</strong></div><div>Hosted on Vercel · Database on Supabase</div><div style="margin-top:12px;font-size:12px">To set up a custom domain, go to your <a href="https://vercel.com/dashboard" target="_blank" style="color:var(--navy)">Vercel dashboard</a> → your project → Settings → Domains → Add domain. Point your DNS CNAME to <strong>cname.vercel-dns.com</strong></div></div></div></div>';
+  el.innerHTML='<div style="max-width:560px"><div class="card"><div class="card-hdr"><span class="card-title">Implementation managers</span><button class="btn btn-sm btn-primary" onclick="showAddMgr()">+ Add</button></div><div class="mgr-mgmt" id="mgr-list">'+implMgrs.map((m,i)=>'<div class="mgr-row"><span>'+esc(m)+'</span><button class="btn btn-sm btn-danger" onclick="removeMgr('+i+')">Remove</button></div>').join('')+'</div></div></div>';
 }
 
 function showAddMgr(){
