@@ -112,16 +112,24 @@ textarea.finput{resize:vertical;min-height:60px;}
 .note-input-area{border:1px solid var(--border-mid);border-radius:var(--r);overflow:hidden;margin-bottom:10px;}
 .note-input-area textarea{width:100%;padding:10px 12px;border:none;font-size:13px;font-family:inherit;font-weight:600;resize:none;outline:none;min-height:70px;}
 .note-input-area-foot{padding:8px 12px;background:var(--surface);border-top:1px solid var(--border);display:flex;justify-content:flex-end;}
-.activity-entry{padding:16px 0;border-bottom:1px solid var(--border);font-size:12px;}
+.activity-entry{padding:10px 0;border-bottom:1px solid var(--border);font-size:12px;}
 .activity-entry:last-child{border-bottom:none;}
-.activity-who{font-weight:700;color:var(--navy);}
-.activity-when{color:var(--muted);margin-left:6px;}
-.activity-what{color:var(--text);margin-top:2px;}
 .report-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:24px;}
 .report-card{background:var(--bg);border-radius:var(--rl);padding:16px 18px;border:1px solid var(--border);}
 .report-lbl{font-size:11px;color:var(--muted);margin-bottom:6px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;}
 .report-val{font-size:24px;font-weight:800;color:var(--navy);}
 .report-sub{font-size:11px;color:var(--muted);margin-top:4px;font-weight:600;}
+.snap-box{background:var(--surface);border-radius:var(--r);padding:14px;cursor:pointer;transition:background .15s;}
+.snap-box:hover{background:var(--navy-light);}
+.snap-lbl{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;}
+.snap-val{font-size:22px;font-weight:800;color:var(--navy);}
+.pipe-row{display:flex;align-items:center;gap:10px;padding:16px 0;border-bottom:1px solid var(--border);cursor:pointer;}
+.pipe-row:last-child{border-bottom:none;}
+.pipe-row:hover .pipe-label{color:var(--navy);}
+.pipe-label{width:130px;font-size:12px;font-weight:600;color:var(--muted);flex-shrink:0;}
+.pipe-bar-wrap{flex:1;background:var(--surface);border-radius:999px;height:8px;overflow:hidden;}
+.pipe-bar{background:var(--navy);height:8px;border-radius:999px;}
+.pipe-count{width:24px;text-align:right;font-size:13px;font-weight:800;color:var(--navy);}
 .welcome-screen{position:fixed;inset:0;background:var(--page);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px;}
 .welcome-box{background:var(--bg);border-radius:var(--rl);width:100%;max-width:460px;overflow:hidden;border:1px solid var(--border);}
 .welcome-hdr{background:var(--navy);padding:28px 32px;}
@@ -132,7 +140,6 @@ textarea.finput{resize:vertical;min-height:60px;}
 .ring-wrap{position:relative;width:40px;height:40px;flex-shrink:0;}
 .ring-svg{animation:spinRing 8s linear infinite;}
 @keyframes spinRing{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-
 .mgr-mgmt{background:var(--surface);border-radius:var(--r);padding:12px 14px;margin-bottom:12px;}
 .mgr-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;font-weight:600;}
 .mgr-row:last-child{border-bottom:none;}
@@ -153,7 +160,6 @@ textarea.finput{resize:vertical;min-height:60px;}
     </div>
   </div>
 </div>
-
 <div id="app" style="display:none">
   <div class="app">
     <div class="sidebar">
@@ -179,25 +185,46 @@ textarea.finput{resize:vertical;min-height:60px;}
       </div>
     </div>
     <div class="main">
-      <div class="topbar" style="display:flex;align-items:center;justify-content:space-between"><div style="display:flex;align-items:center;gap:14px"><span class="page-title" id="ptitle">Dashboard</span><div id="ring-container" class="ring-wrap" style="display:none"><svg class="ring-svg" viewBox="0 0 40 40" width="40" height="40" xmlns="http://www.w3.org/2000/svg"><rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.30)" transform="rotate(0.0 20 20)"/><rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.33)" transform="rotate(12.857142857142858 20 20)"/><rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.35)" transform="rotate(25.714285714285715 20 20)"/><rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.38)" transform="rotate(38.57142857142857 20 20)"/><rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.40)" transform="rotate(51.42857142857143 20 20)"/><rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.42)" transform="rotate(64.28571428571429 20 20)"/><rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.45)" transform="rotate(77.14285714285714 20 20)"/><rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.47)" transform="rotate(90.0 20 20)"/><rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.50)" transform="rotate(102.85714285714286 20 20)"/><rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.53)" transform="rotate(115.71428571428572 20 20)"/><rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.55)" transform="rotate(128.57142857142858 20 20)"/><rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.57)" transform="rotate(141.42857142857144 20 20)"/><rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.60)" transform="rotate(154.28571428571428 20 20)"/><rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.62)" transform="rotate(167.14285714285714 20 20)"/><rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.65)" transform="rotate(180.0 20 20)"/><rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.68)" transform="rotate(192.85714285714286 20 20)"/><rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.70)" transform="rotate(205.71428571428572 20 20)"/><rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.72)" transform="rotate(218.57142857142858 20 20)"/><rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.75)" transform="rotate(231.42857142857144 20 20)"/><rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.77)" transform="rotate(244.2857142857143 20 20)"/><rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.80)" transform="rotate(257.14285714285717 20 20)"/><rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.82)" transform="rotate(270.0 20 20)"/><rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.85)" transform="rotate(282.8571428571429 20 20)"/><rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.88)" transform="rotate(295.7142857142857 20 20)"/><rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.90)" transform="rotate(308.57142857142856 20 20)"/><rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.93)" transform="rotate(321.42857142857144 20 20)"/><rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.95)" transform="rotate(334.2857142857143 20 20)"/><rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.97)" transform="rotate(347.14285714285717 20 20)"/></svg></div></div><div id="pactions" style="display:flex;gap:8px;align-items:center"></div></div>
+      <div class="topbar" style="display:flex;align-items:center;justify-content:space-between">
+        <div style="display:flex;align-items:center;gap:14px">
+          <span class="page-title" id="ptitle">Dashboard</span>
+          <div id="ring-container" class="ring-wrap" style="display:none">
+            <svg class="ring-svg" viewBox="0 0 40 40" width="40" height="40" xmlns="http://www.w3.org/2000/svg">
+              <rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.30)" transform="rotate(0 20 20)"/>
+              <rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.35)" transform="rotate(25.7 20 20)"/>
+              <rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.40)" transform="rotate(51.4 20 20)"/>
+              <rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.45)" transform="rotate(77.1 20 20)"/>
+              <rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.50)" transform="rotate(102.8 20 20)"/>
+              <rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.55)" transform="rotate(128.5 20 20)"/>
+              <rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.60)" transform="rotate(154.2 20 20)"/>
+              <rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.65)" transform="rotate(180 20 20)"/>
+              <rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.70)" transform="rotate(205.7 20 20)"/>
+              <rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.75)" transform="rotate(231.4 20 20)"/>
+              <rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.80)" transform="rotate(257.1 20 20)"/>
+              <rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.85)" transform="rotate(282.8 20 20)"/>
+              <rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.90)" transform="rotate(308.5 20 20)"/>
+              <rect x="18.5" y="1" width="3" height="7" rx="1" fill="rgba(0,254,162,0.97)" transform="rotate(334.2 20 20)"/>
+            </svg>
+          </div>
+        </div>
+        <div id="pactions" style="display:flex;gap:8px;align-items:center"></div>
+      </div>
       <div class="content" id="pcontent"><div class="empty">Loading...</div></div>
     </div>
   </div>
 </div>
 <div id="mc"></div>
-
 <script>
 const SB_URL='https://zqfctprzbcqxrbvgslkh.supabase.co';
 const SB_KEY='sb_publishable_i4w5l5cDDr9tmjNKvYlVlg_REgHxGOg';
 const SALES=['Prospect','Intro meeting','Early diligence','Late diligence','Proposal sent','Deal won','Deal lost'];
 const IMPL=['Discovery & planning','Go-live scheduled','60-day evaluation','Overdue'];
-const PROB={Prospect:0,'Intro meeting':0,'Early diligence':50,'Late diligence':80,'Proposal sent':90,'Deal won':100,'Deal lost':0};
 const TYPES=['Practice','Private equity group','Industry partner','Other'];
 const SOURCES=['Website / inbound','Referral','Outbound / cold outreach','Conference / event','Industry partner','Other'];
 const LOST_REASONS=['Price','Timing','Competition','No decision / went silent','Returned during eval','Budget cut','Other'];
 const SBADGE={Prospect:'b-prospect','Intro meeting':'b-intro','Early diligence':'b-early','Late diligence':'b-late','Proposal sent':'b-proposal','Deal won':'b-won','Deal lost':'b-lost','Discovery & planning':'b-discovery','Go-live scheduled':'b-golive','60-day evaluation':'b-60day',Overdue:'b-overdue',Active:'b-active'};
-let accs=[],view='dashboard',q='',fs='all',ccount=1,sortCol='',sortDir=1;
-let implMgrs=[];
+const TITLES={dashboard:'Dashboard',pipeline:'Sales Pipeline',impl:'Implementation',active:'Active Accounts',renewals:'Renewals',reports:'Reports',activity:'Activity',settings:'Settings'};
+let accs=[],view='dashboard',q='',fs='all',ccount=1,sortCol='',sortDir=1,implMgrs=[];
 
 function getUser(){return localStorage.getItem('crm_user_name')||'Unknown';}
 function saveName(){
@@ -213,8 +240,7 @@ function saveName(){
 function changeName(){
   localStorage.removeItem('crm_user_name');
   document.getElementById('app').style.display='none';
-  document.getElementById('w-first').value='';
-  document.getElementById('w-last').value='';
+  document.getElementById('w-first').value='';document.getElementById('w-last').value='';
   document.getElementById('welcome-screen').style.display='flex';
 }
 
@@ -227,31 +253,21 @@ async function req(method,table,body,filters,order){
   if(method==='DELETE')h.Prefer='return=minimal';
   const o={method,headers:h};
   if(body)o.body=JSON.stringify(body);
-  const r=await fetch(url,o);
-  const t=await r.text();
+  const r=await fetch(url,o);const t=await r.text();
   if(!r.ok)throw new Error(t||r.statusText);
   return t?JSON.parse(t):[];
 }
-
 async function loadAll(){
   try{
-    const [a,m]=await Promise.all([
-      req('GET','accounts',null,null,'updated_at.desc'),
-      req('GET','impl_managers',null,null,'name.asc').catch(()=>[])
-    ]);
-    accs=a;
-    implMgrs=m.length?m.map(x=>x.name):['Leah Orr','Chris Morgan'];
+    const [a,m]=await Promise.all([req('GET','accounts',null,null,'updated_at.desc'),req('GET','impl_managers',null,null,'name.asc').catch(()=>[])]);
+    accs=a;implMgrs=m.length?m.map(x=>x.name):['Leah Orr','Chris Morgan'];
     updRnb();render();
-  }catch(e){
-    document.getElementById('pcontent').innerHTML='<div class="empty">Could not load data.<br><small style="color:#e53e3e;display:block;margin-top:8px">'+e.message+'</small><br><button class="btn btn-navy" onclick="loadAll()" style="margin-top:12px">Retry</button></div>';
-  }
+  }catch(e){document.getElementById('pcontent').innerHTML='<div class="empty">Could not load data.<br><small style="color:#e53e3e;display:block;margin-top:8px">'+e.message+'</small><br><button class="btn btn-navy" onclick="loadAll()" style="margin-top:12px">Retry</button></div>';}
 }
-
 async function upsertAcc(a){await req('POST','accounts',Array.isArray(a)?a:[a],null,null);await loadAll();}
 async function deleteAcc(id){
   if(!confirm('Delete this account? This cannot be undone.'))return;
-  await req('DELETE','accounts',null,['id=eq.'+id],null);
-  closeModal();await loadAll();
+  await req('DELETE','accounts',null,['id=eq.'+id],null);closeModal();await loadAll();
 }
 
 function uid(){return 'a'+Date.now()+Math.random().toString(36).slice(2,7);}
@@ -272,12 +288,7 @@ function cname(a){const c=pcon(a);return((c.first||'')+' '+(c.last||'')).trim()|
 function updRnb(){const n=accs.filter(a=>a.stage==='Active'&&daysFrom(a.renewal_date)!==null&&daysFrom(a.renewal_date)<=30&&daysFrom(a.renewal_date)>=0).length;const el=document.getElementById('rnb');if(el){el.textContent=n;el.style.display=n?'':'none';}}
 function getNotes(a){try{return JSON.parse(a.notes_log||'[]');}catch{return[];}}
 function getActivity(a){try{return JSON.parse(a.activity_log||'[]');}catch{return[];}}
-
-function logActivity(acc,what){
-  const log=getActivity(acc);
-  log.unshift({who:getUser(),what,ts:new Date().toISOString()});
-  return JSON.stringify(log.slice(0,50));
-}
+function logActivity(acc,what){const log=getActivity(acc);log.unshift({who:getUser(),what,ts:new Date().toISOString()});return JSON.stringify(log.slice(0,50));}
 
 function ciStatus(a){
   if(!a.checkin_30_date)return'—';
@@ -290,19 +301,25 @@ function ciStatus(a){
 async function toggleCI(id){
   const a=accs.find(x=>x.id===id);if(!a)return;
   const done=!a.checkin_30_done;
-  const activity=logActivity(a,(done?'Marked 30-day check-in complete':'Undid 30-day check-in'));
-  await upsertAcc(Object.assign({},a,{checkin_30_done:done,activity_log:activity,updated_at:new Date().toISOString()}));
+  await upsertAcc(Object.assign({},a,{checkin_30_done:done,activity_log:logActivity(a,done?'Marked 30-day check-in complete':'Undid 30-day check-in'),updated_at:new Date().toISOString()}));
 }
 
 function nav(v){
   view=v;q='';fs='all';sortCol='';sortDir=1;
   document.querySelectorAll('.nav-item').forEach(e=>e.classList.remove('active'));
   const el=document.getElementById('nav-'+v);if(el)el.classList.add('active');
-  document.getElementById('ptitle').textContent={dashboard:'Dashboard',pipeline:'Sales Pipeline',impl:'Implementation',active:'Active Accounts',renewals:'Renewals',reports:'Reports',activity:'Activity',settings:'Settings'}[v]||'';
+  document.getElementById('ptitle').textContent=TITLES[v]||'';
   const rc=document.getElementById('ring-container');if(rc)rc.style.display=v==='dashboard'?'block':'none';
   render();
 }
-function navFilter(v,stage){view=v;q="";fs=stage;sortCol="";sortDir=1;document.querySelectorAll(".nav-item").forEach(e=>e.classList.remove("active"));const el=document.getElementById("nav-"+v);if(el)el.classList.add("active");document.getElementById("ptitle").textContent={dashboard:"Dashboard",pipeline:"Sales Pipeline",impl:"Implementation",active:"Active Accounts",renewals:"Renewals",reports:"Reports",activity:"Activity",settings:"Settings"}[v]||"";const rc=document.getElementById("ring-container");if(rc)rc.style.display="none";render();}
+function navFilter(v,stage){
+  view=v;q='';fs=stage;sortCol='';sortDir=1;
+  document.querySelectorAll('.nav-item').forEach(e=>e.classList.remove('active'));
+  const el=document.getElementById('nav-'+v);if(el)el.classList.add('active');
+  document.getElementById('ptitle').textContent=TITLES[v]||'';
+  const rc=document.getElementById('ring-container');if(rc)rc.style.display='none';
+  render();
+}
 function render(){
   const c=document.getElementById('pcontent');
   const a=document.getElementById('pactions');
@@ -316,14 +333,11 @@ function render(){
   else if(view==='activity')rActivity(c,a);
   else if(view==='settings')rSettings(c,a);
 }
-
 function exportCSV(rows,cols,filename){
   const header=cols.map(c=>c.label).join(',');
   const data=rows.map(r=>cols.map(c=>{const v=c.fn(r)||'';return'"'+String(v).replace(/"/g,'""')+'"';}).join(','));
   const csv=[header,...data].join('\n');
-  const a=document.createElement('a');
-  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
-  a.download=filename;a.click();
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download=filename;a.click();
 }
 
 function rDash(el,act){
@@ -337,15 +351,36 @@ function rDash(el,act){
   const pipeVal=pipe.reduce((s,a)=>s+(parseC(a.deal_value)||0),0);
   const totalKits=active.reduce((s,a)=>s+(a.kit_count||0),0);
   let alerts='';
-  rs.forEach(a=>{const d=daysFrom(a.renewal_date);alerts+='<div class="alert-row '+(d<=7?'alert-danger':'alert-warn')+'"><span><strong>'+esc(a.name)+'</strong> \u2014 renewal in '+d+' day'+(d===1?'':'s')+' ('+fmt(a.renewal_date)+')</span><button class="btn btn-sm" onclick="openDetail(\''+a.id+'\')">View</button></div>';});
-  impl.filter(a=>a.stage==='60-day evaluation'&&daysFrom(a.checkin_30_date)!==null&&daysFrom(a.checkin_30_date)<0&&!a.checkin_30_done).forEach(a=>{alerts+='<div class="alert-row alert-danger"><span><strong>'+esc(a.name)+'</strong> \u2014 30-day check-in missed (due '+fmt(a.checkin_30_date)+')</span><button class="btn btn-sm" onclick="openDetail(\''+a.id+'\')">View</button></div>';});
-  impl.filter(a=>a.stage==='60-day evaluation'&&daysFrom(a.checkin_30_date)!==null&&daysFrom(a.checkin_30_date)>=0&&daysFrom(a.checkin_30_date)<=7&&!a.checkin_30_done).forEach(a=>{const d=daysFrom(a.checkin_30_date);alerts+='<div class="alert-row alert-warn"><span><strong>'+esc(a.name)+'</strong> \u2014 30-day check-in due in '+d+'d</span><button class="btn btn-sm" onclick="openDetail(\''+a.id+'\')">View</button></div>';});
-  impl.filter(a=>a.stage==='Overdue').forEach(a=>{alerts+='<div class="alert-row alert-danger"><span><strong>'+esc(a.name)+'</strong> \u2014 60-day evaluation overdue</span><button class="btn btn-sm" onclick="openDetail(\''+a.id+'\')">View</button></div>';});
-  impl.filter(a=>a.stage==='60-day evaluation'&&daysFrom(a.eval_end_date)!==null&&daysFrom(a.eval_end_date)<=10&&daysFrom(a.eval_end_date)>=0).forEach(a=>{const d=daysFrom(a.eval_end_date);alerts+='<div class="alert-row alert-warn"><span><strong>'+esc(a.name)+'</strong> \u2014 60-day evaluation ends in '+d+'d</span><button class="btn btn-sm" onclick="openDetail(\''+a.id+'\')">View</button></div>';});
+  rs.forEach(a=>{const d=daysFrom(a.renewal_date);alerts+='<div class="alert-row '+(d<=7?'alert-danger':'alert-warn')+'"><span><strong>'+esc(a.name)+'</strong> — renewal in '+d+' day'+(d===1?'':'s')+' ('+fmt(a.renewal_date)+')</span><button class="btn btn-sm" onclick="openDetail(\''+a.id+'\')">View</button></div>';});
+  impl.filter(a=>a.stage==='60-day evaluation'&&daysFrom(a.checkin_30_date)!==null&&daysFrom(a.checkin_30_date)<0&&!a.checkin_30_done).forEach(a=>{alerts+='<div class="alert-row alert-danger"><span><strong>'+esc(a.name)+'</strong> — 30-day check-in missed (due '+fmt(a.checkin_30_date)+')</span><button class="btn btn-sm" onclick="openDetail(\''+a.id+'\')">View</button></div>';});
+  impl.filter(a=>a.stage==='60-day evaluation'&&daysFrom(a.checkin_30_date)!==null&&daysFrom(a.checkin_30_date)>=0&&daysFrom(a.checkin_30_date)<=7&&!a.checkin_30_done).forEach(a=>{const d=daysFrom(a.checkin_30_date);alerts+='<div class="alert-row alert-warn"><span><strong>'+esc(a.name)+'</strong> — 30-day check-in due in '+d+'d</span><button class="btn btn-sm" onclick="openDetail(\''+a.id+'\')">View</button></div>';});
+  impl.filter(a=>a.stage==='Overdue').forEach(a=>{alerts+='<div class="alert-row alert-danger"><span><strong>'+esc(a.name)+'</strong> — 60-day evaluation overdue</span><button class="btn btn-sm" onclick="openDetail(\''+a.id+'\')">View</button></div>';});
+  impl.filter(a=>a.stage==='60-day evaluation'&&daysFrom(a.eval_end_date)!==null&&daysFrom(a.eval_end_date)<=10&&daysFrom(a.eval_end_date)>=0).forEach(a=>{const d=daysFrom(a.eval_end_date);alerts+='<div class="alert-row alert-warn"><span><strong>'+esc(a.name)+'</strong> — 60-day evaluation ends in '+d+'d</span><button class="btn btn-sm" onclick="openDetail(\''+a.id+'\')">View</button></div>';});
   const stageBreakdown=SALES.filter(s=>s!=='Deal won'&&s!=='Deal lost').map(s=>{const n=pipe.filter(a=>a.stage===s).length;return{s,n};}).filter(x=>x.n>0);
   const maxN=Math.max(...stageBreakdown.map(x=>x.n),1);
-  const pipeHTML=stageBreakdown.length?stageBreakdown.map(x=>'<div style="display:flex;align-items:center;gap:10px;padding:16px 0;border-bottom:1px solid var(--border);cursor:pointer" onclick="navFilter(\'pipeline\',\''+x.s+'\')"><div style="width:130px;font-size:12px;font-weight:600;color:var(--muted);flex-shrink:0">'+x.s+'</div><div style="flex:1;background:var(--surface);border-radius:999px;height:8px;overflow:hidden"><div style="background:var(--navy);height:8px;border-radius:999px;width:'+(x.n/maxN*100)+'%"></div></div><div style="width:24px;text-align:right;font-size:13px;font-weight:800;color:var(--navy)">'+x.n+'</div></div>').join(''):'<div style="color:var(--muted);font-size:13px">No open pipeline deals.</div>';
-  el.innerHTML='<div class="metrics"><div class="metric" onclick="nav('active')" style="cursor:pointer"><div class="metric-lbl">Active Accounts</div><div class="metric-val">'+active.length+'</div><div class="metric-sub" style="color:var(--navy)">View \u2192</div></div><div class="metric" onclick="nav('pipeline')" style="cursor:pointer"><div class="metric-lbl">Sales Pipeline</div><div class="metric-val">'+pipe.length+'</div><div class="metric-sub" style="color:var(--navy)">View \u2192</div></div><div class="metric" onclick="nav('impl')" style="cursor:pointer"><div class="metric-lbl">Implementation</div><div class="metric-val">'+impl.length+'</div><div class="metric-sub" style="color:var(--navy)">View \u2192</div></div><div class="metric" onclick="nav('renewals')" style="cursor:pointer"><div class="metric-lbl">Renewing (30 days)</div><div class="metric-val '+(rs.length?'red':'')+'">'+rs.length+'</div><div class="metric-sub" style="color:'+(rs.length?'var(--danger)':'var(--navy)')+'">View \u2192</div></div></div><div class="card" style="overflow:hidden;margin-bottom:20px"><div class="card-hdr"><span class="card-title">Alerts</span></div>'+(alerts?alerts:'<div style="padding:14px 18px;font-size:13px;font-weight:600;color:var(--ok)">&#10003; All clear \u2014 no items need attention right now.</div>')+'</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:20px"><div style="display:flex;flex-direction:column"><div class="card" style="flex:1;margin-bottom:0"><div class="card-hdr"><span class="card-title">Pipeline Breakdown</span><button class="btn btn-sm btn-navy" onclick="nav('pipeline')">View all</button></div><div style="padding:8px 18px">'+pipeHTML+'</div></div></div><div style="display:flex;flex-direction:column"><div class="card" style="flex:1;margin-bottom:0"><div class="card-hdr"><span class="card-title">Revenue Snapshot</span><button class="btn btn-sm btn-navy" onclick="nav('reports')">Full reports</button></div><div style="padding:16px 18px"><div style="display:grid;grid-template-columns:1fr 1fr;gap:14px"><div style="background:var(--surface);border-radius:var(--r);padding:14px;cursor:pointer" onclick="nav('active')"><div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Hardware revenue</div><div style="font-size:22px;font-weight:800;color:var(--navy)">'+(hwRev?'$'+fmtC(hwRev):'\u2014')+'</div></div><div style="background:var(--surface);border-radius:var(--r);padding:14px;cursor:pointer" onclick="nav('active')"><div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Subscription revenue</div><div style="font-size:22px;font-weight:800;color:var(--navy)">'+(subRev?'$'+fmtC(subRev):'\u2014')+'</div></div><div style="background:var(--surface);border-radius:var(--r);padding:14px;cursor:pointer" onclick="nav('pipeline')"><div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Pipeline value</div><div style="font-size:22px;font-weight:800;color:var(--navy)">'+(pipeVal?'$'+fmtC(pipeVal):'\u2014')+'</div></div><div style="background:var(--surface);border-radius:var(--r);padding:14px;cursor:pointer" onclick="nav('active')"><div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Kits deployed</div><div style="font-size:22px;font-weight:800;color:var(--navy)">'+totalKits+'</div></div></div></div></div></div></div>';
+  const pipeRows=stageBreakdown.map(x=>{
+    const pct=Math.round(x.n/maxN*100);
+    return '<div class="pipe-row" onclick="navFilter(\'pipeline\',\''+x.s+'\')"><div class="pipe-label">'+x.s+'</div><div class="pipe-bar-wrap"><div class="pipe-bar" style="width:'+pct+'%"></div></div><div class="pipe-count">'+x.n+'</div></div>';
+  }).join('');
+  const pipeHTML=stageBreakdown.length?pipeRows:'<div style="color:var(--muted);font-size:13px">No open pipeline deals.</div>';
+  el.innerHTML=
+    '<div class="metrics">'+
+    '<div class="metric" onclick="nav(\'active\')" style="cursor:pointer"><div class="metric-lbl">Active Accounts</div><div class="metric-val">'+active.length+'</div><div class="metric-sub" style="color:var(--navy)">View →</div></div>'+
+    '<div class="metric" onclick="nav(\'pipeline\')" style="cursor:pointer"><div class="metric-lbl">Sales Pipeline</div><div class="metric-val">'+pipe.length+'</div><div class="metric-sub" style="color:var(--navy)">View →</div></div>'+
+    '<div class="metric" onclick="nav(\'impl\')" style="cursor:pointer"><div class="metric-lbl">Implementation</div><div class="metric-val">'+impl.length+'</div><div class="metric-sub" style="color:var(--navy)">View →</div></div>'+
+    '<div class="metric" onclick="nav(\'renewals\')" style="cursor:pointer"><div class="metric-lbl">Renewing (30 days)</div><div class="metric-val '+(rs.length?'red':'')+'">'+rs.length+'</div><div class="metric-sub" style="color:'+(rs.length?'var(--danger)':'var(--navy)')+'">View →</div></div>'+
+    '</div>'+
+    '<div class="card" style="overflow:hidden;margin-bottom:20px"><div class="card-hdr"><span class="card-title">Alerts</span></div>'+(alerts?alerts:'<div style="padding:14px 18px;font-size:13px;font-weight:600;color:var(--ok)">&#10003; All clear — no items need attention right now.</div>')+'</div>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">'+
+    '<div style="display:flex;flex-direction:column"><div class="card" style="flex:1;margin-bottom:0"><div class="card-hdr"><span class="card-title">Pipeline Breakdown</span><button class="btn btn-sm btn-navy" onclick="nav(\'pipeline\')">View all</button></div><div style="padding:8px 18px">'+pipeHTML+'</div></div></div>'+
+    '<div style="display:flex;flex-direction:column"><div class="card" style="flex:1;margin-bottom:0"><div class="card-hdr"><span class="card-title">Revenue Snapshot</span><button class="btn btn-sm btn-navy" onclick="nav(\'reports\')">Full reports</button></div>'+
+    '<div style="padding:16px 18px"><div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">'+
+    '<div class="snap-box" onclick="nav(\'active\')"><div class="snap-lbl">Hardware revenue</div><div class="snap-val">'+(hwRev?'$'+fmtC(hwRev):'—')+'</div></div>'+
+    '<div class="snap-box" onclick="nav(\'active\')"><div class="snap-lbl">Subscription revenue</div><div class="snap-val">'+(subRev?'$'+fmtC(subRev):'—')+'</div></div>'+
+    '<div class="snap-box" onclick="nav(\'pipeline\')"><div class="snap-lbl">Pipeline value</div><div class="snap-val">'+(pipeVal?'$'+fmtC(pipeVal):'—')+'</div></div>'+
+    '<div class="snap-box" onclick="nav(\'active\')"><div class="snap-lbl">Kits deployed</div><div class="snap-val">'+totalKits+'</div></div>'+
+    '</div></div></div></div>'+
+    '</div>';
 }
 
 function rPipe(el,act){
@@ -358,10 +393,8 @@ function rPipe(el,act){
   const totalVal=list.reduce((s,a)=>s+(parseC(a.deal_value)||0),0);
   el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search..." value="'+esc(q)+'" oninput="q=this.value;render()"><select class="finput" style="width:190px" onchange="fs=this.value;render()"><option value="all">All stages</option>'+SALES.map(s=>'<option value="'+s+'"'+(fs===s?' selected':'')+'>'+s+'</option>').join('')+'</select>'+(totalVal?'<span style="margin-left:auto;font-size:13px;font-weight:700;color:var(--navy)">Total pipeline: $'+fmtC(totalVal)+'</span>':'')+'</div><div class="card"><div style="overflow-x:auto"><table><thead><tr>'+th('name','Account','28%')+th('stage','Stage','16%')+th('contact','Contact','22%')+th('deal_value','Deal value','14%')+th('updated','Updated','12%')+'<th style="width:8%"></th></tr></thead><tbody>'+(list.length?list.map(a=>{const pc=pcon(a);return'<tr onclick="openDetail(\''+a.id+'\')"><td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' &middot; '+esc(a.state):'')+'</div></td><td>'+badge(a.stage)+'</td><td><div>'+esc(cname(a))+'</div>'+(pc.email?'<div class="as"><a href="mailto:'+esc(pc.email)+'" style="color:var(--navy)" onclick="event.stopPropagation()">'+esc(pc.email)+'</a></div>':'')+'</td><td>'+(a.deal_value?'$'+fmtC(a.deal_value):'—')+'</td><td style="color:var(--muted)">'+fmt(a.updated_at)+'</td><td><button class="btn btn-sm btn-navy" onclick="event.stopPropagation();openEdit(\''+a.id+'\')">Edit</button></td></tr>';}).join(''):'<tr><td colspan="6" class="empty">No accounts found.</td></tr>')+'</tbody></table></div></div>';
 }
-
 function exportPipeline(){
-  const list=accs.filter(a=>SALES.includes(a.stage));
-  exportCSV(list,[
+  exportCSV(accs.filter(a=>SALES.includes(a.stage)),[
     {label:'Account',fn:a=>a.name},{label:'Stage',fn:a=>a.stage},{label:'Source',fn:a=>a.source},
     {label:'Deal Value',fn:a=>a.deal_value},{label:'City',fn:a=>a.city},{label:'State',fn:a=>a.state},
     {label:'Contact',fn:a=>cname(a)},{label:'Lost Reason',fn:a=>a.lost_reason},{label:'Updated',fn:a=>fmt(a.updated_at)}
@@ -372,23 +405,19 @@ function rImpl(el,act){
   let list=accs.filter(a=>IMPL.includes(a.stage));
   if(q)list=list.filter(a=>a.name.toLowerCase().includes(q.toLowerCase()));
   if(fs!=='all')list=list.filter(a=>a.stage===fs);
-  const getters={name:a=>a.name,stage:a=>a.stage,go_live:a=>a.go_live_date||'',checkin:a=>a.checkin_30_date||'',eval_end:a=>a.eval_end_date||'',impl_manager:a=>a.impl_manager||'',kit_count:a=>a.kit_count||0};
-  list=srt(list,getters);
-  el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search..." value="'+esc(q)+'" oninput="q=this.value;render()"><select class="finput" style="width:200px" onchange="fs=this.value;render()"><option value="all">All stages</option>'+IMPL.map(s=>'<option value="'+s+'"'+(fs===s?' selected':'')+'>'+s+'</option>').join('')+'</select></div><div class="card"><div style="overflow-x:auto"><table><thead><tr>'+th('name','Account','20%')+th('stage','Stage','13%')+th('go_live','Go-live','10%')+th('checkin','30-day check-in','18%')+th('eval_end','60-day end','13%')+th('impl_manager','Impl. mgr','11%')+th('kit_count','Kits','6%')+'<th style="width:9%"></th></tr></thead><tbody>'+(list.length?list.map(a=>{const ed=daysFrom(a.eval_end_date);const ciBtn=a.stage==='60-day evaluation'?'<button class="btn btn-sm" style="margin-left:8px;'+(a.checkin_30_done?'background:#e6f7f0;color:#0a7c4e;border-color:#0a7c4e':'')+'" onclick="event.stopPropagation();toggleCI(\''+a.id+'\')">'+( a.checkin_30_done?'Undo check-in':'Check-in done')+'</button>':'';return'<tr onclick="openDetail(\''+a.id+'\')"><td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' &middot; '+esc(a.state):'')+'</div></td><td>'+badge(a.stage)+'</td><td>'+fmt(a.go_live_date)+'</td><td>'+ciStatus(a)+ciBtn+'</td><td>'+(a.eval_end_date?'<span class="'+(ed!==null&&ed<=10?'warn':'')+'">'+fmt(a.eval_end_date)+' '+dl(ed)+'</span>':'—')+'</td><td>'+esc(a.impl_manager||'—')+'</td><td>'+(a.kit_count||'—')+'</td><td><button class="btn btn-sm btn-navy" onclick="event.stopPropagation();openEdit(\''+a.id+'\')">Edit</button></td></tr>';}).join(''):'<tr><td colspan="8" class="empty">No accounts in implementation.</td></tr>')+'</tbody></table></div></div>';
+  list=srt(list,{name:a=>a.name,stage:a=>a.stage,go_live:a=>a.go_live_date||'',checkin:a=>a.checkin_30_date||'',eval_end:a=>a.eval_end_date||'',impl_manager:a=>a.impl_manager||'',kit_count:a=>a.kit_count||0});
+  el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search..." value="'+esc(q)+'" oninput="q=this.value;render()"><select class="finput" style="width:200px" onchange="fs=this.value;render()"><option value="all">All stages</option>'+IMPL.map(s=>'<option value="'+s+'"'+(fs===s?' selected':'')+'>'+s+'</option>').join('')+'</select></div><div class="card"><div style="overflow-x:auto"><table><thead><tr>'+th('name','Account','20%')+th('stage','Stage','13%')+th('go_live','Go-live','10%')+th('checkin','30-day check-in','18%')+th('eval_end','60-day end','13%')+th('impl_manager','Impl. mgr','11%')+th('kit_count','Kits','6%')+'<th style="width:9%"></th></tr></thead><tbody>'+(list.length?list.map(a=>{const ed=daysFrom(a.eval_end_date);const ciBtn=a.stage==='60-day evaluation'?'<button class="btn btn-sm" style="margin-left:8px;'+(a.checkin_30_done?'background:#e6f7f0;color:#0a7c4e;border-color:#0a7c4e':'')+'" onclick="event.stopPropagation();toggleCI(\''+a.id+'\')">'+(a.checkin_30_done?'Undo check-in':'Check-in done')+'</button>':'';return'<tr onclick="openDetail(\''+a.id+'\')"><td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' &middot; '+esc(a.state):'')+'</div></td><td>'+badge(a.stage)+'</td><td>'+fmt(a.go_live_date)+'</td><td>'+ciStatus(a)+ciBtn+'</td><td>'+(a.eval_end_date?'<span class="'+(ed!==null&&ed<=10?'warn':'')+'">'+fmt(a.eval_end_date)+' '+dl(ed)+'</span>':'—')+'</td><td>'+esc(a.impl_manager||'—')+'</td><td>'+(a.kit_count||'—')+'</td><td><button class="btn btn-sm btn-navy" onclick="event.stopPropagation();openEdit(\''+a.id+'\')">Edit</button></td></tr>';}).join(''):'<tr><td colspan="8" class="empty">No accounts in implementation.</td></tr>')+'</tbody></table></div></div>';
 }
 
 function rActive(el,act){
   act.innerHTML='<button class="btn btn-navy" onclick="exportActive()">Export CSV</button>';
   let list=accs.filter(a=>a.stage==='Active');
   if(q)list=list.filter(a=>a.name.toLowerCase().includes(q.toLowerCase()));
-  const getters={name:a=>a.name,city:a=>a.city||'',state:a=>a.state||'',sub_type:a=>a.sub_type||'',renewal_date:a=>a.renewal_date||'',kit_count:a=>a.kit_count||0,hardware_cost:a=>parseC(a.hardware_cost)||0,sub_amount:a=>parseC(a.sub_amount)||0,contact:a=>cname(a)};
-  list=srt(list,getters);
+  list=srt(list,{name:a=>a.name,city:a=>a.city||'',state:a=>a.state||'',sub_type:a=>a.sub_type||'',renewal_date:a=>a.renewal_date||'',kit_count:a=>a.kit_count||0,hardware_cost:a=>parseC(a.hardware_cost)||0,sub_amount:a=>parseC(a.sub_amount)||0,contact:a=>cname(a)});
   el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search..." value="'+esc(q)+'" oninput="q=this.value;render()"></div><div class="card"><div style="overflow-x:auto"><table><thead><tr>'+th('name','Account','18%')+th('city','City','9%')+th('state','State','7%')+th('sub_type','Sub type','9%')+th('renewal_date','Renewal','12%')+th('kit_count','Kits','6%')+th('hardware_cost','HW cost','9%')+th('sub_amount','Sub amt','9%')+th('contact','Contact','12%')+'<th style="width:9%"></th></tr></thead><tbody>'+(list.length?list.map(a=>{const d=daysFrom(a.renewal_date);return'<tr onclick="openDetail(\''+a.id+'\')"><td><div class="an">'+esc(a.name)+'</div></td><td style="color:var(--muted)">'+esc(a.city||'—')+'</td><td style="color:var(--muted)">'+esc(a.state||'—')+'</td><td>'+(a.sub_type?'<span class="badge '+(a.sub_type==='Monthly'?'b-monthly':'b-yearly')+'">'+a.sub_type+'</span>':'—')+'</td><td>'+(a.renewal_date?'<span class="'+(d!==null&&d<=30?d<=7?'danger':'warn':'')+'">'+fmt(a.renewal_date)+' '+dl(d)+'</span>':'—')+'</td><td>'+(a.kit_count||'—')+'</td><td>'+(a.hardware_cost?'$'+fmtC(a.hardware_cost):'—')+'</td><td>'+(a.sub_amount?'$'+fmtC(a.sub_amount)+(a.sub_type==='Monthly'?'/mo':'/yr'):'—')+'</td><td>'+esc(cname(a))+'</td><td><button class="btn btn-sm btn-navy" onclick="event.stopPropagation();openEdit(\''+a.id+'\')">Edit</button></td></tr>';}).join(''):'<tr><td colspan="10" class="empty">No active accounts.</td></tr>')+'</tbody></table></div></div>';
 }
-
 function exportActive(){
-  const list=accs.filter(a=>a.stage==='Active');
-  exportCSV(list,[
+  exportCSV(accs.filter(a=>a.stage==='Active'),[
     {label:'Account',fn:a=>a.name},{label:'City',fn:a=>a.city},{label:'State',fn:a=>a.state},
     {label:'Sub Type',fn:a=>a.sub_type},{label:'Sub Start',fn:a=>fmt(a.sub_start_date)},
     {label:'Renewal Date',fn:a=>fmt(a.renewal_date)},{label:'Kits',fn:a=>a.kit_count},
@@ -418,97 +447,22 @@ function rReports(el,act){
   const totalKits=active.reduce((s,a)=>s+(a.kit_count||0),0);
   const lostByReason={};lost.forEach(a=>{const r=a.lost_reason||'Unknown';lostByReason[r]=(lostByReason[r]||0)+1;});
   const sourceBreakdown={};accs.forEach(a=>{if(a.source){sourceBreakdown[a.source]=(sourceBreakdown[a.source]||0)+1;}});
-
-  function drillTable(title,rows,cols){
-    return '<div style="margin-top:12px;background:var(--surface);border-radius:var(--r);overflow:hidden;border:1px solid var(--border)"><div style="padding:10px 14px;font-size:12px;font-weight:700;color:var(--navy);border-bottom:1px solid var(--border)">'+title+'</div><table style="width:100%"><thead><tr>'+cols.map(c=>'<th>'+c.label+'</th>').join('')+'</tr></thead><tbody>'+rows.map(r=>'<tr onclick="openDetail(\''+r.id+'\')" style="cursor:pointer">'+cols.map(c=>'<td>'+( c.fn(r)||'—')+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>';
-  }
-
-  function metricCard(lbl,val,sub,drillId){
-    return '<div class="report-card" style="cursor:pointer" onclick="toggleDrill(\''+drillId+'\')" title="Click to see accounts"><div class="report-lbl">'+lbl+'</div><div class="report-val">'+val+'</div><div class="report-sub">'+sub+' <span style="color:var(--navy);font-size:10px">&#9660;</span></div><div id="'+drillId+'" style="display:none"></div></div>';
-  }
-
-  el.innerHTML='<div class="report-grid">'
-    +metricCard('Total hardware revenue',hwRev?'$'+fmtC(hwRev):'$0','All active accounts','drill-hw')
-    +metricCard('Annual subscription revenue',subRev?'$'+fmtC(subRev):'$0','Active accounts combined','drill-sub')
-    +metricCard('Pipeline value',pipeVal?'$'+fmtC(pipeVal):'$0',pipe.length+' open deals','drill-pipe')
-    +metricCard('Monthly subscribers',monthly.length,'of '+active.length+' active','drill-monthly')
-    +metricCard('Yearly subscribers',yearly.length,'of '+active.length+' active','drill-yearly')
-    +metricCard('Total kits deployed',totalKits,'Across active accounts','drill-kits')
-    +'</div>'
-    +'<div class="fg" style="gap:20px">'
-    +'<div><div class="card"><div class="card-hdr"><span class="card-title">Deal lost reasons</span></div>'
-    +(Object.keys(lostByReason).length
-      ?'<table><thead><tr><th>Reason</th><th>Count</th><th></th></tr></thead><tbody>'
-        +Object.entries(lostByReason).sort((a,b)=>b[1]-a[1]).map(([r,n])=>{
-          const ids=lost.filter(a=>(a.lost_reason||'Unknown')===r).map(a=>a.id).join(',');
-          return '<tr><td>'+esc(r)+'</td><td><strong>'+n+'</strong></td><td><button class="btn btn-sm" onclick="toggleLostDrill(this,\''+esc(r)+'\')">Show</button></td></tr>'
-            +'<tr class="lost-drill-'+btoa(r).replace(/=/g,'')+'" style="display:none"><td colspan="3" style="padding:0"><div style="padding:8px 12px;background:var(--surface)">'
-            +lost.filter(a=>(a.lost_reason||'Unknown')===r).map(a=>'<div style="padding:4px 0;font-size:12px;cursor:pointer;color:var(--navy);font-weight:700" onclick="openDetail(\''+a.id+'\')">'+esc(a.name)+(a.city?' &middot; '+esc(a.city):'')+'</div>').join('')
-            +'</div></td></tr>';
-        }).join('')
-        +'</tbody></table>'
-      :'<div class="empty" style="padding:20px">No lost deals yet</div>')
-    +'</div></div>'
-    +'<div><div class="card"><div class="card-hdr"><span class="card-title">Lead sources</span></div>'
-    +(Object.keys(sourceBreakdown).length
-      ?'<table><thead><tr><th>Source</th><th>Count</th><th></th></tr></thead><tbody>'
-        +Object.entries(sourceBreakdown).sort((a,b)=>b[1]-a[1]).map(([s,n])=>{
-          const srcAccs=accs.filter(a=>a.source===s);
-          return '<tr><td>'+esc(s)+'</td><td><strong>'+n+'</strong></td><td><button class="btn btn-sm" onclick="toggleSrcDrill(this,\''+esc(s)+'\')">Show</button></td></tr>'
-            +'<tr class="src-drill-'+btoa(s).replace(/=/g,'')+'" style="display:none"><td colspan="3" style="padding:0"><div style="padding:8px 12px;background:var(--surface)">'
-            +srcAccs.map(a=>'<div style="padding:4px 0;font-size:12px;cursor:pointer;color:var(--navy);font-weight:700" onclick="openDetail(\''+a.id+'\')">'+esc(a.name)+' '+badge(a.stage)+'</div>').join('')
-            +'</div></td></tr>';
-        }).join('')
-        +'</tbody></table>'
-      :'<div class="empty" style="padding:20px">No source data yet</div>')
-    +'</div></div></div>';
-
-  // Populate drill data after render
+  function drillTable(rows,cols){return '<div style="margin-top:12px;background:var(--surface);border-radius:var(--r);overflow:hidden;border:1px solid var(--border)"><table style="width:100%"><thead><tr>'+cols.map(c=>'<th>'+c.label+'</th>').join('')+'</tr></thead><tbody>'+rows.map(r=>'<tr onclick="openDetail(\''+r.id+'\')" style="cursor:pointer">'+cols.map(c=>'<td>'+(c.fn(r)||'—')+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>';}
+  function metricCard(lbl,val,sub,drillId){return '<div class="report-card" style="cursor:pointer" onclick="toggleDrill(\''+drillId+'\')" title="Click to expand"><div class="report-lbl">'+lbl+'</div><div class="report-val">'+val+'</div><div class="report-sub">'+sub+' <span style="color:var(--navy);font-size:10px">▼</span></div><div id="'+drillId+'" style="display:none"></div></div>';}
+  el.innerHTML='<div class="report-grid">'+metricCard('Total hardware revenue',hwRev?'$'+fmtC(hwRev):'$0','All active accounts','drill-hw')+metricCard('Annual subscription revenue',subRev?'$'+fmtC(subRev):'$0','Active accounts combined','drill-sub')+metricCard('Pipeline value',pipeVal?'$'+fmtC(pipeVal):'$0',pipe.length+' open deals','drill-pipe')+metricCard('Monthly subscribers',monthly.length,'of '+active.length+' active','drill-monthly')+metricCard('Yearly subscribers',yearly.length,'of '+active.length+' active','drill-yearly')+metricCard('Total kits deployed',totalKits,'Across active accounts','drill-kits')+'</div><div class="fg" style="gap:20px"><div><div class="card"><div class="card-hdr"><span class="card-title">Deal lost reasons</span></div>'+(Object.keys(lostByReason).length?'<table><thead><tr><th>Reason</th><th>Count</th><th></th></tr></thead><tbody>'+Object.entries(lostByReason).sort((a,b)=>b[1]-a[1]).map(([r,n])=>'<tr><td>'+esc(r)+'</td><td><strong>'+n+'</strong></td><td><button class="btn btn-sm" onclick="toggleLostDrill(this,\''+esc(r)+'\')">Show</button></td></tr><tr class="lost-drill-'+btoa(r).replace(/=/g,'')+'" style="display:none"><td colspan="3" style="padding:0"><div style="padding:8px 12px;background:var(--surface)">'+lost.filter(a=>(a.lost_reason||'Unknown')===r).map(a=>'<div style="padding:4px 0;font-size:12px;cursor:pointer;color:var(--navy);font-weight:700" onclick="openDetail(\''+a.id+'\')">'+esc(a.name)+(a.city?' &middot; '+esc(a.city):'')+'</div>').join('')+'</div></td></tr>').join('')+'</tbody></table>':'<div class="empty" style="padding:20px">No lost deals yet</div>')+'</div></div><div><div class="card"><div class="card-hdr"><span class="card-title">Lead sources</span></div>'+(Object.keys(sourceBreakdown).length?'<table><thead><tr><th>Source</th><th>Count</th><th></th></tr></thead><tbody>'+Object.entries(sourceBreakdown).sort((a,b)=>b[1]-a[1]).map(([s,n])=>'<tr><td>'+esc(s)+'</td><td><strong>'+n+'</strong></td><td><button class="btn btn-sm" onclick="toggleSrcDrill(this,\''+esc(s)+'\')">Show</button></td></tr><tr class="src-drill-'+btoa(s).replace(/=/g,'')+'" style="display:none"><td colspan="3" style="padding:0"><div style="padding:8px 12px;background:var(--surface)">'+accs.filter(a=>a.source===s).map(a=>'<div style="padding:4px 0;font-size:12px;cursor:pointer;color:var(--navy);font-weight:700" onclick="openDetail(\''+a.id+'\')">'+esc(a.name)+' '+badge(a.stage)+'</div>').join('')+'</div></td></tr>').join('')+'</tbody></table>':'<div class="empty" style="padding:20px">No source data yet</div>')+'</div></div></div>';
   setTimeout(()=>{
-    const hwRows=active.filter(a=>a.hardware_cost).sort((a,b)=>(parseC(b.hardware_cost)||0)-(parseC(a.hardware_cost)||0));
-    const subRows=active.filter(a=>a.sub_amount).sort((a,b)=>(parseC(b.sub_amount)||0)-(parseC(a.sub_amount)||0));
-    const pipeRows=pipe.filter(a=>a.deal_value).sort((a,b)=>(parseC(b.deal_value)||0)-(parseC(a.deal_value)||0));
-    const kitsRows=active.filter(a=>a.kit_count).sort((a,b)=>(b.kit_count||0)-(a.kit_count||0));
-    const drills={
-      'drill-hw':{rows:hwRows,cols:[{label:'Account',fn:a=>esc(a.name)},{label:'City',fn:a=>esc(a.city||'')},{label:'Hardware cost',fn:a=>a.hardware_cost?'$'+fmtC(a.hardware_cost):'—'}]},
-      'drill-sub':{rows:subRows,cols:[{label:'Account',fn:a=>esc(a.name)},{label:'Sub type',fn:a=>a.sub_type||'—'},{label:'Amount',fn:a=>a.sub_amount?'$'+fmtC(a.sub_amount)+(a.sub_type==='Monthly'?'/mo':'/yr'):'—'}]},
-      'drill-pipe':{rows:pipeRows,cols:[{label:'Account',fn:a=>esc(a.name)},{label:'Stage',fn:a=>a.stage},{label:'Deal value',fn:a=>a.deal_value?'$'+fmtC(a.deal_value):'—'}]},
-      'drill-monthly':{rows:monthly,cols:[{label:'Account',fn:a=>esc(a.name)},{label:'Amount',fn:a=>a.sub_amount?'$'+fmtC(a.sub_amount)+'/mo':'—'},{label:'Renewal',fn:a=>fmt(a.renewal_date)}]},
-      'drill-yearly':{rows:yearly,cols:[{label:'Account',fn:a=>esc(a.name)},{label:'Amount',fn:a=>a.sub_amount?'$'+fmtC(a.sub_amount)+'/yr':'—'},{label:'Renewal',fn:a=>fmt(a.renewal_date)}]},
-      'drill-kits':{rows:kitsRows,cols:[{label:'Account',fn:a=>esc(a.name)},{label:'City',fn:a=>esc(a.city||'')},{label:'Kits',fn:a=>String(a.kit_count||0)}]},
-    };
-    Object.entries(drills).forEach(([id,{rows,cols}])=>{
-      const el2=document.getElementById(id);
-      if(el2)el2.innerHTML=drillTable('',rows,cols);
-    });
+    const drills={'drill-hw':{rows:active.filter(a=>a.hardware_cost).sort((a,b)=>(parseC(b.hardware_cost)||0)-(parseC(a.hardware_cost)||0)),cols:[{label:'Account',fn:a=>esc(a.name)},{label:'City',fn:a=>esc(a.city||'')},{label:'Hardware cost',fn:a=>a.hardware_cost?'$'+fmtC(a.hardware_cost):'—'}]},'drill-sub':{rows:active.filter(a=>a.sub_amount).sort((a,b)=>(parseC(b.sub_amount)||0)-(parseC(a.sub_amount)||0)),cols:[{label:'Account',fn:a=>esc(a.name)},{label:'Sub type',fn:a=>a.sub_type||'—'},{label:'Amount',fn:a=>a.sub_amount?'$'+fmtC(a.sub_amount)+(a.sub_type==='Monthly'?'/mo':'/yr'):'—'}]},'drill-pipe':{rows:pipe.filter(a=>a.deal_value).sort((a,b)=>(parseC(b.deal_value)||0)-(parseC(a.deal_value)||0)),cols:[{label:'Account',fn:a=>esc(a.name)},{label:'Stage',fn:a=>a.stage},{label:'Deal value',fn:a=>a.deal_value?'$'+fmtC(a.deal_value):'—'}]},'drill-monthly':{rows:monthly,cols:[{label:'Account',fn:a=>esc(a.name)},{label:'Amount',fn:a=>a.sub_amount?'$'+fmtC(a.sub_amount)+'/mo':'—'},{label:'Renewal',fn:a=>fmt(a.renewal_date)}]},'drill-yearly':{rows:yearly,cols:[{label:'Account',fn:a=>esc(a.name)},{label:'Amount',fn:a=>a.sub_amount?'$'+fmtC(a.sub_amount)+'/yr':'—'},{label:'Renewal',fn:a=>fmt(a.renewal_date)}]},'drill-kits':{rows:active.filter(a=>a.kit_count).sort((a,b)=>(b.kit_count||0)-(a.kit_count||0)),cols:[{label:'Account',fn:a=>esc(a.name)},{label:'City',fn:a=>esc(a.city||'')},{label:'Kits',fn:a=>String(a.kit_count||0)}]}};
+    Object.entries(drills).forEach(([id,{rows,cols}])=>{const el2=document.getElementById(id);if(el2)el2.innerHTML=drillTable(rows,cols);});
   },50);
 }
-
-function toggleDrill(id){
-  const el=document.getElementById(id);
-  if(el)el.style.display=el.style.display==='none'?'block':'none';
-}
-function toggleLostDrill(btn,reason){
-  const cls='lost-drill-'+btoa(reason).replace(/=/g,'');
-  document.querySelectorAll('.'+cls).forEach(r=>{
-    r.style.display=r.style.display==='none'?'table-row':'none';
-  });
-  btn.textContent=btn.textContent==='Show'?'Hide':'Show';
-}
-function toggleSrcDrill(btn,src){
-  const cls='src-drill-'+btoa(src).replace(/=/g,'');
-  document.querySelectorAll('.'+cls).forEach(r=>{
-    r.style.display=r.style.display==='none'?'table-row':'none';
-  });
-  btn.textContent=btn.textContent==='Show'?'Hide':'Show';
-}
-
+function toggleDrill(id){const el=document.getElementById(id);if(el)el.style.display=el.style.display==='none'?'block':'none';}
+function toggleLostDrill(btn,reason){const cls='lost-drill-'+btoa(reason).replace(/=/g,'');document.querySelectorAll('.'+cls).forEach(r=>{r.style.display=r.style.display==='none'?'table-row':'none';});btn.textContent=btn.textContent==='Show'?'Hide':'Show';}
+function toggleSrcDrill(btn,src){const cls='src-drill-'+btoa(src).replace(/=/g,'');document.querySelectorAll('.'+cls).forEach(r=>{r.style.display=r.style.display==='none'?'table-row':'none';});btn.textContent=btn.textContent==='Show'?'Hide':'Show';}
 
 function rActivity(el,act){
-  const allActivity=[];
-  accs.forEach(a=>{const log=getActivity(a);log.forEach(e=>allActivity.push({who:e.who,what:e.what,ts:e.ts,accId:a.id,accName:a.name}));});
-  allActivity.sort((a,b)=>new Date(b.ts)-new Date(a.ts));
-  const recent=allActivity.slice(0,50);
+  const all=[];accs.forEach(a=>{getActivity(a).forEach(e=>all.push({who:e.who,what:e.what,ts:e.ts,accId:a.id,accName:a.name}));});
+  all.sort((a,b)=>new Date(b.ts)-new Date(a.ts));
+  const recent=all.slice(0,50);
   if(!recent.length){el.innerHTML='<div class="empty">No activity recorded yet.</div>';return;}
   el.innerHTML='<div class="card"><div style="padding:0">'+recent.map(e=>'<div style="padding:13px 18px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:12px"><div style="flex:1"><div><span style="font-weight:700;color:var(--navy);cursor:pointer" onclick="openDetail(\''+e.accId+'\')">'+esc(e.accName)+'</span><span style="font-size:12px;color:var(--muted);margin-left:10px">'+fmtDT(e.ts)+'</span></div><div style="font-size:13px;color:var(--text);margin-top:3px">'+esc(e.what)+'</div><div style="font-size:11px;color:var(--muted);margin-top:2px">by '+esc(e.who||'Unknown')+'</div></div><button class="btn btn-sm btn-navy" onclick="openDetail(\''+e.accId+'\')">View</button></div>').join('')+'</div></div>';
 }
@@ -516,32 +470,16 @@ function rActivity(el,act){
 function rSettings(el,act){
   el.innerHTML='<div style="max-width:560px"><div class="card"><div class="card-hdr"><span class="card-title">Implementation managers</span><button class="btn btn-sm btn-primary" onclick="showAddMgr()">+ Add</button></div><div class="mgr-mgmt" id="mgr-list">'+implMgrs.map((m,i)=>'<div class="mgr-row"><span>'+esc(m)+'</span><button class="btn btn-sm btn-danger" onclick="removeMgr('+i+')">Remove</button></div>').join('')+'</div></div></div>';
 }
-
-function showAddMgr(){
-  const name=prompt('Enter implementation manager name:');
-  if(!name||!name.trim())return;
-  implMgrs.push(name.trim());
-  localStorage.setItem('crm_impl_mgrs',JSON.stringify(implMgrs));
-  render();
-}
-function removeMgr(i){
-  if(!confirm('Remove '+implMgrs[i]+'?'))return;
-  implMgrs.splice(i,1);
-  localStorage.setItem('crm_impl_mgrs',JSON.stringify(implMgrs));
-  render();
-}
+function showAddMgr(){const name=prompt('Enter implementation manager name:');if(!name||!name.trim())return;implMgrs.push(name.trim());localStorage.setItem('crm_impl_mgrs',JSON.stringify(implMgrs));render();}
+function removeMgr(i){if(!confirm('Remove '+implMgrs[i]+'?'))return;implMgrs.splice(i,1);localStorage.setItem('crm_impl_mgrs',JSON.stringify(implMgrs));render();}
 
 function closeModal(){document.getElementById('mc').innerHTML='';}
 function openAdd(){showForm(null);}
 function openEdit(id){showForm(accs.find(a=>a.id===id));}
-
-function cbHTML(c,i){
-  return'<div class="cblock" id="cb-'+i+'"><div class="cblock-title">'+(i===0?'Primary contact':'Additional contact')+'</div>'+(i>0?'<button class="cbtn-remove" onclick="rmC('+i+')">&times;</button>':'')+'<div class="fg"><div class="fgrp"><label class="flbl">First name</label><input class="finput" id="cfn-'+i+'" value="'+esc(c.first||c.name||'')+'"></div><div class="fgrp"><label class="flbl">Last name</label><input class="finput" id="cln-'+i+'" value="'+esc(c.last||'')+'"></div><div class="fgrp"><label class="flbl">Title</label><input class="finput" id="ct-'+i+'" value="'+esc(c.title||'')+'"></div><div class="fgrp"><label class="flbl">Email</label><input class="finput" id="ce-'+i+'" value="'+esc(c.email||'')+'"></div><div class="fgrp full"><label class="flbl">Phone</label><input class="finput" id="cp-'+i+'" value="'+esc(c.phone||'')+'"></div></div></div>';
-}
+function cbHTML(c,i){return'<div class="cblock" id="cb-'+i+'"><div class="cblock-title">'+(i===0?'Primary contact':'Additional contact')+'</div>'+(i>0?'<button class="cbtn-remove" onclick="rmC('+i+')">&times;</button>':'')+'<div class="fg"><div class="fgrp"><label class="flbl">First name</label><input class="finput" id="cfn-'+i+'" value="'+esc(c.first||c.name||'')+'"></div><div class="fgrp"><label class="flbl">Last name</label><input class="finput" id="cln-'+i+'" value="'+esc(c.last||'')+'"></div><div class="fgrp"><label class="flbl">Title</label><input class="finput" id="ct-'+i+'" value="'+esc(c.title||'')+'"></div><div class="fgrp"><label class="flbl">Email</label><input class="finput" id="ce-'+i+'" value="'+esc(c.email||'')+'"></div><div class="fgrp full"><label class="flbl">Phone</label><input class="finput" id="cp-'+i+'" value="'+esc(c.phone||'')+'"></div></div></div>';}
 function addC(){const i=ccount++;const d=document.createElement('div');d.innerHTML=cbHTML({},i);document.getElementById('cc').appendChild(d.firstElementChild);}
 function rmC(i){const e=document.getElementById('cb-'+i);if(e)e.remove();}
 function gatherC(){const r=[];document.querySelectorAll('[id^="cb-"]').forEach(b=>{const i=b.id.split('-').pop();const f=(document.getElementById('cfn-'+i)||{}).value||'';const l=(document.getElementById('cln-'+i)||{}).value||'';const t=(document.getElementById('ct-'+i)||{}).value||'';const e=(document.getElementById('ce-'+i)||{}).value||'';const p=(document.getElementById('cp-'+i)||{}).value||'';if(f||l||e||p)r.push({first:f,last:l,title:t,email:e,phone:p});});return r;}
-
 function mgrsOpts(sel){return'<option value="">— Select —</option>'+implMgrs.map(m=>'<option value="'+esc(m)+'"'+(sel===m?' selected':'')+'>'+esc(m)+'</option>').join('');}
 
 function showForm(acc){
@@ -552,12 +490,11 @@ function showForm(acc){
   if(!contacts.length)contacts.push({});
   ccount=contacts.length;
   const stageOpts=pt==='impl'?IMPL.map(s=>'<option value="'+s+'"'+(a.stage===s?' selected':'')+'>'+s+'</option>').join(''):pt==='active'?'<option value="Active" selected>Active</option>':SALES.map(s=>'<option value="'+s+'"'+(a.stage===s?' selected':'')+'>'+s+'</option>').join('');
-  document.getElementById('mc').innerHTML='<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-hdr"><span class="modal-title">'+(isEdit?'Edit account':'Add account')+'</span><button class="xbtn" onclick="closeModal()">&times;</button></div><div class="modal-body"><div class="fsec">Account info</div><div class="fg"><div class="fgrp full"><label class="flbl">Account name *</label><input class="finput" id="fn" value="'+esc(a.name||'')+'"></div><div class="fgrp"><label class="flbl">Type</label><select class="finput" id="ft"><option value="">— Select type —</option>'+TYPES.map(t=>'<option value="'+t+'"'+(a.acct_type===t?' selected':'')+'>'+t+'</option>').join('')+'</select></div><div class="fgrp"><label class="flbl">Source</label><select class="finput" id="fsrc"><option value="">— Select source —</option>'+SOURCES.map(s=>'<option value="'+s+'"'+(a.source===s?' selected':'')+'>'+s+'</option>').join('')+'</select></div></div><div class="fgrp full" style="margin-top:14px"><label class="flbl">Street address</label><input class="finput" id="faddr" value="'+esc(a.address||'')+'"></div><div class="fg3" style="margin-top:14px"><div class="fgrp"><label class="flbl">City</label><input class="finput" id="fci" value="'+esc(a.city||'')+'"></div><div class="fgrp"><label class="flbl">State</label><input class="finput" id="fst" value="'+esc(a.state||'')+'"></div><div class="fgrp"><label class="flbl">Zip</label><input class="finput" id="fzp" value="'+esc(a.zip||'')+'"></div></div><div class="fg" style="margin-top:14px"><div class="fgrp"><label class="flbl">Phone</label><input class="finput" id="fph" value="'+esc(a.phone||'')+'"></div><div class="fgrp"><label class="flbl">Website</label><input class="finput" id="fwb" value="'+esc(a.website||'')+'"></div></div><div class="fsec">Pipeline stage</div><div class="fg"><div class="fgrp"><label class="flbl">Pipeline type</label><select class="finput" id="fpt" onchange="updStage()"><option value="sales"'+(pt==='sales'?' selected':'')+'>Sales Pipeline</option><option value="impl"'+(pt==='impl'?' selected':'')+'>Implementation</option><option value="active"'+(pt==='active'?' selected':'')+'>Active account</option></select></div><div class="fgrp"><label class="flbl">Stage</label><select class="finput" id="fsg">'+stageOpts+'</select></div><div class="fgrp"><label class="flbl">Deal value ($)</label><input class="finput" id="fdv" type="text" placeholder="e.g. 25,000" value="'+(a.deal_value?fmtC(a.deal_value):'')+'"></div><div class="fgrp"><label class="flbl">Lost reason</label><select class="finput" id="flr"><option value="">—</option>'+LOST_REASONS.map(r=>'<option value="'+r+'"'+(a.lost_reason===r?' selected':'')+'>'+r+'</option>').join('')+'</select></div></div><div class="fsec">Contacts</div><div id="cc">'+contacts.map((c,i)=>cbHTML(c,i)).join('')+'</div><button class="add-c-btn" onclick="addC()">+ Add another contact</button><div class="fsec">Implementation &amp; hardware</div><div class="fg"><div class="fgrp"><label class="flbl">Implementation manager</label><select class="finput" id="fim">'+mgrsOpts(a.impl_manager)+'</select></div><div class="fgrp"><label class="flbl">Signed / close date</label><input class="finput" id="fsd" type="date" value="'+(a.signed_date||'')+'"></div><div class="fgrp"><label class="flbl">Go-live date</label><input class="finput" id="fgl" type="date" value="'+(a.go_live_date||'')+'" onchange="autoD()"></div><div class="fgrp"><label class="flbl">30-day check-in <span style="color:var(--green-dark);font-size:10px">(auto)</span></label><input class="finput" id="fc3" type="date" value="'+(a.checkin_30_date||'')+'"></div><div class="fgrp"><label class="flbl">60-day eval end <span style="color:var(--green-dark);font-size:10px">(auto)</span></label><input class="finput" id="fe6" type="date" value="'+(a.eval_end_date||'')+'"></div><div class="fgrp"></div><div class="fgrp"><label class="flbl">Number of kits</label><input class="finput" id="fkc" type="text" value="'+(a.kit_count||'')+'"></div><div class="fgrp"><label class="flbl">Hardware cost ($)</label><input class="finput" id="fhc" type="text" placeholder="e.g. 5,000" value="'+(a.hardware_cost?fmtC(a.hardware_cost):'')+'"></div></div><div class="fsec">Subscription</div><div class="fg"><div class="fgrp"><label class="flbl">Subscription type</label><select class="finput" id="fst2"><option value=""'+((!a.sub_type)?' selected':'')+'>—</option><option value="Monthly"'+(a.sub_type==='Monthly'?' selected':'')+'>Monthly</option><option value="Yearly"'+(a.sub_type==='Yearly'?' selected':'')+'>Yearly</option></select></div><div class="fgrp"><label class="flbl">Subscription amount ($)</label><input class="finput" id="fsa" type="text" placeholder="e.g. 1,200" value="'+(a.sub_amount?fmtC(a.sub_amount):'')+'"></div><div class="fgrp full"><label class="flbl">Subscription start date <span style="color:var(--green-dark);font-size:10px">(auto-fills renewal)</span></label><input class="finput" id="fssd" type="date" value="'+(a.sub_start_date||'')+'" onchange="autoRenewal()"></div><div class="fgrp"><label class="flbl">Renewal date <span style="color:var(--green-dark);font-size:10px">(auto)</span></label><input class="finput" id="frd" type="date" value="'+(a.renewal_date||'')+'"></div></div></div><div class="modal-foot">'+(isEdit?'<button class="btn btn-danger" onclick="deleteAcc(\''+a.id+'\')" style="margin-right:auto">Delete</button>':'')+'<button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveAcc(\''+( a.id||'')+'\')">Save account</button></div></div></div>';
+  document.getElementById('mc').innerHTML='<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-hdr"><span class="modal-title">'+(isEdit?'Edit account':'Add account')+'</span><button class="xbtn" onclick="closeModal()">&times;</button></div><div class="modal-body"><div class="fsec">Account info</div><div class="fg"><div class="fgrp full"><label class="flbl">Account name *</label><input class="finput" id="fn" value="'+esc(a.name||'')+'"></div><div class="fgrp"><label class="flbl">Type</label><select class="finput" id="ft"><option value="">— Select type —</option>'+TYPES.map(t=>'<option value="'+t+'"'+(a.acct_type===t?' selected':'')+'>'+t+'</option>').join('')+'</select></div><div class="fgrp"><label class="flbl">Source</label><select class="finput" id="fsrc"><option value="">— Select source —</option>'+SOURCES.map(s=>'<option value="'+s+'"'+(a.source===s?' selected':'')+'>'+s+'</option>').join('')+'</select></div></div><div class="fgrp full" style="margin-top:14px"><label class="flbl">Street address</label><input class="finput" id="faddr" value="'+esc(a.address||'')+'"></div><div class="fg3" style="margin-top:14px"><div class="fgrp"><label class="flbl">City</label><input class="finput" id="fci" value="'+esc(a.city||'')+'"></div><div class="fgrp"><label class="flbl">State</label><input class="finput" id="fst" value="'+esc(a.state||'')+'"></div><div class="fgrp"><label class="flbl">Zip</label><input class="finput" id="fzp" value="'+esc(a.zip||'')+'"></div></div><div class="fg" style="margin-top:14px"><div class="fgrp"><label class="flbl">Phone</label><input class="finput" id="fph" value="'+esc(a.phone||'')+'"></div><div class="fgrp"><label class="flbl">Website</label><input class="finput" id="fwb" value="'+esc(a.website||'')+'"></div></div><div class="fsec">Pipeline stage</div><div class="fg"><div class="fgrp"><label class="flbl">Pipeline type</label><select class="finput" id="fpt" onchange="updStage()"><option value="sales"'+(pt==='sales'?' selected':'')+'>Sales Pipeline</option><option value="impl"'+(pt==='impl'?' selected':'')+'>Implementation</option><option value="active"'+(pt==='active'?' selected':'')+'>Active account</option></select></div><div class="fgrp"><label class="flbl">Stage</label><select class="finput" id="fsg">'+stageOpts+'</select></div><div class="fgrp"><label class="flbl">Deal value ($)</label><input class="finput" id="fdv" type="text" placeholder="e.g. 25,000" value="'+(a.deal_value?fmtC(a.deal_value):'')+'"></div><div class="fgrp"><label class="flbl">Lost reason</label><select class="finput" id="flr" onchange="autoLostStage()"><option value="">—</option>'+LOST_REASONS.map(r=>'<option value="'+r+'"'+(a.lost_reason===r?' selected':'')+'>'+r+'</option>').join('')+'</select></div></div><div class="fsec">Contacts</div><div id="cc">'+contacts.map((c,i)=>cbHTML(c,i)).join('')+'</div><button class="add-c-btn" onclick="addC()">+ Add another contact</button><div class="fsec">Implementation &amp; hardware</div><div class="fg"><div class="fgrp"><label class="flbl">Implementation manager</label><select class="finput" id="fim">'+mgrsOpts(a.impl_manager)+'</select></div><div class="fgrp"><label class="flbl">Signed / close date</label><input class="finput" id="fsd" type="date" value="'+(a.signed_date||'')+'"></div><div class="fgrp"><label class="flbl">Go-live date</label><input class="finput" id="fgl" type="date" value="'+(a.go_live_date||'')+'" onchange="autoD()"></div><div class="fgrp"><label class="flbl">30-day check-in <span style="color:var(--green-dark);font-size:10px">(auto)</span></label><input class="finput" id="fc3" type="date" value="'+(a.checkin_30_date||'')+'"></div><div class="fgrp"><label class="flbl">60-day eval end <span style="color:var(--green-dark);font-size:10px">(auto)</span></label><input class="finput" id="fe6" type="date" value="'+(a.eval_end_date||'')+'"></div><div class="fgrp"></div><div class="fgrp"><label class="flbl">Number of kits</label><input class="finput" id="fkc" type="text" value="'+(a.kit_count||'')+'"></div><div class="fgrp"><label class="flbl">Hardware cost ($)</label><input class="finput" id="fhc" type="text" placeholder="e.g. 5,000" value="'+(a.hardware_cost?fmtC(a.hardware_cost):'')+'"></div></div><div class="fsec">Subscription</div><div class="fg"><div class="fgrp"><label class="flbl">Subscription type</label><select class="finput" id="fst2"><option value=""'+((!a.sub_type)?' selected':'')+'>—</option><option value="Monthly"'+(a.sub_type==='Monthly'?' selected':'')+'>Monthly</option><option value="Yearly"'+(a.sub_type==='Yearly'?' selected':'')+'>Yearly</option></select></div><div class="fgrp"><label class="flbl">Subscription amount ($)</label><input class="finput" id="fsa" type="text" placeholder="e.g. 1,200" value="'+(a.sub_amount?fmtC(a.sub_amount):'')+'"></div><div class="fgrp full"><label class="flbl">Subscription start date <span style="color:var(--green-dark);font-size:10px">(auto-fills renewal)</span></label><input class="finput" id="fssd" type="date" value="'+(a.sub_start_date||'')+'" onchange="autoRenewal()"></div><div class="fgrp"><label class="flbl">Renewal date <span style="color:var(--green-dark);font-size:10px">(auto)</span></label><input class="finput" id="frd" type="date" value="'+(a.renewal_date||'')+'"></div></div></div><div class="modal-foot">'+(isEdit?'<button class="btn btn-danger" onclick="deleteAcc(\''+a.id+'\')" style="margin-right:auto">Delete</button>':'')+'<button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveAcc(\''+(a.id||'')+'\')">Save account</button></div></div></div>';
 }
-
 function autoD(){const g=document.getElementById('fgl').value;if(g){document.getElementById('fc3').value=addDays(g,30);document.getElementById('fe6').value=addDays(g,60);}}
-function autoLostStage(){const r=document.getElementById('flr').value;if(r){const pt=document.getElementById('fpt');const sg=document.getElementById('fsg');if(pt&&sg&&pt.value!=='sales'){pt.value='sales';updStage();}if(sg)sg.value='Deal lost';}}
 function autoRenewal(){const s=document.getElementById('fssd').value;if(s){const d=new Date(s);d.setFullYear(d.getFullYear()+1);document.getElementById('frd').value=d.toISOString().split('T')[0];}}
+function autoLostStage(){const r=document.getElementById('flr').value;if(r){const pt=document.getElementById('fpt');const sg=document.getElementById('fsg');if(pt&&sg&&pt.value!=='sales'){pt.value='sales';updStage();}if(sg)sg.value='Deal lost';}}
 function updStage(){const pt=document.getElementById('fpt').value;const s=document.getElementById('fsg');if(pt==='sales')s.innerHTML=SALES.map(x=>'<option>'+x+'</option>').join('');else if(pt==='impl')s.innerHTML=IMPL.map(x=>'<option>'+x+'</option>').join('');else s.innerHTML='<option value="Active">Active</option>';}
 
 async function saveAcc(eid){
@@ -613,8 +550,7 @@ async function addNote(id){
   const a=accs.find(x=>x.id===id);if(!a)return;
   const notes=getNotes(a);
   notes.unshift({text,author:getUser(),ts:new Date().toISOString()});
-  const activity=logActivity(a,'Added a note');
-  const updated=Object.assign({},a,{notes_log:JSON.stringify(notes),activity_log:activity,updated_at:new Date().toISOString()});
+  const updated=Object.assign({},a,{notes_log:JSON.stringify(notes),activity_log:logActivity(a,'Added a note'),updated_at:new Date().toISOString()});
   try{
     const btn=document.getElementById('note-save-btn');
     if(btn){btn.textContent='Saving...';btn.disabled=true;}
@@ -627,10 +563,9 @@ function openDetail(id){
   let contacts=[];try{contacts=JSON.parse(a.contacts_json||'[]');}catch{}
   const d=daysFrom(a.renewal_date);const ed=daysFrom(a.eval_end_date);
   const ch=contacts.length?contacts.map((c,i)=>{const cn=((c.first||'')+' '+(c.last||'')).trim()||c.name||'—';return'<div style="'+(i>0?'padding-top:14px;border-top:1px solid var(--border);margin-top:14px':'')+'"><div style="font-size:11px;font-weight:800;color:var(--navy);margin-bottom:8px;text-transform:uppercase">'+(i===0?'Primary contact':'Contact '+(i+1))+'</div><div class="dgrid"><div class="dlbl">Name</div><div class="dval">'+esc(cn)+'</div><div class="dlbl">Title</div><div class="dval">'+esc(c.title||'—')+'</div><div class="dlbl">Email</div><div class="dval">'+(c.email?'<a href="mailto:'+esc(c.email)+'" style="color:var(--navy);font-weight:700">'+esc(c.email)+'</a>':'—')+'</div><div class="dlbl">Phone</div><div class="dval">'+esc(c.phone||'—')+'</div></div></div>';}).join(''):'<div style="color:var(--muted);font-size:13px">No contacts added.</div>';
-  const notes=getNotes(a);
-  const activity=getActivity(a);
+  const notes=getNotes(a);const activity=getActivity(a);
   const notesHTML='<div class="note-input-area"><textarea id="note-input" placeholder="Add a note..." rows="3"></textarea><div class="note-input-area-foot"><button class="btn btn-primary btn-sm" id="note-save-btn" onclick="addNote(\''+a.id+'\')">Add note</button></div></div>'+(notes.length?notes.map(n=>'<div class="note-entry"><div class="note-meta">'+esc(n.author||'Unknown')+' &middot; '+fmtDT(n.ts)+'</div><div class="note-text">'+esc(n.text)+'</div></div>').join(''):'<div style="color:var(--muted);font-size:13px;padding:8px 0">No notes yet.</div>');
-  const actHTML=activity.length?activity.map(e=>'<div class="activity-entry"><span class="activity-who">'+esc(e.who||'Unknown')+'</span><span class="activity-when">&middot; '+fmtDT(e.ts)+'</span><div class="activity-what">'+esc(e.what)+'</div></div>').join(''):'<div style="color:var(--muted);font-size:13px;padding:8px 0">No activity recorded yet.</div>';
+  const actHTML=activity.length?activity.map(e=>'<div class="activity-entry"><span style="font-weight:700;color:var(--navy)">'+esc(e.who||'Unknown')+'</span><span style="color:var(--muted);margin-left:6px">&middot; '+fmtDT(e.ts)+'</span><div style="color:var(--text);margin-top:2px;font-size:12px">'+esc(e.what)+'</div></div>').join(''):'<div style="color:var(--muted);font-size:13px;padding:8px 0">No activity recorded yet.</div>';
   document.getElementById('mc').innerHTML='<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-hdr"><div><div class="modal-title">'+esc(a.name)+'</div><div style="font-size:11px;color:rgba(255,255,255,.6);margin-top:2px">'+esc(a.acct_type||'')+(a.source?' &middot; '+esc(a.source):'')+(a.city?' &middot; '+esc(a.city):'')+(a.state?' '+esc(a.state):'')+'</div></div><div style="display:flex;align-items:center;gap:10px">'+badge(a.stage)+'<button class="xbtn" onclick="closeModal()">&times;</button></div></div><div class="modal-body"><div class="tabs"><div class="tab active" id="dt-c" onclick="stab(\'c\')">Contacts</div><div class="tab" id="dt-i" onclick="stab(\'i\')">Implementation</div><div class="tab" id="dt-s" onclick="stab(\'s\')">Subscription</div><div class="tab" id="dt-n" onclick="stab(\'n\')">Notes</div><div class="tab" id="dt-a" onclick="stab(\'a\')">Activity</div></div><div id="dc-c">'+ch+'</div><div id="dc-i" style="display:none"><div class="dgrid"><div class="dlbl">Impl. manager</div><div class="dval">'+esc(a.impl_manager||'—')+'</div><div class="dlbl">Signed date</div><div class="dval">'+fmt(a.signed_date)+'</div><div class="dlbl">Go-live date</div><div class="dval">'+fmt(a.go_live_date)+'</div><div class="dlbl">30-day check-in</div><div class="dval">'+ciStatus(a)+'</div><div class="dlbl">60-day eval end</div><div class="dval">'+(a.eval_end_date?'<span class="'+(ed!==null&&ed<=10?'warn':'')+'">'+fmt(a.eval_end_date)+' '+dl(ed)+'</span>':'—')+'</div><div class="dlbl">Kits</div><div class="dval">'+(a.kit_count||'—')+'</div><div class="dlbl">Hardware cost</div><div class="dval">'+(a.hardware_cost?'$'+fmtC(a.hardware_cost):'—')+'</div><div class="dlbl">Phone</div><div class="dval">'+esc(a.phone||'—')+'</div><div class="dlbl">Website</div><div class="dval">'+esc(a.website||'—')+'</div>'+(a.deal_value?'<div class="dlbl">Deal value</div><div class="dval">$'+fmtC(a.deal_value)+'</div>':'')+(a.lost_reason?'<div class="dlbl">Lost reason</div><div class="dval">'+esc(a.lost_reason)+'</div>':'')+'</div></div><div id="dc-s" style="display:none"><div class="dgrid"><div class="dlbl">Start date</div><div class="dval">'+(a.sub_start_date?fmt(a.sub_start_date):'—')+'</div><div class="dlbl">Sub type</div><div class="dval">'+(a.sub_type?'<span class="badge '+(a.sub_type==='Monthly'?'b-monthly':'b-yearly')+'">'+a.sub_type+'</span>':'—')+'</div><div class="dlbl">Amount</div><div class="dval">'+(a.sub_amount?'$'+fmtC(a.sub_amount)+(a.sub_type==='Monthly'?'/mo':'/yr'):'—')+'</div><div class="dlbl">Renewal date</div><div class="dval">'+(a.renewal_date?'<span class="'+(d!==null&&d<=30?d<=7?'danger':'warn':'')+'">'+fmt(a.renewal_date)+' '+dl(d)+'</span>':'—')+'</div></div></div><div id="dc-n" style="display:none">'+notesHTML+'</div><div id="dc-a" style="display:none">'+actHTML+'</div></div><div class="modal-foot"><button class="btn" onclick="closeModal()">Close</button><button class="btn btn-primary" onclick="closeModal();openEdit(\''+a.id+'\')">Edit account</button></div></div></div>';
 }
 function stab(t){['c','i','s','n','a'].forEach(x=>{const dt=document.getElementById('dt-'+x);const dc=document.getElementById('dc-'+x);if(dt)dt.classList.toggle('active',x===t);if(dc)dc.style.display=x===t?'':'none';});}
