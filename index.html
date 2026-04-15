@@ -199,8 +199,7 @@ textarea.finput{resize:vertical;min-height:60px;}
       <div class="nav-item" id="nav-renewals" onclick="nav('renewals')"><span class="nav-dot"></span>Renewals<span class="nav-badge" id="rnb" style="display:none">0</span></div>
       <div class="nav-sec">Insights</div>
       <div class="nav-item" id="nav-reports" onclick="nav('reports')"><span class="nav-dot"></span>Reports</div>
-      <div class="nav-item" id="nav-activity" onclick="nav('activity')"><span class="nav-dot"></span>Activity</div><div class=\"tab\" id=\"dt-d\" onclick=\"stab(\'d\')\">Docs</div><div class=\"tab\" id=\"dt-f\" onclick=\"stab(\'f\')\">Follow-ups</div>
-      <div class="nav-sec">Settings</div>
+      <div class="nav-item" id="nav-activity" onclick="nav('activity')"><span class="nav-dot"></span>Activity</div><div class="nav-sec">Settings</div>
       <div class="nav-item" id="nav-settings" onclick="nav('settings')"><span class="nav-dot"></span>Settings</div>
       <div class="nav-sec">Personal</div>
       <div class="nav-item" id="nav-followups" onclick="nav('followups')"><span class="nav-dot"></span>My Follow-ups<span class="nav-badge" id="fub" style="display:none">0</span></div>
@@ -1073,7 +1072,7 @@ function openDetail(id){
   document.getElementById('mc').innerHTML=
     '<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal">'+
     '<div class="modal-hdr"><div><div class="modal-title">'+esc(a.name)+'</div><div style="font-size:11px;color:rgba(255,255,255,.6);margin-top:2px">'+esc(a.acct_type||'')+(a.source?' &middot; '+esc(a.source):'')+(a.city?' &middot; '+esc(a.city):'')+(a.state?' '+esc(a.state):'')+'</div></div><div style="display:flex;align-items:center;gap:10px">'+badge(a.stage)+'<button class="xbtn" onclick="closeModal()">&times;</button></div></div>'+
-    '<div class="modal-body"><div class="tabs"><div class="tab active" id="dt-c" onclick="stab(\'c\')">Contacts</div><div class="tab" id="dt-i" onclick="stab(\'i\')">Implementation</div><div class="tab" id="dt-s" onclick="stab(\'s\')">Subscription</div><div class="tab" id="dt-n" onclick="stab(\'n\')">Notes</div><div class="tab" id="dt-a" onclick="stab(\'a\')">Activity</div></div>'+
+    '<div class="modal-body"><div class="tabs"><div class="tab active" id="dt-c" onclick="stab(\'c\')">Contacts</div><div class="tab" id="dt-i" onclick="stab(\'i\')">Implementation</div><div class="tab" id="dt-s" onclick="stab(\'s\')">Subscription</div><div class="tab" id="dt-n" onclick="stab(\'n\')">Notes</div><div class="tab" id="dt-a" onclick="stab(\'a\')">Activity</div><div class=\"tab\" id=\"dt-d\" onclick=\"stab(\'d\')\">Docs</div><div class=\"tab\" id=\"dt-f\" onclick=\"stab(\'f\')\">Follow-ups</div></div>'+
     '<div id="dc-c">'+ch+'</div>'+
     '<div id="dc-i" style="display:none"><div class="dgrid">'+
     '<div class="dlbl">Impl. manager</div><div class="dval">'+esc(a.impl_manager||'\u2014')+'</div>'+
