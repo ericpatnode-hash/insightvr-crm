@@ -501,10 +501,10 @@ function rReports(el,act){
   const totalKits=active.reduce((s,a)=>s+(a.kit_count||0),0);
 
   function drillTable(rows,cols){
-    return '<div style="margin-top:12px;background:var(--surface);border-radius:var(--r);overflow:hidden;border:1px solid var(--border)"><table style="width:100%"><thead><tr>'+cols.map(c=>'<th>'+c.label+'</th>').join('')+'</tr></thead><tbody>'+rows.map(r=>'<tr onclick="openDetail(''+r.id+'')" style="cursor:pointer">'+cols.map(c=>'<td>'+(c.fn(r)||'—')+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>';
+    return '<div style="margin-top:12px;background:var(--surface);border-radius:var(--r);overflow:hidden;border:1px solid var(--border)"><table style="width:100%"><thead><tr>'+cols.map(c=>'<th>'+c.label+'</th>').join('')+'</tr></thead><tbody>'+rows.map(r=>'<tr onclick="openDetail('\''+r.id+'\'')" style="cursor:pointer">'+cols.map(c=>'<td>'+(c.fn(r)||'—')+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>';
   }
   function metricCard(lbl,val,sub,drillId){
-    return '<div class="report-card" onclick="toggleDrill(''+drillId+'')" title="Click to expand"><div class="report-lbl">'+lbl+'</div><div class="report-val">'+val+'</div><div class="report-sub">'+sub+' <span style="color:var(--navy);font-size:10px">▼</span></div><div id="'+drillId+'" style="display:none"></div></div>';
+    return '<div class="report-card" onclick="toggleDrill('\''+drillId+'\'')" title="Click to expand"><div class="report-lbl">'+lbl+'</div><div class="report-val">'+val+'</div><div class="report-sub">'+sub+' <span style="color:var(--navy);font-size:10px">▼</span></div><div id="'+drillId+'" style="display:none"></div></div>';
   }
 
   // Lost accounts filter state
@@ -535,7 +535,7 @@ function rReports(el,act){
     '<span style="font-size:12px;color:var(--muted)">'+filteredLost.length+' account'+(filteredLost.length===1?'':'s')+'</span>'+
     '</div>'+
     '<div style="overflow-x:auto"><table><thead><tr><th style="width:28%">Account</th><th style="width:14%">City</th><th style="width:14%">Lost reason</th><th style="width:16%">Contact</th><th style="width:14%">Source</th><th style="width:14%"></th></tr></thead><tbody>'+
-    (filteredLost.length?filteredLost.map(a=>'<tr onclick="openDetail(''+a.id+'')"><td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.state||'')+'</div></td><td style="color:var(--muted)">'+esc(a.city||'—')+'</td><td>'+badge('Deal lost')+'<div class="as">'+esc(a.lost_reason||'—')+'</div></td><td>'+esc(cname(a))+'</td><td style="color:var(--muted);font-size:12px">'+esc(a.source||'—')+'</td><td><button class="btn btn-sm btn-navy" onclick="event.stopPropagation();openEdit(''+a.id+'')">Edit</button></td></tr>').join(''):
+    (filteredLost.length?filteredLost.map(a=>'<tr onclick="openDetail('\''+a.id+'\'')"><td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.state||'')+'</div></td><td style="color:var(--muted)">'+esc(a.city||'—')+'</td><td>'+badge('Deal lost')+'<div class="as">'+esc(a.lost_reason||'—')+'</div></td><td>'+esc(cname(a))+'</td><td style="color:var(--muted);font-size:12px">'+esc(a.source||'—')+'</td><td><button class="btn btn-sm btn-navy" onclick="event.stopPropagation();openEdit('\''+a.id+'\'')">Edit</button></td></tr>').join(''):
     '<tr><td colspan="6" class="empty" style="padding:24px">No lost accounts'+(lostFilter!=='all'?' for this reason':'')+'.</td></tr>')+
     '</tbody></table></div></div></div>'+
     // Lead sources
@@ -548,7 +548,7 @@ function rReports(el,act){
     '<span style="font-size:12px;color:var(--muted)">'+filteredSrc.length+' account'+(filteredSrc.length===1?'':'s')+'</span>'+
     '</div>'+
     '<div style="overflow-x:auto"><table><thead><tr><th style="width:28%">Account</th><th style="width:16%">Stage</th><th style="width:18%">Source</th><th style="width:18%">Contact</th><th style="width:14%">Updated</th><th style="width:6%"></th></tr></thead><tbody>'+
-    (filteredSrc.length?filteredSrc.map(a=>'<tr onclick="openDetail(''+a.id+'')"><td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' &middot; '+esc(a.state):'')+'</div></td><td>'+badge(a.stage)+'</td><td style="font-size:12px;color:var(--muted)">'+esc(a.source)+'</td><td>'+esc(cname(a))+'</td><td style="color:var(--muted);font-size:12px">'+fmt(a.updated_at)+'</td><td><button class="btn btn-sm btn-navy" onclick="event.stopPropagation();openEdit(''+a.id+'')">Edit</button></td></tr>').join(''):
+    (filteredSrc.length?filteredSrc.map(a=>'<tr onclick="openDetail('\''+a.id+'\'')"><td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' &middot; '+esc(a.state):'')+'</div></td><td>'+badge(a.stage)+'</td><td style="font-size:12px;color:var(--muted)">'+esc(a.source)+'</td><td>'+esc(cname(a))+'</td><td style="color:var(--muted);font-size:12px">'+fmt(a.updated_at)+'</td><td><button class="btn btn-sm btn-navy" onclick="event.stopPropagation();openEdit('\''+a.id+'\'')">Edit</button></td></tr>').join(''):
     '<tr><td colspan="6" class="empty" style="padding:24px">No accounts with source data yet.</td></tr>')+
     '</tbody></table></div></div></div>'+
     '</div>';
