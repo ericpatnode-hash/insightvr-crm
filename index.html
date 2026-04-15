@@ -25,7 +25,8 @@ body{font-family:'Nunito Sans',-apple-system,sans-serif;font-size:14px;color:var
 .nav-item.active .nav-dot{background:var(--green);}
 .nav-badge{margin-left:auto;font-size:10px;background:#e53e3e;color:#fff;border-radius:999px;padding:1px 7px;font-weight:700;}
 .sf{margin-top:auto;padding:14px 16px;border-top:1px solid rgba(255,255,255,.12);}
-.sf-text{font-size:11px;color:rgba(255,255,255,.4);margin-bottom:8px;}
+.sf-user{font-size:12px;color:rgba(255,255,255,.8);font-weight:700;margin-bottom:8px;}
+.sf-text{font-size:11px;color:rgba(255,255,255,.4);margin-bottom:6px;}
 .page-title{font-size:16px;font-weight:800;color:#fff;}
 .btn{padding:7px 16px;border-radius:var(--r);border:1px solid var(--border-mid);background:var(--bg);color:var(--text);cursor:pointer;font-size:13px;font-family:inherit;font-weight:700;}
 .btn:hover{background:var(--surface);}
@@ -90,7 +91,7 @@ input[type=text].search{padding:8px 13px;border:1px solid var(--border-mid);bord
 .finput{padding:8px 11px;border:1px solid var(--border-mid);border-radius:var(--r);background:var(--bg);color:var(--text);font-size:13px;font-family:inherit;font-weight:600;}
 .finput:focus{outline:none;border-color:var(--navy);}
 .fsec{font-size:11px;font-weight:800;color:var(--navy);margin:20px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--navy-light);text-transform:uppercase;letter-spacing:.06em;}
-textarea.finput{resize:vertical;min-height:70px;}
+textarea.finput{resize:vertical;min-height:60px;}
 .cblock{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:10px;position:relative;}
 .cblock-title{font-size:11px;font-weight:800;color:var(--navy);text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px;}
 .cbtn-remove{position:absolute;top:10px;right:10px;background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;line-height:1;}
@@ -104,9 +105,41 @@ textarea.finput{resize:vertical;min-height:70px;}
 .dval{font-weight:600;}
 .blbl{font-size:11px;font-weight:800;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em;}
 .empty{text-align:center;padding:48px 20px;color:var(--muted);font-size:13px;font-weight:600;}
+.note-entry{background:var(--surface);border-radius:var(--r);padding:12px 14px;margin-bottom:10px;border:1px solid var(--border);}
+.note-meta{font-size:11px;color:var(--muted);font-weight:700;margin-bottom:6px;}
+.note-text{font-size:13px;font-weight:600;white-space:pre-wrap;}
+.note-input-area{border:1px solid var(--border-mid);border-radius:var(--r);overflow:hidden;margin-bottom:10px;}
+.note-input-area textarea{width:100%;padding:10px 12px;border:none;font-size:13px;font-family:inherit;font-weight:600;resize:none;outline:none;min-height:70px;}
+.note-input-area-foot{padding:8px 12px;background:var(--surface);border-top:1px solid var(--border);display:flex;justify-content:flex-end;}
+.welcome-screen{position:fixed;inset:0;background:var(--page);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px;}
+.welcome-box{background:var(--bg);border-radius:var(--rl);width:100%;max-width:460px;overflow:hidden;border:1px solid var(--border);}
+.welcome-hdr{background:var(--navy);padding:28px 32px;}
+.welcome-title{font-size:22px;font-weight:800;color:#fff;margin-bottom:4px;}
+.welcome-sub{font-size:13px;color:rgba(255,255,255,.7);font-weight:600;line-height:1.6;}
+.welcome-body{padding:28px 32px;}
+.welcome-note{font-size:12px;color:var(--muted);background:var(--surface);border-radius:var(--r);padding:12px 14px;margin-bottom:20px;line-height:1.7;font-weight:600;border-left:3px solid var(--navy);}
 </style>
 </head>
 <body>
+
+<div id="welcome-screen" class="welcome-screen" style="display:none">
+  <div class="welcome-box">
+    <div class="welcome-hdr">
+      <div class="welcome-title">Welcome to InsightVR CRM</div>
+      <div class="welcome-sub">Before you get started, please enter your name. This will appear on any notes you add.</div>
+    </div>
+    <div class="welcome-body">
+      <div class="welcome-note">Your name is saved on this device only. You will not be asked again.</div>
+      <div class="fg" style="margin-bottom:14px">
+        <div class="fgrp"><label class="flbl">First name *</label><input class="finput" id="w-first" placeholder="First name"></div>
+        <div class="fgrp"><label class="flbl">Last name *</label><input class="finput" id="w-last" placeholder="Last name"></div>
+      </div>
+      <div id="w-err" style="color:var(--danger);font-size:12px;margin-bottom:10px;display:none">Please enter your first and last name.</div>
+      <button class="btn btn-navy" style="width:100%;padding:11px;font-size:14px" onclick="saveName()">Get started</button>
+    </div>
+  </div>
+</div>
+
 <div id="app" style="display:none">
   <div class="app">
     <div class="sidebar">
@@ -120,7 +153,11 @@ textarea.finput{resize:vertical;min-height:70px;}
       <div class="nav-sec">Accounts</div>
       <div class="nav-item" id="nav-active" onclick="nav('active')"><span class="nav-dot"></span>Active accounts</div>
       <div class="nav-item" id="nav-renewals" onclick="nav('renewals')"><span class="nav-dot"></span>Renewals<span class="nav-badge" id="rnb" style="display:none">0</span></div>
-      <div class="sf"><div class="sf-text">Connected to Supabase</div><button class="btn btn-sm" style="width:100%;font-size:11px;background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.2)" onclick="resetDB()">Change database</button></div>
+      <div class="sf">
+        <div class="sf-user" id="sf-name"></div>
+        <div class="sf-text">InsightVR CRM</div>
+        <button class="btn btn-sm" style="width:100%;font-size:11px;background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.2);margin-top:4px" onclick="changeName()">Change name</button>
+      </div>
     </div>
     <div class="main">
       <div class="topbar"><span class="page-title" id="ptitle">Dashboard</span><div id="pactions"></div></div>
@@ -137,8 +174,28 @@ const SALES=['Prospect','Intro meeting','Early diligence','Late diligence','Prop
 const IMPL=['Discovery & planning','Go-live scheduled','60-day evaluation','Overdue'];
 const PROB={Prospect:'—','Intro meeting':'—','Early diligence':'50%','Late diligence':'80%','Proposal sent':'90%','Deal won':'Closed','Deal lost':'Lost'};
 const TYPES=['Practice','Private equity group','Industry partner','Other'];
+const IMPL_MGRS=['Leah Orr','Chris Morgan'];
 const SBADGE={Prospect:'b-prospect','Intro meeting':'b-intro','Early diligence':'b-early','Late diligence':'b-late','Proposal sent':'b-proposal','Deal won':'b-won','Deal lost':'b-lost','Discovery & planning':'b-discovery','Go-live scheduled':'b-golive','60-day evaluation':'b-60day',Overdue:'b-overdue',Active:'b-active'};
-let DB=null,view='dashboard',accs=[],q='',fs='all',ccount=1;
+let accs=[],view='dashboard',q='',fs='all',ccount=1;
+
+function getUser(){return localStorage.getItem('crm_user_name')||'';}
+function saveName(){
+  const f=(document.getElementById('w-first').value||'').trim();
+  const l=(document.getElementById('w-last').value||'').trim();
+  if(!f||!l){document.getElementById('w-err').style.display='block';return;}
+  localStorage.setItem('crm_user_name',f+' '+l);
+  document.getElementById('welcome-screen').style.display='none';
+  document.getElementById('app').style.display='block';
+  document.getElementById('sf-name').textContent=f+' '+l;
+  loadAccounts();
+}
+function changeName(){
+  localStorage.removeItem('crm_user_name');
+  document.getElementById('app').style.display='none';
+  document.getElementById('w-first').value='';
+  document.getElementById('w-last').value='';
+  document.getElementById('welcome-screen').style.display='flex';
+}
 
 async function req(method,table,body,filters,order){
   let url=SB_URL+'/rest/v1/'+table+'?select=*';
@@ -155,8 +212,6 @@ async function req(method,table,body,filters,order){
   return t?JSON.parse(t):[];
 }
 
-function resetDB(){if(!confirm('Change database?'))return;location.reload();}
-
 async function loadAccounts(){
   try{
     accs=await req('GET','accounts',null,null,'updated_at.desc');
@@ -167,7 +222,7 @@ async function loadAccounts(){
 }
 async function upsertAcc(a){await req('POST','accounts',Array.isArray(a)?a:[a],null,null);await loadAccounts();}
 async function deleteAcc(id){
-  if(!confirm('Delete this account?'))return;
+  if(!confirm('Delete this account? This cannot be undone.'))return;
   await req('DELETE','accounts',null,['id=eq.'+id],null);
   closeModal();await loadAccounts();
 }
@@ -176,11 +231,16 @@ function uid(){return 'a'+Date.now()+Math.random().toString(36).slice(2,7);}
 function daysFrom(d){if(!d)return null;return Math.round((new Date(d)-new Date())/86400000);}
 function addDays(s,n){if(!s)return'';const d=new Date(s);d.setDate(d.getDate()+n);return d.toISOString().split('T')[0];}
 function fmt(d){if(!d)return'—';return new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
+function fmtDT(d){if(!d)return'';const dt=new Date(d);return dt.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+' at '+dt.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});}
 function badge(s){return'<span class="badge '+(SBADGE[s]||'b-prospect')+'">'+s+'</span>';}
 function dl(d){if(d===null)return'';return d<0?'('+Math.abs(d)+'d overdue)':'('+d+'d)';}
 function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function fmtCurrency(v){if(!v&&v!==0)return'';return Number(v).toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:2});}
+function parseCurrency(s){if(!s)return null;const n=parseFloat(String(s).replace(/,/g,''));return isNaN(n)?null:n;}
 function pcon(a){try{const c=JSON.parse(a.contacts_json||'[]');return c.length?c[0]:{}}catch{return{};}}
+function pconName(a){const c=pcon(a);if(!c.first&&!c.last)return c.name||'—';return((c.first||'')+' '+(c.last||'')).trim()||'—';}
 function updRnb(){const n=accs.filter(a=>a.stage==='Active'&&daysFrom(a.renewal_date)!==null&&daysFrom(a.renewal_date)<=30&&daysFrom(a.renewal_date)>=0).length;const el=document.getElementById('rnb');if(el){el.textContent=n;el.style.display=n?'':'none';}}
+function getNotes(a){try{return JSON.parse(a.notes_log||'[]');}catch{return[];}}
 
 function ciStatus(a){
   if(!a.checkin_30_date)return'—';
@@ -202,7 +262,6 @@ function nav(v){
   document.getElementById('ptitle').textContent={dashboard:'Dashboard',pipeline:'Sales pipeline',impl:'Implementation',active:'Active accounts',renewals:'Renewals'}[v]||'';
   render();
 }
-
 function render(){
   const c=document.getElementById('pcontent');
   const a=document.getElementById('pactions');
@@ -223,11 +282,11 @@ function rDash(el,act){
   let alerts='';
   rs.forEach(a=>{const d=daysFrom(a.renewal_date);alerts+='<div class="alert-row '+(d<=7?'alert-danger':'alert-warn')+'"><span><strong>'+esc(a.name)+'</strong> — renewal in '+d+' day'+(d===1?'':'s')+' ('+fmt(a.renewal_date)+')</span><button class="btn btn-sm" onclick="openDetail(\''+a.id+'\')">View</button></div>';});
   impl.filter(a=>a.stage==='60-day evaluation'&&daysFrom(a.checkin_30_date)!==null&&daysFrom(a.checkin_30_date)<0&&!a.checkin_30_done).forEach(a=>{alerts+='<div class="alert-row alert-danger"><span><strong>'+esc(a.name)+'</strong> — 30-day check-in missed (due '+fmt(a.checkin_30_date)+')</span><button class="btn btn-sm" onclick="openDetail(\''+a.id+'\')">View</button></div>';});
-  impl.filter(a=>a.stage==='60-day evaluation'&&daysFrom(a.checkin_30_date)!==null&&daysFrom(a.checkin_30_date)>=0&&daysFrom(a.checkin_30_date)<=7&&!a.checkin_30_done).forEach(a=>{const d=daysFrom(a.checkin_30_date);alerts+='<div class="alert-row alert-warn"><span><strong>'+esc(a.name)+'</strong> — 30-day check-in due in '+d+'d ('+fmt(a.checkin_30_date)+')</span><button class="btn btn-sm" onclick="openDetail(\''+a.id+'\')">View</button></div>';});
+  impl.filter(a=>a.stage==='60-day evaluation'&&daysFrom(a.checkin_30_date)!==null&&daysFrom(a.checkin_30_date)>=0&&daysFrom(a.checkin_30_date)<=7&&!a.checkin_30_done).forEach(a=>{const d=daysFrom(a.checkin_30_date);alerts+='<div class="alert-row alert-warn"><span><strong>'+esc(a.name)+'</strong> — 30-day check-in due in '+d+'d</span><button class="btn btn-sm" onclick="openDetail(\''+a.id+'\')">View</button></div>';});
   impl.filter(a=>a.stage==='Overdue').forEach(a=>{alerts+='<div class="alert-row alert-danger"><span><strong>'+esc(a.name)+'</strong> — 60-day evaluation overdue</span><button class="btn btn-sm" onclick="openDetail(\''+a.id+'\')">View</button></div>';});
   impl.filter(a=>a.stage==='60-day evaluation'&&daysFrom(a.eval_end_date)!==null&&daysFrom(a.eval_end_date)<=10&&daysFrom(a.eval_end_date)>=0).forEach(a=>{const d=daysFrom(a.eval_end_date);alerts+='<div class="alert-row alert-warn"><span><strong>'+esc(a.name)+'</strong> — 60-day evaluation ends in '+d+'d</span><button class="btn btn-sm" onclick="openDetail(\''+a.id+'\')">View</button></div>';});
   const rec=accs.slice(0,8);
-  el.innerHTML='<div class="metrics"><div class="metric"><div class="metric-lbl">Active accounts</div><div class="metric-val">'+active.length+'</div><div class="metric-sub">Subscribed</div></div><div class="metric"><div class="metric-lbl">Sales pipeline</div><div class="metric-val">'+pipe.length+'</div><div class="metric-sub">Prospects &amp; leads</div></div><div class="metric"><div class="metric-lbl">In implementation</div><div class="metric-val">'+impl.length+'</div><div class="metric-sub">Post-close</div></div><div class="metric"><div class="metric-lbl">Renewing (30 days)</div><div class="metric-val '+(rs.length?'red':'')+'">'+rs.length+'</div><div class="metric-sub">Needs attention</div></div></div>'+(alerts?'<div class="card" style="overflow:hidden;margin-bottom:20px">'+alerts+'</div>':'')+'<div class="card"><div class="card-hdr"><span class="card-title">Recent activity</span></div><div style="overflow-x:auto"><table><thead><tr><th style="width:26%">Account</th><th style="width:16%">Stage</th><th style="width:18%">Key date</th><th style="width:10%">Kits</th><th style="width:16%">Contact</th><th style="width:14%"></th></tr></thead><tbody>'+(rec.length?rec.map(a=>{const pc=pcon(a);let kd='—';if(a.stage==='Active'&&a.renewal_date){const d=daysFrom(a.renewal_date);kd='<span class="'+(d<=30?d<=7?'danger':'warn':'')+'">Renews '+fmt(a.renewal_date)+'</span>';}else if(a.stage==='60-day evaluation'&&a.eval_end_date){const d=daysFrom(a.eval_end_date);kd='<span class="'+(d<=10?'warn':'')+'">Eval ends '+fmt(a.eval_end_date)+'</span>';}else if(a.go_live_date)kd='Go-live '+fmt(a.go_live_date);return'<tr onclick="openDetail(\''+a.id+'\')"><td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' &middot; '+esc(a.state):'')+'</div></td><td>'+badge(a.stage)+'</td><td>'+kd+'</td><td>'+(a.kit_count||'—')+'</td><td>'+esc(pc.name||'—')+'</td><td><button class="btn btn-sm btn-navy" onclick="event.stopPropagation();openEdit(\''+a.id+'\')">Edit</button></td></tr>';}).join(''):'<tr><td colspan="6" class="empty">No accounts yet — click "+ Add account" to start.</td></tr>')+'</tbody></table></div></div>';
+  el.innerHTML='<div class="metrics"><div class="metric"><div class="metric-lbl">Active accounts</div><div class="metric-val">'+active.length+'</div><div class="metric-sub">Subscribed</div></div><div class="metric"><div class="metric-lbl">Sales pipeline</div><div class="metric-val">'+pipe.length+'</div><div class="metric-sub">Prospects &amp; leads</div></div><div class="metric"><div class="metric-lbl">In implementation</div><div class="metric-val">'+impl.length+'</div><div class="metric-sub">Post-close</div></div><div class="metric"><div class="metric-lbl">Renewing (30 days)</div><div class="metric-val '+(rs.length?'red':'')+'">'+rs.length+'</div><div class="metric-sub">Needs attention</div></div></div>'+(alerts?'<div class="card" style="overflow:hidden;margin-bottom:20px">'+alerts+'</div>':'')+'<div class="card"><div class="card-hdr"><span class="card-title">Recent activity</span></div><div style="overflow-x:auto"><table><thead><tr><th style="width:26%">Account</th><th style="width:16%">Stage</th><th style="width:18%">Key date</th><th style="width:10%">Kits</th><th style="width:16%">Contact</th><th style="width:14%"></th></tr></thead><tbody>'+(rec.length?rec.map(a=>{const pc=pcon(a);const cn=((pc.first||'')+' '+(pc.last||'')).trim()||pc.name||'—';let kd='—';if(a.stage==='Active'&&a.renewal_date){const d=daysFrom(a.renewal_date);kd='<span class="'+(d<=30?d<=7?'danger':'warn':'')+'">Renews '+fmt(a.renewal_date)+'</span>';}else if(a.stage==='60-day evaluation'&&a.eval_end_date){const d=daysFrom(a.eval_end_date);kd='<span class="'+(d<=10?'warn':'')+'">Eval ends '+fmt(a.eval_end_date)+'</span>';}else if(a.go_live_date)kd='Go-live '+fmt(a.go_live_date);return'<tr onclick="openDetail(\''+a.id+'\')"><td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' &middot; '+esc(a.state):'')+'</div></td><td>'+badge(a.stage)+'</td><td>'+kd+'</td><td>'+(a.kit_count||'—')+'</td><td>'+esc(cn)+'</td><td><button class="btn btn-sm btn-navy" onclick="event.stopPropagation();openEdit(\''+a.id+'\')">Edit</button></td></tr>';}).join(''):'<tr><td colspan="6" class="empty">No accounts yet — click "+ Add account" to start.</td></tr>')+'</tbody></table></div></div>';
 }
 
 function rPipe(el,act){
@@ -235,26 +294,26 @@ function rPipe(el,act){
   let list=accs.filter(a=>SALES.includes(a.stage));
   if(q)list=list.filter(a=>a.name.toLowerCase().includes(q.toLowerCase())||(a.city||'').toLowerCase().includes(q.toLowerCase()));
   if(fs!=='all')list=list.filter(a=>a.stage===fs);
-  el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search..." value="'+esc(q)+'" oninput="q=this.value;render()"><select class="finput" style="width:190px" onchange="fs=this.value;render()"><option value="all">All stages</option>'+SALES.map(s=>'<option value="'+s+'"'+(fs===s?' selected':'')+'>'+s+'</option>').join('')+'</select></div><div class="card"><div style="overflow-x:auto"><table><thead><tr><th style="width:22%">Account</th><th style="width:12%">Type</th><th style="width:14%">Stage</th><th style="width:8%">Prob.</th><th style="width:16%">Contact</th><th style="width:14%">Updated</th><th style="width:14%"></th></tr></thead><tbody>'+(list.length?list.map(a=>{const pc=pcon(a);return'<tr onclick="openDetail(\''+a.id+'\')"><td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' &middot; '+esc(a.state):'')+'</div></td><td style="font-size:12px;color:var(--muted)">'+esc(a.acct_type||'—')+'</td><td>'+badge(a.stage)+'</td><td>'+(PROB[a.stage]||'—')+'</td><td><div>'+esc(pc.name||'—')+'</div><div class="as">'+esc(pc.email||'')+'</div></td><td style="color:var(--muted)">'+fmt(a.updated_at)+'</td><td><button class="btn btn-sm btn-navy" onclick="event.stopPropagation();openEdit(\''+a.id+'\')">Edit</button></td></tr>';}).join(''):'<tr><td colspan="7" class="empty">No accounts found.</td></tr>')+'</tbody></table></div></div>';
+  el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search..." value="'+esc(q)+'" oninput="q=this.value;render()"><select class="finput" style="width:190px" onchange="fs=this.value;render()"><option value="all">All stages</option>'+SALES.map(s=>'<option value="'+s+'"'+(fs===s?' selected':'')+'>'+s+'</option>').join('')+'</select></div><div class="card"><div style="overflow-x:auto"><table><thead><tr><th style="width:22%">Account</th><th style="width:12%">Type</th><th style="width:14%">Stage</th><th style="width:8%">Prob.</th><th style="width:16%">Contact</th><th style="width:14%">Updated</th><th style="width:14%"></th></tr></thead><tbody>'+(list.length?list.map(a=>{const pc=pcon(a);const cn=((pc.first||'')+' '+(pc.last||'')).trim()||pc.name||'—';return'<tr onclick="openDetail(\''+a.id+'\')"><td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' &middot; '+esc(a.state):'')+'</div></td><td style="font-size:12px;color:var(--muted)">'+esc(a.acct_type||'—')+'</td><td>'+badge(a.stage)+'</td><td>'+(PROB[a.stage]||'—')+'</td><td>'+esc(cn)+'</td><td style="color:var(--muted)">'+fmt(a.updated_at)+'</td><td><button class="btn btn-sm btn-navy" onclick="event.stopPropagation();openEdit(\''+a.id+'\')">Edit</button></td></tr>';}).join(''):'<tr><td colspan="7" class="empty">No accounts found.</td></tr>')+'</tbody></table></div></div>';
 }
 
 function rImpl(el,act){
   let list=accs.filter(a=>IMPL.includes(a.stage));
   if(q)list=list.filter(a=>a.name.toLowerCase().includes(q.toLowerCase()));
   if(fs!=='all')list=list.filter(a=>a.stage===fs);
-  el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search..." value="'+esc(q)+'" oninput="q=this.value;render()"><select class="finput" style="width:200px" onchange="fs=this.value;render()"><option value="all">All stages</option>'+IMPL.map(s=>'<option value="'+s+'"'+(fs===s?' selected':'')+'>'+s+'</option>').join('')+'</select></div><div class="card"><div style="overflow-x:auto"><table><thead><tr><th style="width:20%">Account</th><th style="width:14%">Stage</th><th style="width:12%">Go-live</th><th style="width:16%">30-day check-in</th><th style="width:13%">60-day eval end</th><th style="width:12%">Impl. mgr</th><th style="width:7%">Kits</th><th style="width:6%"></th></tr></thead><tbody>'+(list.length?list.map(a=>{const ed=daysFrom(a.eval_end_date);return'<tr onclick="openDetail(\''+a.id+'\')"><td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' &middot; '+esc(a.state):'')+'</div></td><td>'+badge(a.stage)+'</td><td>'+fmt(a.go_live_date)+'</td><td>'+ciStatus(a)+'</td><td>'+(a.eval_end_date?'<span class="'+(ed!==null&&ed<=10?'warn':'')+'">'+fmt(a.eval_end_date)+' '+dl(ed)+'</span>':'—')+'</td><td>'+esc(a.impl_manager||'—')+'</td><td>'+(a.kit_count||'—')+'</td><td>'+(a.stage==='60-day evaluation'?'<button class="btn btn-sm" style="'+(a.checkin_30_done?'background:#e6f7f0;color:#0a7c4e;border-color:#0a7c4e':'')+'" onclick="event.stopPropagation();toggleCI(\''+a.id+'\')">'+(a.checkin_30_done?'Undo':'Mark done')+'</button>':'')+'</td></tr>';}).join(''):'<tr><td colspan="8" class="empty">No accounts in implementation.</td></tr>')+'</tbody></table></div></div>';
+  el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search..." value="'+esc(q)+'" oninput="q=this.value;render()"><select class="finput" style="width:200px" onchange="fs=this.value;render()"><option value="all">All stages</option>'+IMPL.map(s=>'<option value="'+s+'"'+(fs===s?' selected':'')+'>'+s+'</option>').join('')+'</select></div><div class="card"><div style="overflow-x:auto"><table><thead><tr><th style="width:20%">Account</th><th style="width:14%">Stage</th><th style="width:11%">Go-live</th><th style="width:15%">30-day check-in</th><th style="width:12%">60-day end</th><th style="width:12%">Impl. mgr</th><th style="width:7%">Kits</th><th style="width:9%"></th></tr></thead><tbody>'+(list.length?list.map(a=>{const ed=daysFrom(a.eval_end_date);return'<tr onclick="openDetail(\''+a.id+'\')"><td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' &middot; '+esc(a.state):'')+'</div></td><td>'+badge(a.stage)+'</td><td>'+fmt(a.go_live_date)+'</td><td>'+ciStatus(a)+'</td><td>'+(a.eval_end_date?'<span class="'+(ed!==null&&ed<=10?'warn':'')+'">'+fmt(a.eval_end_date)+' '+dl(ed)+'</span>':'—')+'</td><td>'+esc(a.impl_manager||'—')+'</td><td>'+(a.kit_count||'—')+'</td><td>'+(a.stage==='60-day evaluation'?'<button class="btn btn-sm" style="'+(a.checkin_30_done?'background:#e6f7f0;color:#0a7c4e;border-color:#0a7c4e':'')+'" onclick="event.stopPropagation();toggleCI(\''+a.id+'\')">'+(a.checkin_30_done?'Undo':'Mark done')+'</button>':'')+'</td></tr>';}).join(''):'<tr><td colspan="8" class="empty">No accounts in implementation.</td></tr>')+'</tbody></table></div></div>';
 }
 
 function rActive(el,act){
   let list=accs.filter(a=>a.stage==='Active');
   if(q)list=list.filter(a=>a.name.toLowerCase().includes(q.toLowerCase()));
-  el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search..." value="'+esc(q)+'" oninput="q=this.value;render()"></div><div class="card"><div style="overflow-x:auto"><table><thead><tr><th style="width:20%">Account</th><th style="width:11%">Sub type</th><th style="width:14%">Renewal</th><th style="width:7%">Kits</th><th style="width:11%">HW cost</th><th style="width:11%">Sub amt</th><th style="width:14%">Contact</th><th style="width:12%"></th></tr></thead><tbody>'+(list.length?list.map(a=>{const pc=pcon(a);const d=daysFrom(a.renewal_date);return'<tr onclick="openDetail(\''+a.id+'\')"><td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' &middot; '+esc(a.state):'')+'</div></td><td>'+(a.sub_type?'<span class="badge '+(a.sub_type==='Monthly'?'b-monthly':'b-yearly')+'">'+a.sub_type+'</span>':'—')+'</td><td>'+(a.renewal_date?'<span class="'+(d!==null&&d<=30?d<=7?'danger':'warn':'')+'">'+fmt(a.renewal_date)+' '+dl(d)+'</span>':'—')+'</td><td>'+(a.kit_count||'—')+'</td><td>'+(a.hardware_cost?'$'+Number(a.hardware_cost).toLocaleString():'—')+'</td><td>'+(a.sub_amount?'$'+Number(a.sub_amount).toLocaleString()+(a.sub_type==='Monthly'?'/mo':'/yr'):'—')+'</td><td>'+esc(pc.name||'—')+'</td><td><button class="btn btn-sm btn-navy" onclick="event.stopPropagation();openEdit(\''+a.id+'\')">Edit</button></td></tr>';}).join(''):'<tr><td colspan="8" class="empty">No active accounts.</td></tr>')+'</tbody></table></div></div>';
+  el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search..." value="'+esc(q)+'" oninput="q=this.value;render()"></div><div class="card"><div style="overflow-x:auto"><table><thead><tr><th style="width:18%">Account</th><th style="width:10%">City</th><th style="width:8%">State</th><th style="width:10%">Sub type</th><th style="width:13%">Renewal</th><th style="width:7%">Kits</th><th style="width:10%">HW cost</th><th style="width:10%">Sub amt</th><th style="width:14%">Contact</th><th style="width:10%"></th></tr></thead><tbody>'+(list.length?list.map(a=>{const pc=pcon(a);const cn=((pc.first||'')+' '+(pc.last||'')).trim()||pc.name||'—';const d=daysFrom(a.renewal_date);return'<tr onclick="openDetail(\''+a.id+'\')"><td><div class="an">'+esc(a.name)+'</div></td><td style="color:var(--muted)">'+esc(a.city||'—')+'</td><td style="color:var(--muted)">'+esc(a.state||'—')+'</td><td>'+(a.sub_type?'<span class="badge '+(a.sub_type==='Monthly'?'b-monthly':'b-yearly')+'">'+a.sub_type+'</span>':'—')+'</td><td>'+(a.renewal_date?'<span class="'+(d!==null&&d<=30?d<=7?'danger':'warn':'')+'">'+fmt(a.renewal_date)+' '+dl(d)+'</span>':'—')+'</td><td>'+(a.kit_count||'—')+'</td><td>'+(a.hardware_cost?'$'+fmtCurrency(a.hardware_cost):'—')+'</td><td>'+(a.sub_amount?'$'+fmtCurrency(a.sub_amount)+(a.sub_type==='Monthly'?'/mo':'/yr'):'—')+'</td><td>'+esc(cn)+'</td><td><button class="btn btn-sm btn-navy" onclick="event.stopPropagation();openEdit(\''+a.id+'\')">Edit</button></td></tr>';}).join(''):'<tr><td colspan="10" class="empty">No active accounts.</td></tr>')+'</tbody></table></div></div>';
 }
 
 function rRenewals(el,act){
   const active=accs.filter(a=>a.stage==='Active');
   const bkts=[{l:'Overdue',f:a=>{const d=daysFrom(a.renewal_date);return d!==null&&d<0;}},{l:'Next 7 days',f:a=>{const d=daysFrom(a.renewal_date);return d!==null&&d>=0&&d<=7;}},{l:'Next 30 days',f:a=>{const d=daysFrom(a.renewal_date);return d!==null&&d>7&&d<=30;}},{l:'Next 90 days',f:a=>{const d=daysFrom(a.renewal_date);return d!==null&&d>30&&d<=90;}},{l:'90+ days',f:a=>{const d=daysFrom(a.renewal_date);return d!==null&&d>90;}}];
-  const html=bkts.map(b=>{const list=active.filter(b.f);if(!list.length)return'';return'<div class="blbl">'+b.l+' ('+list.length+')</div><div class="card" style="margin-bottom:20px"><table><thead><tr><th style="width:26%">Account</th><th style="width:16%">Renewal date</th><th style="width:14%">Sub type</th><th style="width:14%">Amount</th><th style="width:16%">Contact</th><th style="width:14%">Notes</th></tr></thead><tbody>'+list.map(a=>{const pc=pcon(a);const d=daysFrom(a.renewal_date);return'<tr onclick="openDetail(\''+a.id+'\')"><td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+'</div></td><td><span class="'+(d!==null&&d<=7?'danger':d!==null&&d<=30?'warn':'')+'">'+fmt(a.renewal_date)+' '+dl(d)+'</span></td><td>'+(a.sub_type?'<span class="badge '+(a.sub_type==='Monthly'?'b-monthly':'b-yearly')+'">'+a.sub_type+'</span>':'—')+'</td><td>'+(a.sub_amount?'$'+Number(a.sub_amount).toLocaleString():'—')+'</td><td>'+esc(pc.name||'—')+'</td><td style="color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:120px">'+esc(a.notes||'—')+'</td></tr>';}).join('')+'</tbody></table></div>';}).join('');
+  const html=bkts.map(b=>{const list=active.filter(b.f);if(!list.length)return'';const cn=a=>{const pc=pcon(a);return((pc.first||'')+' '+(pc.last||'')).trim()||pc.name||'—';};return'<div class="blbl">'+b.l+' ('+list.length+')</div><div class="card" style="margin-bottom:20px"><table><thead><tr><th style="width:24%">Account</th><th style="width:16%">Renewal date</th><th style="width:12%">Sub type</th><th style="width:12%">Amount</th><th style="width:14%">Contact</th><th style="width:22%">Latest note</th></tr></thead><tbody>'+list.map(a=>{const d=daysFrom(a.renewal_date);const notes=getNotes(a);const ln=notes.length?notes[0]:'';return'<tr onclick="openDetail(\''+a.id+'\')"><td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' &middot; '+esc(a.state):'')+'</div></td><td><span class="'+(d!==null&&d<=7?'danger':d!==null&&d<=30?'warn':'')+'">'+fmt(a.renewal_date)+' '+dl(d)+'</span></td><td>'+(a.sub_type?'<span class="badge '+(a.sub_type==='Monthly'?'b-monthly':'b-yearly')+'">'+a.sub_type+'</span>':'—')+'</td><td>'+(a.sub_amount?'$'+fmtCurrency(a.sub_amount):'—')+'</td><td>'+esc(cn(a))+'</td><td style="color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px">'+(ln?esc(ln.text):'—')+'</td></tr>';}).join('')+'</tbody></table></div>';}).join('');
   el.innerHTML=html||'<div class="empty">No active accounts to track.</div>';
 }
 
@@ -262,10 +321,12 @@ function closeModal(){document.getElementById('mc').innerHTML='';}
 function openAdd(){showForm(null);}
 function openEdit(id){showForm(accs.find(a=>a.id===id));}
 
-function cbHTML(c,i){return'<div class="cblock" id="cb-'+i+'"><div class="cblock-title">'+(i===0?'Primary contact':'Additional contact')+'</div>'+(i>0?'<button class="cbtn-remove" onclick="rmC('+i+')">&times;</button>':'')+'<div class="fg"><div class="fgrp"><label class="flbl">Name</label><input class="finput" id="cn-'+i+'" value="'+esc(c.name||'')+'"></div><div class="fgrp"><label class="flbl">Title</label><input class="finput" id="ct-'+i+'" value="'+esc(c.title||'')+'"></div><div class="fgrp"><label class="flbl">Email</label><input class="finput" id="ce-'+i+'" value="'+esc(c.email||'')+'"></div><div class="fgrp"><label class="flbl">Phone</label><input class="finput" id="cp-'+i+'" value="'+esc(c.phone||'')+'"></div></div></div>';}
+function cbHTML(c,i){
+  return'<div class="cblock" id="cb-'+i+'"><div class="cblock-title">'+(i===0?'Primary contact':'Additional contact')+'</div>'+(i>0?'<button class="cbtn-remove" onclick="rmC('+i+')">&times;</button>':'')+'<div class="fg"><div class="fgrp"><label class="flbl">First name</label><input class="finput" id="cfn-'+i+'" value="'+esc(c.first||c.name||'')+'"></div><div class="fgrp"><label class="flbl">Last name</label><input class="finput" id="cln-'+i+'" value="'+esc(c.last||'')+'"></div><div class="fgrp"><label class="flbl">Title</label><input class="finput" id="ct-'+i+'" value="'+esc(c.title||'')+'"></div><div class="fgrp"><label class="flbl">Email</label><input class="finput" id="ce-'+i+'" value="'+esc(c.email||'')+'"></div><div class="fgrp full"><label class="flbl">Phone</label><input class="finput" id="cp-'+i+'" value="'+esc(c.phone||'')+'"></div></div></div>';
+}
 function addC(){const i=ccount++;const d=document.createElement('div');d.innerHTML=cbHTML({},i);document.getElementById('cc').appendChild(d.firstElementChild);}
 function rmC(i){const e=document.getElementById('cb-'+i);if(e)e.remove();}
-function gatherC(){const r=[];document.querySelectorAll('[id^="cb-"]').forEach(b=>{const i=b.id.split('-').pop();const n=(document.getElementById('cn-'+i)||{}).value||'';const t=(document.getElementById('ct-'+i)||{}).value||'';const e=(document.getElementById('ce-'+i)||{}).value||'';const p=(document.getElementById('cp-'+i)||{}).value||'';if(n||e||p)r.push({name:n,title:t,email:e,phone:p});});return r;}
+function gatherC(){const r=[];document.querySelectorAll('[id^="cb-"]').forEach(b=>{const i=b.id.split('-').pop();const f=(document.getElementById('cfn-'+i)||{}).value||'';const l=(document.getElementById('cln-'+i)||{}).value||'';const t=(document.getElementById('ct-'+i)||{}).value||'';const e=(document.getElementById('ce-'+i)||{}).value||'';const p=(document.getElementById('cp-'+i)||{}).value||'';if(f||l||e||p)r.push({first:f,last:l,title:t,email:e,phone:p});});return r;}
 
 function showForm(acc){
   const a=acc||{};const isEdit=!!acc;
@@ -274,7 +335,7 @@ function showForm(acc){
   let contacts=[];try{contacts=JSON.parse(a.contacts_json||'[]');}catch{}
   if(!contacts.length)contacts.push({});
   ccount=contacts.length;
-  document.getElementById('mc').innerHTML='<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-hdr"><span class="modal-title">'+(isEdit?'Edit account':'Add account')+'</span><button class="xbtn" onclick="closeModal()">&times;</button></div><div class="modal-body"><div class="fsec">Account info</div><div class="fg"><div class="fgrp full"><label class="flbl">Account name *</label><input class="finput" id="fn" value="'+esc(a.name||'')+'"></div><div class="fgrp full"><label class="flbl">Type</label><select class="finput" id="ft"><option value="">— Select type —</option>'+TYPES.map(t=>'<option value="'+t+'"'+(a.acct_type===t?' selected':'')+'>'+t+'</option>').join('')+'</select></div></div><div class="fgrp full" style="margin-top:14px"><label class="flbl">Street address</label><input class="finput" id="faddr" value="'+esc(a.address||'')+'"></div><div class="fg3" style="margin-top:14px"><div class="fgrp"><label class="flbl">City</label><input class="finput" id="fci" value="'+esc(a.city||'')+'"></div><div class="fgrp"><label class="flbl">State</label><input class="finput" id="fst" value="'+esc(a.state||'')+'"></div><div class="fgrp"><label class="flbl">Zip</label><input class="finput" id="fzp" value="'+esc(a.zip||'')+'"></div></div><div class="fg" style="margin-top:14px"><div class="fgrp"><label class="flbl">Phone</label><input class="finput" id="fph" value="'+esc(a.phone||'')+'"></div><div class="fgrp"><label class="flbl">Website</label><input class="finput" id="fwb" value="'+esc(a.website||'')+'"></div></div><div class="fsec">Pipeline stage</div><div class="fg"><div class="fgrp"><label class="flbl">Pipeline type</label><select class="finput" id="fpt" onchange="updStage()"><option value="sales"'+(pt==='sales'?' selected':'')+'>Sales pipeline</option><option value="impl"'+(pt==='impl'?' selected':'')+'>Implementation</option><option value="active"'+(pt==='active'?' selected':'')+'>Active account</option></select></div><div class="fgrp"><label class="flbl">Stage</label><select class="finput" id="fsg">'+(pt==='impl'?IMPL.map(s=>'<option value="'+s+'"'+(a.stage===s?' selected':'')+'>'+s+'</option>').join(''):pt==='active'?'<option value="Active" selected>Active</option>':SALES.map(s=>'<option value="'+s+'"'+(a.stage===s?' selected':'')+'>'+s+'</option>').join(''))+'</select></div></div><div class="fsec">Contacts</div><div id="cc">'+contacts.map((c,i)=>cbHTML(c,i)).join('')+'</div><button class="add-c-btn" onclick="addC()">+ Add another contact</button><div class="fsec">Implementation &amp; hardware</div><div class="fg"><div class="fgrp"><label class="flbl">Implementation manager</label><input class="finput" id="fim" value="'+esc(a.impl_manager||'')+'"></div><div class="fgrp"><label class="flbl">Signed / close date</label><input class="finput" id="fsd" type="date" value="'+(a.signed_date||'')+'"></div><div class="fgrp"><label class="flbl">Go-live date</label><input class="finput" id="fgl" type="date" value="'+(a.go_live_date||'')+'" onchange="autoD()"></div><div class="fgrp"><label class="flbl">30-day check-in <span style="color:var(--green-dark);font-size:10px">(auto)</span></label><input class="finput" id="fc3" type="date" value="'+(a.checkin_30_date||'')+'"></div><div class="fgrp"><label class="flbl">60-day eval end <span style="color:var(--green-dark);font-size:10px">(auto)</span></label><input class="finput" id="fe6" type="date" value="'+(a.eval_end_date||'')+'"></div><div class="fgrp"><label class="flbl">Number of kits</label><input class="finput" id="fkc" type="number" min="0" value="'+(a.kit_count||'')+'"></div><div class="fgrp"><label class="flbl">Hardware cost ($)</label><input class="finput" id="fhc" type="number" min="0" value="'+(a.hardware_cost||'')+'"></div></div><div class="fsec">Subscription</div><div class="fg"><div class="fgrp"><label class="flbl">Subscription type</label><select class="finput" id="fst2"><option value=""'+((!a.sub_type)?' selected':'')+'>—</option><option value="Monthly"'+(a.sub_type==='Monthly'?' selected':'')+'>Monthly</option><option value="Yearly"'+(a.sub_type==='Yearly'?' selected':'')+'>Yearly</option></select></div><div class="fgrp"><label class="flbl">Subscription amount ($)</label><input class="finput" id="fsa" type="number" min="0" value="'+(a.sub_amount||'')+'"></div><div class="fgrp"><label class="flbl">Renewal date</label><input class="finput" id="frd" type="date" value="'+(a.renewal_date||'')+'"></div></div><div class="fsec">Notes</div><textarea class="finput" id="fno" style="width:100%">'+esc(a.notes||'')+'</textarea></div><div class="modal-foot">'+(isEdit?'<button class="btn btn-danger" onclick="deleteAcc(\''+a.id+'\')" style="margin-right:auto">Delete</button>':'')+'<button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveAcc(\''+( a.id||'')+'\')">Save account</button></div></div></div>';
+  document.getElementById('mc').innerHTML='<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-hdr"><span class="modal-title">'+(isEdit?'Edit account':'Add account')+'</span><button class="xbtn" onclick="closeModal()">&times;</button></div><div class="modal-body"><div class="fsec">Account info</div><div class="fg"><div class="fgrp full"><label class="flbl">Account name *</label><input class="finput" id="fn" value="'+esc(a.name||'')+'"></div><div class="fgrp full"><label class="flbl">Type</label><select class="finput" id="ft"><option value="">— Select type —</option>'+TYPES.map(t=>'<option value="'+t+'"'+(a.acct_type===t?' selected':'')+'>'+t+'</option>').join('')+'</select></div></div><div class="fgrp full" style="margin-top:14px"><label class="flbl">Street address</label><input class="finput" id="faddr" value="'+esc(a.address||'')+'"></div><div class="fg3" style="margin-top:14px"><div class="fgrp"><label class="flbl">City</label><input class="finput" id="fci" value="'+esc(a.city||'')+'"></div><div class="fgrp"><label class="flbl">State</label><input class="finput" id="fst" value="'+esc(a.state||'')+'"></div><div class="fgrp"><label class="flbl">Zip</label><input class="finput" id="fzp" value="'+esc(a.zip||'')+'"></div></div><div class="fg" style="margin-top:14px"><div class="fgrp"><label class="flbl">Phone</label><input class="finput" id="fph" value="'+esc(a.phone||'')+'"></div><div class="fgrp"><label class="flbl">Website</label><input class="finput" id="fwb" value="'+esc(a.website||'')+'"></div></div><div class="fsec">Pipeline stage</div><div class="fg"><div class="fgrp"><label class="flbl">Pipeline type</label><select class="finput" id="fpt" onchange="updStage()"><option value="sales"'+(pt==='sales'?' selected':'')+'>Sales pipeline</option><option value="impl"'+(pt==='impl'?' selected':'')+'>Implementation</option><option value="active"'+(pt==='active'?' selected':'')+'>Active account</option></select></div><div class="fgrp"><label class="flbl">Stage</label><select class="finput" id="fsg">'+(pt==='impl'?IMPL.map(s=>'<option value="'+s+'"'+(a.stage===s?' selected':'')+'>'+s+'</option>').join(''):pt==='active'?'<option value="Active" selected>Active</option>':SALES.map(s=>'<option value="'+s+'"'+(a.stage===s?' selected':'')+'>'+s+'</option>').join(''))+'</select></div></div><div class="fsec">Contacts</div><div id="cc">'+contacts.map((c,i)=>cbHTML(c,i)).join('')+'</div><button class="add-c-btn" onclick="addC()">+ Add another contact</button><div class="fsec">Implementation &amp; hardware</div><div class="fg"><div class="fgrp"><label class="flbl">Implementation manager</label><select class="finput" id="fim"><option value="">— Select —</option>'+IMPL_MGRS.map(m=>'<option value="'+m+'"'+(a.impl_manager===m?' selected':'')+'>'+m+'</option>').join('')+'</select></div><div class="fgrp"><label class="flbl">Signed / close date</label><input class="finput" id="fsd" type="date" value="'+(a.signed_date||'')+'"></div><div class="fgrp"><label class="flbl">Go-live date</label><input class="finput" id="fgl" type="date" value="'+(a.go_live_date||'')+'" onchange="autoD()"></div><div class="fgrp"><label class="flbl">30-day check-in <span style="color:var(--green-dark);font-size:10px">(auto)</span></label><input class="finput" id="fc3" type="date" value="'+(a.checkin_30_date||'')+'"></div><div class="fgrp"><label class="flbl">60-day eval end <span style="color:var(--green-dark);font-size:10px">(auto)</span></label><input class="finput" id="fe6" type="date" value="'+(a.eval_end_date||'')+'"></div><div class="fgrp"><label class="flbl">Number of kits</label><input class="finput" id="fkc" type="text" value="'+(a.kit_count||'')+'"></div><div class="fgrp"><label class="flbl">Hardware cost ($)</label><input class="finput" id="fhc" type="text" placeholder="e.g. 5,000" value="'+(a.hardware_cost?fmtCurrency(a.hardware_cost):'')+'"></div></div><div class="fsec">Subscription</div><div class="fg"><div class="fgrp"><label class="flbl">Subscription type</label><select class="finput" id="fst2"><option value=""'+((!a.sub_type)?' selected':'')+'>—</option><option value="Monthly"'+(a.sub_type==='Monthly'?' selected':'')+'>Monthly</option><option value="Yearly"'+(a.sub_type==='Yearly'?' selected':'')+'>Yearly</option></select></div><div class="fgrp"><label class="flbl">Subscription amount ($)</label><input class="finput" id="fsa" type="text" placeholder="e.g. 1,200" value="'+(a.sub_amount?fmtCurrency(a.sub_amount):'')+'"></div><div class="fgrp"><label class="flbl">Renewal date</label><input class="finput" id="frd" type="date" value="'+(a.renewal_date||'')+'"></div></div></div><div class="modal-foot">'+(isEdit?'<button class="btn btn-danger" onclick="deleteAcc(\''+a.id+'\')" style="margin-right:auto">Delete</button>':'')+'<button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveAcc(\''+( a.id||'')+'\')">Save account</button></div></div></div>';
 }
 
 function autoD(){const g=document.getElementById('fgl').value;if(g){document.getElementById('fc3').value=addDays(g,30);document.getElementById('fe6').value=addDays(g,60);}}
@@ -295,17 +356,17 @@ async function saveAcc(eid){
     website:document.getElementById('fwb').value.trim()||null,
     stage:document.getElementById('fsg').value,
     contacts_json:JSON.stringify(gatherC()),
-    impl_manager:document.getElementById('fim').value.trim()||null,
+    impl_manager:document.getElementById('fim').value||null,
     signed_date:document.getElementById('fsd').value||null,
     go_live_date:document.getElementById('fgl').value||null,
     checkin_30_date:document.getElementById('fc3').value||null,
     eval_end_date:document.getElementById('fe6').value||null,
     kit_count:document.getElementById('fkc').value?parseInt(document.getElementById('fkc').value):null,
-    hardware_cost:document.getElementById('fhc').value?parseFloat(document.getElementById('fhc').value):null,
+    hardware_cost:parseCurrency(document.getElementById('fhc').value),
     sub_type:document.getElementById('fst2').value||null,
-    sub_amount:document.getElementById('fsa').value?parseFloat(document.getElementById('fsa').value):null,
+    sub_amount:parseCurrency(document.getElementById('fsa').value),
     renewal_date:document.getElementById('frd').value||null,
-    notes:document.getElementById('fno').value.trim()||null,
+    notes_log:(accs.find(a=>a.id===eid)||{}).notes_log||'[]',
     updated_at:now,
     created_at:eid?(accs.find(a=>a.id===eid)||{}).created_at||now:now,
   };
@@ -316,18 +377,42 @@ async function saveAcc(eid){
   }catch(e){alert('Error: '+e.message);}
 }
 
+async function addNote(id){
+  const text=(document.getElementById('note-input').value||'').trim();
+  if(!text)return;
+  const a=accs.find(x=>x.id===id);if(!a)return;
+  const notes=getNotes(a);
+  notes.unshift({text,author:getUser(),ts:new Date().toISOString()});
+  const updated=Object.assign({},a,{notes_log:JSON.stringify(notes),updated_at:new Date().toISOString()});
+  try{
+    const btn=document.getElementById('note-save-btn');
+    if(btn){btn.textContent='Saving...';btn.disabled=true;}
+    await upsertAcc(updated);
+    openDetail(id);
+    stab('n');
+  }catch(e){alert('Error: '+e.message);}
+}
+
 function openDetail(id){
   const a=accs.find(x=>x.id===id);if(!a)return;
   let contacts=[];try{contacts=JSON.parse(a.contacts_json||'[]');}catch{}
   const d=daysFrom(a.renewal_date);const ed=daysFrom(a.eval_end_date);
-  const ch=contacts.length?contacts.map((c,i)=>'<div style="'+(i>0?'padding-top:14px;border-top:1px solid var(--border);margin-top:14px':'')+'"><div style="font-size:11px;font-weight:800;color:var(--navy);margin-bottom:8px;text-transform:uppercase">'+(i===0?'Primary contact':'Contact '+(i+1))+'</div><div class="dgrid"><div class="dlbl">Name</div><div class="dval">'+esc(c.name||'—')+'</div><div class="dlbl">Title</div><div class="dval">'+esc(c.title||'—')+'</div><div class="dlbl">Email</div><div class="dval">'+(c.email?'<a href="mailto:'+esc(c.email)+'" style="color:var(--navy)">'+esc(c.email)+'</a>':'—')+'</div><div class="dlbl">Phone</div><div class="dval">'+esc(c.phone||'—')+'</div></div></div>').join(''):'<div style="color:var(--muted);font-size:13px">No contacts added.</div>';
-  document.getElementById('mc').innerHTML='<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-hdr"><div><div class="modal-title">'+esc(a.name)+'</div><div style="font-size:11px;color:rgba(255,255,255,.6);margin-top:2px">'+esc(a.acct_type||'')+(a.city?' &middot; '+esc(a.city):'')+(a.state?' '+esc(a.state):'')+'</div></div><div style="display:flex;align-items:center;gap:10px">'+badge(a.stage)+'<button class="xbtn" onclick="closeModal()">&times;</button></div></div><div class="modal-body"><div class="tabs"><div class="tab active" id="dt-c" onclick="stab(\'c\')">Contacts</div><div class="tab" id="dt-i" onclick="stab(\'i\')">Implementation</div><div class="tab" id="dt-s" onclick="stab(\'s\')">Subscription</div><div class="tab" id="dt-n" onclick="stab(\'n\')">Notes</div></div><div id="dc-c">'+ch+'</div><div id="dc-i" style="display:none"><div class="dgrid"><div class="dlbl">Impl. manager</div><div class="dval">'+esc(a.impl_manager||'—')+'</div><div class="dlbl">Signed date</div><div class="dval">'+fmt(a.signed_date)+'</div><div class="dlbl">Go-live date</div><div class="dval">'+fmt(a.go_live_date)+'</div><div class="dlbl">30-day check-in</div><div class="dval">'+ciStatus(a)+'</div><div class="dlbl">60-day eval end</div><div class="dval">'+(a.eval_end_date?'<span class="'+(ed!==null&&ed<=10?'warn':'')+'">'+fmt(a.eval_end_date)+' '+dl(ed)+'</span>':'—')+'</div><div class="dlbl">Kits</div><div class="dval">'+(a.kit_count||'—')+'</div><div class="dlbl">Hardware cost</div><div class="dval">'+(a.hardware_cost?'$'+Number(a.hardware_cost).toLocaleString():'—')+'</div></div></div><div id="dc-s" style="display:none"><div class="dgrid"><div class="dlbl">Sub type</div><div class="dval">'+(a.sub_type?'<span class="badge '+(a.sub_type==='Monthly'?'b-monthly':'b-yearly')+'">'+a.sub_type+'</span>':'—')+'</div><div class="dlbl">Amount</div><div class="dval">'+(a.sub_amount?'$'+Number(a.sub_amount).toLocaleString()+(a.sub_type==='Monthly'?'/mo':'/yr'):'—')+'</div><div class="dlbl">Renewal date</div><div class="dval">'+(a.renewal_date?'<span class="'+(d!==null&&d<=30?d<=7?'danger':'warn':'')+'">'+fmt(a.renewal_date)+' '+dl(d)+'</span>':'—')+'</div></div></div><div id="dc-n" style="display:none"><div style="font-size:13px;white-space:pre-wrap">'+esc(a.notes)||'<span style="color:var(--muted)">No notes.</span>'+'</div></div></div><div class="modal-foot"><button class="btn" onclick="closeModal()">Close</button><button class="btn btn-primary" onclick="closeModal();openEdit(\''+a.id+'\')">Edit account</button></div></div></div>';
+  const ch=contacts.length?contacts.map((c,i)=>{const cn=((c.first||'')+' '+(c.last||'')).trim()||c.name||'—';return'<div style="'+(i>0?'padding-top:14px;border-top:1px solid var(--border);margin-top:14px':'')+'"><div style="font-size:11px;font-weight:800;color:var(--navy);margin-bottom:8px;text-transform:uppercase">'+(i===0?'Primary contact':'Contact '+(i+1))+'</div><div class="dgrid"><div class="dlbl">Name</div><div class="dval">'+esc(cn)+'</div><div class="dlbl">Title</div><div class="dval">'+esc(c.title||'—')+'</div><div class="dlbl">Email</div><div class="dval">'+(c.email?'<a href="mailto:'+esc(c.email)+'" style="color:var(--navy)">'+esc(c.email)+'</a>':'—')+'</div><div class="dlbl">Phone</div><div class="dval">'+esc(c.phone||'—')+'</div></div></div>';}).join(''):'<div style="color:var(--muted);font-size:13px">No contacts added.</div>';
+  const notes=getNotes(a);
+  const notesHTML='<div class="note-input-area"><textarea id="note-input" placeholder="Add a note..." rows="3"></textarea><div class="note-input-area-foot"><button class="btn btn-primary btn-sm" id="note-save-btn" onclick="addNote(\''+a.id+'\')">Add note</button></div></div>'+(notes.length?notes.map(n=>'<div class="note-entry"><div class="note-meta">'+esc(n.author||'Unknown')+' &middot; '+fmtDT(n.ts)+'</div><div class="note-text">'+esc(n.text)+'</div></div>').join(''):'<div style="color:var(--muted);font-size:13px;padding:8px 0">No notes yet.</div>');
+  document.getElementById('mc').innerHTML='<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-hdr"><div><div class="modal-title">'+esc(a.name)+'</div><div style="font-size:11px;color:rgba(255,255,255,.6);margin-top:2px">'+esc(a.acct_type||'')+(a.city?' &middot; '+esc(a.city):'')+(a.state?' '+esc(a.state):'')+'</div></div><div style="display:flex;align-items:center;gap:10px">'+badge(a.stage)+'<button class="xbtn" onclick="closeModal()">&times;</button></div></div><div class="modal-body"><div class="tabs"><div class="tab active" id="dt-c" onclick="stab(\'c\')">Contacts</div><div class="tab" id="dt-i" onclick="stab(\'i\')">Implementation</div><div class="tab" id="dt-s" onclick="stab(\'s\')">Subscription</div><div class="tab" id="dt-n" onclick="stab(\'n\')">Notes</div></div><div id="dc-c">'+ch+'</div><div id="dc-i" style="display:none"><div class="dgrid"><div class="dlbl">Impl. manager</div><div class="dval">'+esc(a.impl_manager||'—')+'</div><div class="dlbl">Signed date</div><div class="dval">'+fmt(a.signed_date)+'</div><div class="dlbl">Go-live date</div><div class="dval">'+fmt(a.go_live_date)+'</div><div class="dlbl">30-day check-in</div><div class="dval">'+ciStatus(a)+'</div><div class="dlbl">60-day eval end</div><div class="dval">'+(a.eval_end_date?'<span class="'+(ed!==null&&ed<=10?'warn':'')+'">'+fmt(a.eval_end_date)+' '+dl(ed)+'</span>':'—')+'</div><div class="dlbl">Kits</div><div class="dval">'+(a.kit_count||'—')+'</div><div class="dlbl">Hardware cost</div><div class="dval">'+(a.hardware_cost?'$'+fmtCurrency(a.hardware_cost):'—')+'</div><div class="dlbl">Phone</div><div class="dval">'+esc(a.phone||'—')+'</div><div class="dlbl">Website</div><div class="dval">'+esc(a.website||'—')+'</div></div></div><div id="dc-s" style="display:none"><div class="dgrid"><div class="dlbl">Sub type</div><div class="dval">'+(a.sub_type?'<span class="badge '+(a.sub_type==='Monthly'?'b-monthly':'b-yearly')+'">'+a.sub_type+'</span>':'—')+'</div><div class="dlbl">Amount</div><div class="dval">'+(a.sub_amount?'$'+fmtCurrency(a.sub_amount)+(a.sub_type==='Monthly'?'/mo':'/yr'):'—')+'</div><div class="dlbl">Renewal date</div><div class="dval">'+(a.renewal_date?'<span class="'+(d!==null&&d<=30?d<=7?'danger':'warn':'')+'">'+fmt(a.renewal_date)+' '+dl(d)+'</span>':'—')+'</div></div></div><div id="dc-n" style="display:none">'+notesHTML+'</div></div><div class="modal-foot"><button class="btn" onclick="closeModal()">Close</button><button class="btn btn-primary" onclick="closeModal();openEdit(\''+a.id+'\')">Edit account</button></div></div></div>';
 }
 function stab(t){['c','i','s','n'].forEach(x=>{document.getElementById('dt-'+x).classList.toggle('active',x===t);document.getElementById('dc-'+x).style.display=x===t?'':'none';});}
 
 document.addEventListener('DOMContentLoaded',function(){
-  document.getElementById('app').style.display='block';
-  loadAccounts();
+  const name=getUser();
+  if(name){
+    document.getElementById('sf-name').textContent=name;
+    document.getElementById('app').style.display='block';
+    loadAccounts();
+  } else {
+    document.getElementById('welcome-screen').style.display='flex';
+  }
 });
 </script>
 </body>
