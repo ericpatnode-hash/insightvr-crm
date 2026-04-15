@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -161,12 +162,12 @@ textarea.finput{resize:vertical;min-height:60px;}
       <div class="nav-sec">Overview</div>
       <div class="nav-item active" id="nav-dashboard" onclick="nav('dashboard')"><span class="nav-dot"></span>Dashboard</div>
       <div class="nav-sec">Sales</div>
-      <div class="nav-item" id="nav-pipeline" onclick="nav('pipeline')"><span class="nav-dot"></span>Sales Pipeline</div>
+      <div class="nav-item" id="nav-pipeline" onclick="nav(\'pipeline\')"><span class="nav-dot"></span>Sales Pipeline</div>
       <div class="nav-sec">Implementation</div>
-      <div class="nav-item" id="nav-impl" onclick="nav('impl')"><span class="nav-dot"></span>Implementation</div>
+      <div class="nav-item" id="nav-impl" onclick="nav(\'impl\')"><span class="nav-dot"></span>Implementation</div>
       <div class="nav-sec">Accounts</div>
-      <div class="nav-item" id="nav-active" onclick="nav('active')"><span class="nav-dot"></span>Active Accounts</div>
-      <div class="nav-item" id="nav-renewals" onclick="nav('renewals')"><span class="nav-dot"></span>Renewals<span class="nav-badge" id="rnb" style="display:none">0</span></div>
+      <div class="nav-item" id="nav-active" onclick="nav(\'active\')"><span class="nav-dot"></span>Active Accounts</div>
+      <div class="nav-item" id="nav-renewals" onclick="nav(\'renewals\')"><span class="nav-dot"></span>Renewals<span class="nav-badge" id="rnb" style="display:none">0</span></div>
       <div class="nav-sec">Insights</div>
       <div class="nav-item" id="nav-reports" onclick="nav('reports')"><span class="nav-dot"></span>Reports</div>
       <div class="nav-item" id="nav-activity" onclick="nav('activity')"><span class="nav-dot"></span>Activity</div>
@@ -338,11 +339,11 @@ function rDash(el,act){
 
   // Alerts
   let alerts='';
-  rs.forEach(a=>{const d=daysFrom(a.renewal_date);alerts+='<div class="alert-row '+(d<=7?'alert-danger':'alert-warn')+'"><span><strong>'+esc(a.name)+'</strong> — renewal in '+d+' day'+(d===1?'':'s')+' ('+fmt(a.renewal_date)+')</span><button class="btn btn-sm" onclick="openDetail(''+a.id+'')">View</button></div>';});
-  impl.filter(a=>a.stage==='60-day evaluation'&&daysFrom(a.checkin_30_date)!==null&&daysFrom(a.checkin_30_date)<0&&!a.checkin_30_done).forEach(a=>{alerts+='<div class="alert-row alert-danger"><span><strong>'+esc(a.name)+'</strong> — 30-day check-in missed (due '+fmt(a.checkin_30_date)+')</span><button class="btn btn-sm" onclick="openDetail(''+a.id+'')">View</button></div>';});
-  impl.filter(a=>a.stage==='60-day evaluation'&&daysFrom(a.checkin_30_date)!==null&&daysFrom(a.checkin_30_date)>=0&&daysFrom(a.checkin_30_date)<=7&&!a.checkin_30_done).forEach(a=>{const d=daysFrom(a.checkin_30_date);alerts+='<div class="alert-row alert-warn"><span><strong>'+esc(a.name)+'</strong> — 30-day check-in due in '+d+'d</span><button class="btn btn-sm" onclick="openDetail(''+a.id+'')">View</button></div>';});
-  impl.filter(a=>a.stage==='Overdue').forEach(a=>{alerts+='<div class="alert-row alert-danger"><span><strong>'+esc(a.name)+'</strong> — 60-day evaluation overdue</span><button class="btn btn-sm" onclick="openDetail(''+a.id+'')">View</button></div>';});
-  impl.filter(a=>a.stage==='60-day evaluation'&&daysFrom(a.eval_end_date)!==null&&daysFrom(a.eval_end_date)<=10&&daysFrom(a.eval_end_date)>=0).forEach(a=>{const d=daysFrom(a.eval_end_date);alerts+='<div class="alert-row alert-warn"><span><strong>'+esc(a.name)+'</strong> — 60-day evaluation ends in '+d+'d</span><button class="btn btn-sm" onclick="openDetail(''+a.id+'')">View</button></div>';});
+  rs.forEach(a=>{const d=daysFrom(a.renewal_date);alerts+='<div class="alert-row '+(d<=7?'alert-danger':'alert-warn')+'"><span><strong>'+esc(a.name)+'</strong> — renewal in '+d+' day'+(d===1?'':'s')+' ('+fmt(a.renewal_date)+')</span><button class="btn btn-sm" onclick="openDetail(\''+a.id+'\')">View</button></div>';});
+  impl.filter(a=>a.stage==='60-day evaluation'&&daysFrom(a.checkin_30_date)!==null&&daysFrom(a.checkin_30_date)<0&&!a.checkin_30_done).forEach(a=>{alerts+='<div class="alert-row alert-danger"><span><strong>'+esc(a.name)+'</strong> — 30-day check-in missed (due '+fmt(a.checkin_30_date)+')</span><button class="btn btn-sm" onclick="openDetail(\''+a.id+'\')">View</button></div>';});
+  impl.filter(a=>a.stage==='60-day evaluation'&&daysFrom(a.checkin_30_date)!==null&&daysFrom(a.checkin_30_date)>=0&&daysFrom(a.checkin_30_date)<=7&&!a.checkin_30_done).forEach(a=>{const d=daysFrom(a.checkin_30_date);alerts+='<div class="alert-row alert-warn"><span><strong>'+esc(a.name)+'</strong> — 30-day check-in due in '+d+'d</span><button class="btn btn-sm" onclick="openDetail(\''+a.id+'\')">View</button></div>';});
+  impl.filter(a=>a.stage==='Overdue').forEach(a=>{alerts+='<div class="alert-row alert-danger"><span><strong>'+esc(a.name)+'</strong> — 60-day evaluation overdue</span><button class="btn btn-sm" onclick="openDetail(\''+a.id+'\')">View</button></div>';});
+  impl.filter(a=>a.stage==='60-day evaluation'&&daysFrom(a.eval_end_date)!==null&&daysFrom(a.eval_end_date)<=10&&daysFrom(a.eval_end_date)>=0).forEach(a=>{const d=daysFrom(a.eval_end_date);alerts+='<div class="alert-row alert-warn"><span><strong>'+esc(a.name)+'</strong> — 60-day evaluation ends in '+d+'d</span><button class="btn btn-sm" onclick="openDetail(\''+a.id+'\')">View</button></div>';});
 
   // Pipeline stage breakdown
   const stageBreakdown=SALES.filter(s=>s!=='Deal won'&&s!=='Deal lost').map(s=>{const n=pipe.filter(a=>a.stage===s).length;return{s,n};}).filter(x=>x.n>0);
@@ -351,11 +352,11 @@ function rDash(el,act){
 
   el.innerHTML=
     // Metric cards
-    '<div class="metrics"><div class="metric" onclick="nav('active')" style="cursor:pointer"><div class="metric-lbl">Active Accounts</div><div class="metric-val">'+active.length+'</div><div class="metric-sub" style="color:var(--navy)">View →</div></div><div class="metric" onclick="nav('pipeline')" style="cursor:pointer"><div class="metric-lbl">Sales Pipeline</div><div class="metric-val">'+pipe.length+'</div><div class="metric-sub" style="color:var(--navy)">View →</div></div><div class="metric" onclick="nav('impl')" style="cursor:pointer"><div class="metric-lbl">Implementation</div><div class="metric-val">'+impl.length+'</div><div class="metric-sub" style="color:var(--navy)">View →</div></div><div class="metric" onclick="nav('renewals')" style="cursor:pointer"><div class="metric-lbl">Renewing (30 days)</div><div class="metric-val '+(rs.length?'red':'')+'">'+rs.length+'</div><div class="metric-sub" style="color:'+(rs.length?'var(--danger)':'var(--navy)')+'">View →</div></div></div>'
+    '<div class="metrics"><div class="metric" onclick="nav(\'active\')" style="cursor:pointer"><div class="metric-lbl">Active Accounts</div><div class="metric-val">'+active.length+'</div><div class="metric-sub" style="color:var(--navy)">View →</div></div><div class="metric" onclick="nav(\'pipeline\')" style="cursor:pointer"><div class="metric-lbl">Sales Pipeline</div><div class="metric-val">'+pipe.length+'</div><div class="metric-sub" style="color:var(--navy)">View →</div></div><div class="metric" onclick="nav(\'impl\')" style="cursor:pointer"><div class="metric-lbl">Implementation</div><div class="metric-val">'+impl.length+'</div><div class="metric-sub" style="color:var(--navy)">View →</div></div><div class="metric" onclick="nav(\'renewals\')" style="cursor:pointer"><div class="metric-lbl">Renewing (30 days)</div><div class="metric-val '+(rs.length?'red':'')+'">'+rs.length+'</div><div class="metric-sub" style="color:'+(rs.length?'var(--danger)':'var(--navy)')+'">View →</div></div></div>'
     // Alerts
     +'<div class="card" style="overflow:hidden;margin-bottom:20px"><div class="card-hdr"><span class="card-title">Alerts</span></div>'+(alerts?alerts:'<div style="padding:14px 18px;font-size:13px;font-weight:600;color:var(--ok)">&#10003; All clear — no items need attention right now.</div>')+'</div>'
     // Two column: pipeline breakdown + revenue snapshot
-    +'<div class="fg" style="gap:20px;align-items:start"><div><div class="card"><div class="card-hdr"><span class="card-title">Pipeline breakdown</span><button class="btn btn-sm btn-navy" onclick="nav('pipeline')">View all</button></div><div style="padding:16px 18px">'+pipeHTML+'</div></div></div>'
+    +'<div class="fg" style="gap:20px;align-items:start"><div><div class="card"><div class="card-hdr"><span class="card-title">Pipeline breakdown</span><button class="btn btn-sm btn-navy" onclick="nav(\'pipeline\')">View all</button></div><div style="padding:16px 18px">'+pipeHTML+'</div></div></div>'
     +'<div><div class="card"><div class="card-hdr"><span class="card-title">Revenue snapshot</span><button class="btn btn-sm btn-navy" onclick="nav('reports')">Full reports</button></div><div style="padding:16px 18px"><div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">'
     +'<div style="background:var(--surface);border-radius:var(--r);padding:14px"><div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Hardware revenue</div><div style="font-size:22px;font-weight:800;color:var(--navy)">'+(hwRev?'$'+fmtC(hwRev):'—')+'</div></div>'
     +'<div style="background:var(--surface);border-radius:var(--r);padding:14px"><div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Subscription revenue</div><div style="font-size:22px;font-weight:800;color:var(--navy)">'+(subRev?'$'+fmtC(subRev):'—')+'</div></div>'
@@ -533,7 +534,7 @@ function rActivity(el,act){
     return;
   }
   el.innerHTML='<div class="card"><div style="padding:0">'
-    +recent.map(e=>'<div style="padding:13px 18px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:12px"><div style="flex:1"><div><span style="font-weight:700;color:var(--navy);cursor:pointer" onclick="openDetail(''+e.accId+'')">'+esc(e.accName)+'</span><span style="font-size:12px;color:var(--muted);margin-left:10px">'+fmtDT(e.ts)+'</span></div><div style="font-size:13px;color:var(--text);margin-top:3px">'+esc(e.what)+'</div><div style="font-size:11px;color:var(--muted);margin-top:2px">by '+esc(e.who||'Unknown')+'</div></div><button class="btn btn-sm btn-navy" onclick="openDetail(''+e.accId+'')">View</button></div>').join('')
+    +recent.map(e=>'<div style="padding:13px 18px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:12px"><div style="flex:1"><div><span style="font-weight:700;color:var(--navy);cursor:pointer" onclick="openDetail(\''+e.accId+'\')">'+esc(e.accName)+'</span><span style="font-size:12px;color:var(--muted);margin-left:10px">'+fmtDT(e.ts)+'</span></div><div style="font-size:13px;color:var(--text);margin-top:3px">'+esc(e.what)+'</div><div style="font-size:11px;color:var(--muted);margin-top:2px">by '+esc(e.who||'Unknown')+'</div></div><button class="btn btn-sm btn-navy" onclick="openDetail(\''+e.accId+'\')">View</button></div>').join('')
     +'</div></div>';
 }
 
