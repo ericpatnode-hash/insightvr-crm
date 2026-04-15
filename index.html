@@ -359,7 +359,7 @@ async function toggleCI(id){
 }
 
 function nav(v){
-  view=v;q='';fs='all';sortCol='';sortDir=1;
+  view=v;q='';fs='all';sortCol='';sortDir=1;window._rpt_lostFilter='all';window._rpt_srcFilter='all';
   document.querySelectorAll('.nav-item').forEach(e=>e.classList.remove('active'));
   const el=document.getElementById('nav-'+v);if(el)el.classList.add('active');
   document.getElementById('ptitle').textContent=TITLES[v]||'';
@@ -367,7 +367,7 @@ function nav(v){
   render();
 }
 function navFilter(v,stage){
-  view=v;q='';fs=stage;sortCol='';sortDir=1;
+  view=v;q='';fs=stage;sortCol='';sortDir=1;window._rpt_lostFilter='all';window._rpt_srcFilter='all';
   document.querySelectorAll('.nav-item').forEach(e=>e.classList.remove('active'));
   const el=document.getElementById('nav-'+v);if(el)el.classList.add('active');
   document.getElementById('ptitle').textContent=TITLES[v]||'';
@@ -499,16 +499,74 @@ function rReports(el,act){
   const monthly=active.filter(a=>a.sub_type==='Monthly');
   const yearly=active.filter(a=>a.sub_type==='Yearly');
   const totalKits=active.reduce((s,a)=>s+(a.kit_count||0),0);
-  const lostByReason={};lost.forEach(a=>{const r=a.lost_reason||'Unknown';lostByReason[r]=(lostByReason[r]||0)+1;});
-  const sourceBreakdown={};accs.forEach(a=>{if(a.source){sourceBreakdown[a.source]=(sourceBreakdown[a.source]||0)+1;}});
-  function drillTable(rows,cols){return '<div style="margin-top:12px;background:var(--surface);border-radius:var(--r);overflow:hidden;border:1px solid var(--border)"><table style="width:100%"><thead><tr>'+cols.map(c=>'<th>'+c.label+'</th>').join('')+'</tr></thead><tbody>'+rows.map(r=>'<tr onclick="openDetail(\''+r.id+'\')" style="cursor:pointer">'+cols.map(c=>'<td>'+(c.fn(r)||'—')+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>';}
-  function metricCard(lbl,val,sub,drillId){return '<div class="report-card" style="cursor:pointer" onclick="toggleDrill(\''+drillId+'\')" title="Click to expand"><div class="report-lbl">'+lbl+'</div><div class="report-val">'+val+'</div><div class="report-sub">'+sub+' <span style="color:var(--navy);font-size:10px">▼</span></div><div id="'+drillId+'" style="display:none"></div></div>';}
-  el.innerHTML='<div class="report-grid">'+metricCard('Total hardware revenue',hwRev?'$'+fmtC(hwRev):'$0','All active accounts','drill-hw')+metricCard('Annual subscription revenue',subRev?'$'+fmtC(subRev):'$0','Active accounts combined','drill-sub')+metricCard('Pipeline value',pipeVal?'$'+fmtC(pipeVal):'$0',pipe.length+' open deals','drill-pipe')+metricCard('Monthly subscribers',monthly.length,'of '+active.length+' active','drill-monthly')+metricCard('Yearly subscribers',yearly.length,'of '+active.length+' active','drill-yearly')+metricCard('Total kits deployed',totalKits,'Across active accounts','drill-kits')+'</div><div class="fg" style="gap:20px"><div><div class="card"><div class="card-hdr"><span class="card-title">Deal lost reasons</span></div>'+(Object.keys(lostByReason).length?'<table><thead><tr><th>Reason</th><th>Count</th><th></th></tr></thead><tbody>'+Object.entries(lostByReason).sort((a,b)=>b[1]-a[1]).map(([r,n])=>'<tr><td>'+esc(r)+'</td><td><strong>'+n+'</strong></td><td><button class="btn btn-sm" onclick="toggleLostDrill(this,\''+esc(r)+'\')">Show</button></td></tr><tr class="lost-drill-'+btoa(r).replace(/=/g,'')+'" style="display:none"><td colspan="3" style="padding:0"><div style="padding:8px 12px;background:var(--surface)">'+lost.filter(a=>(a.lost_reason||'Unknown')===r).map(a=>'<div style="padding:4px 0;font-size:12px;cursor:pointer;color:var(--navy);font-weight:700" onclick="openDetail(\''+a.id+'\')">'+esc(a.name)+(a.city?' &middot; '+esc(a.city):'')+'</div>').join('')+'</div></td></tr>').join('')+'</tbody></table>':'<div class="empty" style="padding:20px">No lost deals yet</div>')+'</div></div><div><div class="card"><div class="card-hdr"><span class="card-title">Lead sources</span></div>'+(Object.keys(sourceBreakdown).length?'<table><thead><tr><th>Source</th><th>Count</th><th></th></tr></thead><tbody>'+Object.entries(sourceBreakdown).sort((a,b)=>b[1]-a[1]).map(([s,n])=>'<tr><td>'+esc(s)+'</td><td><strong>'+n+'</strong></td><td><button class="btn btn-sm" onclick="toggleSrcDrill(this,\''+esc(s)+'\')">Show</button></td></tr><tr class="src-drill-'+btoa(s).replace(/=/g,'')+'" style="display:none"><td colspan="3" style="padding:0"><div style="padding:8px 12px;background:var(--surface)">'+accs.filter(a=>a.source===s).map(a=>'<div style="padding:4px 0;font-size:12px;cursor:pointer;color:var(--navy);font-weight:700" onclick="openDetail(\''+a.id+'\')">'+esc(a.name)+' '+badge(a.stage)+'</div>').join('')+'</div></td></tr>').join('')+'</tbody></table>':'<div class="empty" style="padding:20px">No source data yet</div>')+'</div></div></div>';
+
+  function drillTable(rows,cols){
+    return '<div style="margin-top:12px;background:var(--surface);border-radius:var(--r);overflow:hidden;border:1px solid var(--border)"><table style="width:100%"><thead><tr>'+cols.map(c=>'<th>'+c.label+'</th>').join('')+'</tr></thead><tbody>'+rows.map(r=>'<tr onclick="openDetail(''+r.id+'')" style="cursor:pointer">'+cols.map(c=>'<td>'+(c.fn(r)||'—')+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>';
+  }
+  function metricCard(lbl,val,sub,drillId){
+    return '<div class="report-card" onclick="toggleDrill(''+drillId+'')" title="Click to expand"><div class="report-lbl">'+lbl+'</div><div class="report-val">'+val+'</div><div class="report-sub">'+sub+' <span style="color:var(--navy);font-size:10px">▼</span></div><div id="'+drillId+'" style="display:none"></div></div>';
+  }
+
+  // Lost accounts filter state
+  const lostFilter=window._rpt_lostFilter||'all';
+  const srcFilter=window._rpt_srcFilter||'all';
+  const lostReasons=[...new Set(lost.map(a=>a.lost_reason||'Unknown'))].sort();
+  const sources=[...new Set(accs.filter(a=>a.source).map(a=>a.source))].sort();
+  const filteredLost=lostFilter==='all'?lost:lost.filter(a=>(a.lost_reason||'Unknown')===lostFilter);
+  const filteredSrc=srcFilter==='all'?accs.filter(a=>a.source):accs.filter(a=>a.source===srcFilter);
+
+  el.innerHTML=
+    '<div class="report-grid">'+
+    metricCard('Total hardware revenue',hwRev?'$'+fmtC(hwRev):'$0','All active accounts','drill-hw')+
+    metricCard('Annual subscription revenue',subRev?'$'+fmtC(subRev):'$0','Active accounts combined','drill-sub')+
+    metricCard('Pipeline value',pipeVal?'$'+fmtC(pipeVal):'$0',pipe.length+' open deals','drill-pipe')+
+    metricCard('Monthly subscribers',monthly.length,'of '+active.length+' active','drill-monthly')+
+    metricCard('Yearly subscribers',yearly.length,'of '+active.length+' active','drill-yearly')+
+    metricCard('Total kits deployed',totalKits,'Across active accounts','drill-kits')+
+    '</div>'+
+    '<div class="fg" style="gap:20px">'+
+    // Deal lost reasons
+    '<div><div class="card"><div class="card-hdr"><span class="card-title">Deal Lost Accounts</span><span style="font-size:12px;color:var(--muted);font-weight:600">'+lost.length+' total</span></div>'+
+    '<div style="padding:12px 16px;border-bottom:1px solid var(--border);background:var(--surface);display:flex;gap:8px;align-items:center">'+
+    '<select class="finput" style="width:200px;font-size:12px" onchange="window._rpt_lostFilter=this.value;rReports(document.getElementById('pcontent'),document.getElementById('pactions'))">'+
+    '<option value="all"'+(lostFilter==='all'?' selected':'')+'>All lost reasons</option>'+
+    lostReasons.map(r=>'<option value="'+esc(r)+'"'+(lostFilter===r?' selected':'')+'>'+esc(r)+'</option>').join('')+
+    '</select>'+
+    '<span style="font-size:12px;color:var(--muted)">'+filteredLost.length+' account'+(filteredLost.length===1?'':'s')+'</span>'+
+    '</div>'+
+    '<div style="overflow-x:auto"><table><thead><tr><th style="width:28%">Account</th><th style="width:14%">City</th><th style="width:14%">Lost reason</th><th style="width:16%">Contact</th><th style="width:14%">Source</th><th style="width:14%"></th></tr></thead><tbody>'+
+    (filteredLost.length?filteredLost.map(a=>'<tr onclick="openDetail(''+a.id+'')"><td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.state||'')+'</div></td><td style="color:var(--muted)">'+esc(a.city||'—')+'</td><td>'+badge('Deal lost')+'<div class="as">'+esc(a.lost_reason||'—')+'</div></td><td>'+esc(cname(a))+'</td><td style="color:var(--muted);font-size:12px">'+esc(a.source||'—')+'</td><td><button class="btn btn-sm btn-navy" onclick="event.stopPropagation();openEdit(''+a.id+'')">Edit</button></td></tr>').join(''):
+    '<tr><td colspan="6" class="empty" style="padding:24px">No lost accounts'+(lostFilter!=='all'?' for this reason':'')+'.</td></tr>')+
+    '</tbody></table></div></div></div>'+
+    // Lead sources
+    '<div><div class="card"><div class="card-hdr"><span class="card-title">Lead Sources</span><span style="font-size:12px;color:var(--muted);font-weight:600">'+accs.filter(a=>a.source).length+' with source</span></div>'+
+    '<div style="padding:12px 16px;border-bottom:1px solid var(--border);background:var(--surface);display:flex;gap:8px;align-items:center">'+
+    '<select class="finput" style="width:220px;font-size:12px" onchange="window._rpt_srcFilter=this.value;rReports(document.getElementById('pcontent'),document.getElementById('pactions'))">'+
+    '<option value="all"'+(srcFilter==='all'?' selected':'')+'>All sources</option>'+
+    sources.map(s=>'<option value="'+esc(s)+'"'+(srcFilter===s?' selected':'')+'>'+esc(s)+'</option>').join('')+
+    '</select>'+
+    '<span style="font-size:12px;color:var(--muted)">'+filteredSrc.length+' account'+(filteredSrc.length===1?'':'s')+'</span>'+
+    '</div>'+
+    '<div style="overflow-x:auto"><table><thead><tr><th style="width:28%">Account</th><th style="width:16%">Stage</th><th style="width:18%">Source</th><th style="width:18%">Contact</th><th style="width:14%">Updated</th><th style="width:6%"></th></tr></thead><tbody>'+
+    (filteredSrc.length?filteredSrc.map(a=>'<tr onclick="openDetail(''+a.id+'')"><td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' &middot; '+esc(a.state):'')+'</div></td><td>'+badge(a.stage)+'</td><td style="font-size:12px;color:var(--muted)">'+esc(a.source)+'</td><td>'+esc(cname(a))+'</td><td style="color:var(--muted);font-size:12px">'+fmt(a.updated_at)+'</td><td><button class="btn btn-sm btn-navy" onclick="event.stopPropagation();openEdit(''+a.id+'')">Edit</button></td></tr>').join(''):
+    '<tr><td colspan="6" class="empty" style="padding:24px">No accounts with source data yet.</td></tr>')+
+    '</tbody></table></div></div></div>'+
+    '</div>';
+
+  // Populate metric drilldowns
   setTimeout(()=>{
-    const drills={'drill-hw':{rows:active.filter(a=>a.hardware_cost).sort((a,b)=>(parseC(b.hardware_cost)||0)-(parseC(a.hardware_cost)||0)),cols:[{label:'Account',fn:a=>esc(a.name)},{label:'City',fn:a=>esc(a.city||'')},{label:'Hardware cost',fn:a=>a.hardware_cost?'$'+fmtC(a.hardware_cost):'—'}]},'drill-sub':{rows:active.filter(a=>a.sub_amount).sort((a,b)=>(parseC(b.sub_amount)||0)-(parseC(a.sub_amount)||0)),cols:[{label:'Account',fn:a=>esc(a.name)},{label:'Sub type',fn:a=>a.sub_type||'—'},{label:'Amount',fn:a=>a.sub_amount?'$'+fmtC(a.sub_amount)+(a.sub_type==='Monthly'?'/mo':'/yr'):'—'}]},'drill-pipe':{rows:pipe.filter(a=>a.deal_value).sort((a,b)=>(parseC(b.deal_value)||0)-(parseC(a.deal_value)||0)),cols:[{label:'Account',fn:a=>esc(a.name)},{label:'Stage',fn:a=>a.stage},{label:'Deal value',fn:a=>a.deal_value?'$'+fmtC(a.deal_value):'—'}]},'drill-monthly':{rows:monthly,cols:[{label:'Account',fn:a=>esc(a.name)},{label:'Amount',fn:a=>a.sub_amount?'$'+fmtC(a.sub_amount)+'/mo':'—'},{label:'Renewal',fn:a=>fmt(a.renewal_date)}]},'drill-yearly':{rows:yearly,cols:[{label:'Account',fn:a=>esc(a.name)},{label:'Amount',fn:a=>a.sub_amount?'$'+fmtC(a.sub_amount)+'/yr':'—'},{label:'Renewal',fn:a=>fmt(a.renewal_date)}]},'drill-kits':{rows:active.filter(a=>a.kit_count).sort((a,b)=>(b.kit_count||0)-(a.kit_count||0)),cols:[{label:'Account',fn:a=>esc(a.name)},{label:'City',fn:a=>esc(a.city||'')},{label:'Kits',fn:a=>String(a.kit_count||0)}]}};
+    const drills={
+      'drill-hw':{rows:active.filter(a=>a.hardware_cost).sort((a,b)=>(parseC(b.hardware_cost)||0)-(parseC(a.hardware_cost)||0)),cols:[{label:'Account',fn:a=>esc(a.name)},{label:'City',fn:a=>esc(a.city||'')},{label:'Hardware cost',fn:a=>a.hardware_cost?'$'+fmtC(a.hardware_cost):'—'}]},
+      'drill-sub':{rows:active.filter(a=>a.sub_amount).sort((a,b)=>(parseC(b.sub_amount)||0)-(parseC(a.sub_amount)||0)),cols:[{label:'Account',fn:a=>esc(a.name)},{label:'Sub type',fn:a=>a.sub_type||'—'},{label:'Amount',fn:a=>a.sub_amount?'$'+fmtC(a.sub_amount)+(a.sub_type==='Monthly'?'/mo':'/yr'):'—'}]},
+      'drill-pipe':{rows:pipe.filter(a=>a.deal_value).sort((a,b)=>(parseC(b.deal_value)||0)-(parseC(a.deal_value)||0)),cols:[{label:'Account',fn:a=>esc(a.name)},{label:'Stage',fn:a=>a.stage},{label:'Deal value',fn:a=>a.deal_value?'$'+fmtC(a.deal_value):'—'}]},
+      'drill-monthly':{rows:monthly,cols:[{label:'Account',fn:a=>esc(a.name)},{label:'Amount',fn:a=>a.sub_amount?'$'+fmtC(a.sub_amount)+'/mo':'—'},{label:'Renewal',fn:a=>fmt(a.renewal_date)}]},
+      'drill-yearly':{rows:yearly,cols:[{label:'Account',fn:a=>esc(a.name)},{label:'Amount',fn:a=>a.sub_amount?'$'+fmtC(a.sub_amount)+'/yr':'—'},{label:'Renewal',fn:a=>fmt(a.renewal_date)}]},
+      'drill-kits':{rows:active.filter(a=>a.kit_count).sort((a,b)=>(b.kit_count||0)-(a.kit_count||0)),cols:[{label:'Account',fn:a=>esc(a.name)},{label:'City',fn:a=>esc(a.city||'')},{label:'Kits',fn:a=>String(a.kit_count||0)}]},
+    };
     Object.entries(drills).forEach(([id,{rows,cols}])=>{const el2=document.getElementById(id);if(el2)el2.innerHTML=drillTable(rows,cols);});
   },50);
 }
+
 function toggleDrill(id){const el=document.getElementById(id);if(el)el.style.display=el.style.display==='none'?'block':'none';}
 function toggleLostDrill(btn,reason){const cls='lost-drill-'+btoa(reason).replace(/=/g,'');document.querySelectorAll('.'+cls).forEach(r=>{r.style.display=r.style.display==='none'?'table-row':'none';});btn.textContent=btn.textContent==='Show'?'Hide':'Show';}
 function toggleSrcDrill(btn,src){const cls='src-drill-'+btoa(src).replace(/=/g,'');document.querySelectorAll('.'+cls).forEach(r=>{r.style.display=r.style.display==='none'?'table-row':'none';});btn.textContent=btn.textContent==='Show'?'Hide':'Show';}
