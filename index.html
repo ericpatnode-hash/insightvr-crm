@@ -4,474 +4,331 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>InsightVR CRM</title>
-<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --navy:#1F5E9C;--navy-dark:#174d82;--navy-light:#e8f0f9;
-    --green:#00FEA2;--green-dark:#00c980;
-    --text:#0a0a0a;--text-muted:#5a6472;--text-hint:#9aa3ad;
-    --bg:#ffffff;--bg-surface:#f5f7fa;--bg-page:#eef1f5;
-    --border:rgba(0,0,0,0.1);--border-mid:rgba(0,0,0,0.18);
-    --radius:8px;--radius-lg:12px;--sidebar-w:210px;
-    --success:#0a7c4e;--success-bg:#e6f7f0;
-    --warning:#7c5a0a;--warning-bg:#fef6e6;
-    --danger:#9c1f1f;--danger-bg:#fdeaea;
-  }
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:'Nunito Sans',-apple-system,BlinkMacSystemFont,sans-serif;font-size:14px;color:var(--text);background:var(--bg-page);}
-  a{color:inherit;text-decoration:none;}
-  .app{display:flex;min-height:100vh;}
-  .sidebar{width:var(--sidebar-w);background:var(--navy);position:fixed;top:0;left:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column;z-index:100;}
-  .main{margin-left:var(--sidebar-w);flex:1;min-height:100vh;}
-  .topbar{background:var(--navy);padding:0 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;height:56px;}
-  .page-content{padding:24px;}
-  .brand{padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,0.12);}
-  .brand-name{font-size:16px;font-weight:800;color:#fff;}
-  .brand-sub{font-size:11px;color:var(--green);margin-top:2px;font-weight:700;letter-spacing:.04em;}
-  .nav-section{padding:14px 14px 4px;font-size:10px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:.08em;text-transform:uppercase;}
-  .nav-item{padding:9px 14px;font-size:13px;color:rgba(255,255,255,0.7);cursor:pointer;display:flex;align-items:center;gap:9px;border-left:3px solid transparent;font-weight:600;}
-  .nav-item:hover{background:rgba(255,255,255,0.08);color:#fff;}
-  .nav-item.active{background:rgba(255,255,255,0.12);color:#fff;border-left:3px solid var(--green);}
-  .nav-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.3);flex-shrink:0;}
-  .nav-item.active .nav-dot{background:var(--green);}
-  .nav-badge{margin-left:auto;font-size:10px;background:#e53e3e;color:#fff;border-radius:999px;padding:1px 7px;font-weight:700;}
-  .sidebar-footer{margin-top:auto;padding:14px 16px;border-top:1px solid rgba(255,255,255,0.12);}
-  .sidebar-footer-text{font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:8px;}
-  .page-title{font-size:16px;font-weight:800;color:#fff;}
-  .topbar-actions{display:flex;gap:8px;align-items:center;}
-  .btn{padding:7px 16px;border-radius:var(--radius);border:1px solid var(--border-mid);background:var(--bg);color:var(--text);cursor:pointer;font-size:13px;font-family:'Nunito Sans',sans-serif;font-weight:700;}
-  .btn:hover{background:var(--bg-surface);}
-  .btn-primary{background:var(--green);color:#000;border-color:var(--green);}
-  .btn-primary:hover{background:var(--green-dark);border-color:var(--green-dark);}
-  .btn-navy{background:var(--navy);color:#fff;border-color:var(--navy);}
-  .btn-navy:hover{background:var(--navy-dark);}
-  .btn-danger{color:var(--danger);border-color:#f09595;}
-  .btn-danger:hover{background:var(--danger-bg);}
-  .btn-sm{padding:4px 10px;font-size:12px;}
-  .metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:24px;}
-  .metric{background:var(--bg);border-radius:var(--radius-lg);padding:16px 18px;border:1px solid var(--border);}
-  .metric-label{font-size:11px;color:var(--text-muted);margin-bottom:6px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;}
-  .metric-val{font-size:28px;font-weight:800;line-height:1;color:var(--navy);}
-  .metric-val.alert{color:var(--danger);}
-  .metric-sub{font-size:11px;color:var(--text-muted);margin-top:4px;font-weight:600;}
-  .card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:20px;}
-  .card-header{padding:13px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--bg-surface);}
-  .card-title{font-size:13px;font-weight:700;color:var(--navy);}
-  table{width:100%;border-collapse:collapse;}
-  th{padding:10px 14px;text-align:left;font-size:11px;font-weight:700;color:var(--text-muted);border-bottom:1px solid var(--border);background:var(--bg-surface);white-space:nowrap;text-transform:uppercase;letter-spacing:.04em;}
-  td{padding:11px 14px;font-size:13px;border-bottom:1px solid var(--border);vertical-align:middle;font-weight:600;}
-  tr:last-child td{border-bottom:none;}
-  tbody tr{cursor:pointer;}
-  tbody tr:hover td{background:var(--navy-light);}
-  .acct-name{font-weight:700;color:var(--navy);}
-  .acct-sub{font-size:11px;color:var(--text-muted);margin-top:1px;font-weight:600;}
-  .col-muted{color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px;}
-  .badge{font-size:10px;padding:3px 9px;border-radius:999px;font-weight:700;display:inline-block;white-space:nowrap;}
-  .b-prospect{background:#e8f0f9;color:#1F5E9C;}
-  .b-intro{background:#e6f7f0;color:#0a7c4e;}
-  .b-early{background:#fef6e6;color:#7c5a0a;}
-  .b-late{background:#FAC775;color:#412402;}
-  .b-proposal{background:#FBEAF0;color:#72243E;}
-  .b-won{background:#d4f7e8;color:#065f46;}
-  .b-lost{background:var(--danger-bg);color:var(--danger);}
-  .b-discovery{background:#e8f0f9;color:#1F5E9C;}
-  .b-golive{background:#d4f7e8;color:#065f46;}
-  .b-30day{background:#fef6e6;color:#7c5a0a;}
-  .b-60day{background:#FAC775;color:#412402;}
-  .b-overdue{background:var(--danger-bg);color:var(--danger);}
-  .b-active{background:#d4f7e8;color:#065f46;}
-  .b-monthly{background:#e8f0f9;color:#1F5E9C;}
-  .b-yearly{background:#1F5E9C;color:#fff;}
-  .alert-banner{padding:11px 18px;font-size:12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);font-weight:600;}
-  .alert-warn{background:var(--warning-bg);color:var(--warning);}
-  .alert-danger{background:var(--danger-bg);color:var(--danger);}
-  .warn{color:#b45309;font-weight:700;}
-  .danger{color:var(--danger);font-weight:700;}
-  .filter-bar{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center;}
-  input[type=text].search{padding:8px 13px;border:1px solid var(--border-mid);border-radius:var(--radius);background:var(--bg);color:var(--text);font-size:13px;font-family:'Nunito Sans',sans-serif;width:240px;font-weight:600;}
-  input[type=text].search:focus{outline:none;border-color:var(--navy);}
-  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:flex;align-items:flex-start;justify-content:center;padding:32px 16px;overflow-y:auto;}
-  .modal{background:var(--bg);border-radius:var(--radius-lg);width:100%;max-width:660px;border:1px solid var(--border);}
-  .modal-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--navy);border-radius:var(--radius-lg) var(--radius-lg) 0 0;}
-  .modal-title{font-size:15px;font-weight:800;color:#fff;}
-  .modal-body{padding:20px;max-height:72vh;overflow-y:auto;}
-  .modal-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;}
-  .close-btn{background:none;border:none;font-size:22px;cursor:pointer;color:rgba(255,255,255,0.7);line-height:1;padding:2px 4px;}
-  .close-btn:hover{color:#fff;}
-  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-  .form-grid-3{display:grid;grid-template-columns:2fr 1fr 1fr;gap:14px;}
-  .form-group{display:flex;flex-direction:column;gap:5px;}
-  .form-group.full{grid-column:1/-1;}
-  .form-label{font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;}
-  .form-input{padding:8px 11px;border:1px solid var(--border-mid);border-radius:var(--radius);background:var(--bg);color:var(--text);font-size:13px;font-family:'Nunito Sans',sans-serif;font-weight:600;}
-  .form-input:focus{outline:none;border-color:var(--navy);}
-  .form-section{font-size:11px;font-weight:800;color:var(--navy);margin:20px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--navy-light);text-transform:uppercase;letter-spacing:.06em;}
-  textarea.form-input{resize:vertical;min-height:70px;}
-  .contact-block{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:10px;position:relative;}
-  .contact-block-title{font-size:11px;font-weight:800;color:var(--navy);text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px;}
-  .remove-contact{position:absolute;top:10px;right:10px;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:18px;line-height:1;}
-  .remove-contact:hover{color:var(--danger);}
-  .add-contact-btn{width:100%;padding:9px;border:1px dashed var(--border-mid);border-radius:var(--radius);background:none;color:var(--navy);font-size:12px;font-weight:700;cursor:pointer;font-family:'Nunito Sans',sans-serif;margin-top:4px;}
-  .add-contact-btn:hover{background:var(--navy-light);}
-  .tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:18px;}
-  .tab{padding:9px 18px;font-size:13px;cursor:pointer;color:var(--text-muted);border-bottom:2px solid transparent;margin-bottom:-1px;font-weight:700;}
-  .tab:hover{color:var(--navy);}
-  .tab.active{color:var(--navy);border-bottom-color:var(--navy);}
-  .detail-grid{display:grid;grid-template-columns:160px 1fr;gap:8px 16px;font-size:13px;}
-  .detail-label{color:var(--text-muted);font-weight:700;}
-  .detail-val{color:var(--text);font-weight:600;}
-  .bucket-label{font-size:11px;font-weight:800;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em;}
-  .empty{text-align:center;padding:48px 20px;color:var(--text-muted);font-size:13px;font-weight:600;}
-  .loading{text-align:center;padding:60px;color:var(--text-muted);font-weight:600;}
-  .config-screen{max-width:520px;margin:80px auto;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;}
-  .config-header{background:var(--navy);padding:28px 32px;}
-  .config-title{font-size:22px;font-weight:800;color:#fff;margin-bottom:4px;}
-  .config-sub{font-size:13px;color:rgba(255,255,255,0.7);line-height:1.6;font-weight:600;}
-  .config-body{padding:28px 32px;}
-  .config-note{font-size:12px;color:var(--text-muted);background:var(--bg-surface);border-radius:var(--radius);padding:14px;margin-bottom:20px;line-height:1.7;font-weight:600;border-left:3px solid var(--navy);}
-  .config-label{font-size:11px;font-weight:800;color:var(--text-muted);margin-bottom:5px;display:block;text-transform:uppercase;letter-spacing:.05em;}
-  .config-input{width:100%;padding:9px 12px;border:1px solid var(--border-mid);border-radius:var(--radius);font-size:13px;font-family:'Nunito Sans',sans-serif;margin-bottom:14px;font-weight:600;}
-  .config-input:focus{outline:none;border-color:var(--navy);}
+:root{--navy:#1F5E9C;--navy-dark:#174d82;--navy-light:#e8f0f9;--green:#00FEA2;--green-dark:#00c980;--text:#0a0a0a;--muted:#5a6472;--bg:#fff;--surface:#f5f7fa;--page:#eef1f5;--border:rgba(0,0,0,0.1);--border-mid:rgba(0,0,0,0.18);--r:8px;--rl:12px;--sw:210px;--danger:#9c1f1f;--danger-bg:#fdeaea;--warn-text:#7c5a0a;--warn-bg:#fef6e6;--ok:#0a7c4e;--ok-bg:#e6f7f0;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito Sans',-apple-system,sans-serif;font-size:14px;color:var(--text);background:var(--page);}
+.app{display:flex;min-height:100vh;}
+.sidebar{width:var(--sw);background:var(--navy);position:fixed;top:0;left:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column;z-index:100;}
+.main{margin-left:var(--sw);flex:1;}
+.topbar{background:var(--navy);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:50;}
+.content{padding:24px;}
+.brand{padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.12);}
+.brand-name{font-size:16px;font-weight:800;color:#fff;}
+.brand-sub{font-size:11px;color:var(--green);margin-top:2px;font-weight:700;}
+.nav-sec{padding:14px 14px 4px;font-size:10px;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:.08em;text-transform:uppercase;}
+.nav-item{padding:9px 14px;font-size:13px;color:rgba(255,255,255,.7);cursor:pointer;display:flex;align-items:center;gap:9px;border-left:3px solid transparent;font-weight:600;}
+.nav-item:hover{background:rgba(255,255,255,.08);color:#fff;}
+.nav-item.active{background:rgba(255,255,255,.12);color:#fff;border-left-color:var(--green);}
+.nav-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.3);flex-shrink:0;}
+.nav-item.active .nav-dot{background:var(--green);}
+.nav-badge{margin-left:auto;font-size:10px;background:#e53e3e;color:#fff;border-radius:999px;padding:1px 7px;font-weight:700;}
+.sf{margin-top:auto;padding:14px 16px;border-top:1px solid rgba(255,255,255,.12);}
+.sf-text{font-size:11px;color:rgba(255,255,255,.4);margin-bottom:8px;}
+.page-title{font-size:16px;font-weight:800;color:#fff;}
+.btn{padding:7px 16px;border-radius:var(--r);border:1px solid var(--border-mid);background:var(--bg);color:var(--text);cursor:pointer;font-size:13px;font-family:inherit;font-weight:700;}
+.btn:hover{background:var(--surface);}
+.btn-primary{background:var(--green);color:#000;border-color:var(--green);}
+.btn-primary:hover{background:var(--green-dark);}
+.btn-navy{background:var(--navy);color:#fff;border-color:var(--navy);}
+.btn-navy:hover{background:var(--navy-dark);}
+.btn-danger{color:var(--danger);border-color:#f09595;}
+.btn-sm{padding:4px 10px;font-size:12px;}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:24px;}
+.metric{background:var(--bg);border-radius:var(--rl);padding:16px 18px;border:1px solid var(--border);}
+.metric-lbl{font-size:11px;color:var(--muted);margin-bottom:6px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;}
+.metric-val{font-size:28px;font-weight:800;color:var(--navy);}
+.metric-val.red{color:var(--danger);}
+.metric-sub{font-size:11px;color:var(--muted);margin-top:4px;font-weight:600;}
+.card{background:var(--bg);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:20px;}
+.card-hdr{padding:13px 18px;border-bottom:1px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:space-between;}
+.card-title{font-size:13px;font-weight:700;color:var(--navy);}
+table{width:100%;border-collapse:collapse;}
+th{padding:10px 14px;text-align:left;font-size:11px;font-weight:700;color:var(--muted);border-bottom:1px solid var(--border);background:var(--surface);white-space:nowrap;text-transform:uppercase;letter-spacing:.04em;}
+td{padding:11px 14px;font-size:13px;border-bottom:1px solid var(--border);vertical-align:middle;font-weight:600;}
+tr:last-child td{border-bottom:none;}
+tbody tr{cursor:pointer;}
+tbody tr:hover td{background:var(--navy-light);}
+.an{font-weight:700;color:var(--navy);}
+.as{font-size:11px;color:var(--muted);margin-top:1px;}
+.badge{font-size:10px;padding:3px 9px;border-radius:999px;font-weight:700;display:inline-block;white-space:nowrap;}
+.b-prospect{background:#e8f0f9;color:#1F5E9C;}
+.b-intro{background:var(--ok-bg);color:var(--ok);}
+.b-early{background:var(--warn-bg);color:var(--warn-text);}
+.b-late{background:#FAC775;color:#412402;}
+.b-proposal{background:#FBEAF0;color:#72243E;}
+.b-won{background:#d4f7e8;color:#065f46;}
+.b-lost{background:var(--danger-bg);color:var(--danger);}
+.b-discovery{background:#e8f0f9;color:#1F5E9C;}
+.b-golive{background:#d4f7e8;color:#065f46;}
+.b-60day{background:#FAC775;color:#412402;}
+.b-overdue{background:var(--danger-bg);color:var(--danger);}
+.b-active{background:#d4f7e8;color:#065f46;}
+.b-monthly{background:#e8f0f9;color:#1F5E9C;}
+.b-yearly{background:#1F5E9C;color:#fff;}
+.alert-row{padding:11px 18px;font-size:12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);font-weight:600;}
+.alert-warn{background:var(--warn-bg);color:var(--warn-text);}
+.alert-danger{background:var(--danger-bg);color:var(--danger);}
+.warn{color:#b45309;font-weight:700;}
+.danger{color:var(--danger);font-weight:700;}
+.fbar{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center;}
+input[type=text].search{padding:8px 13px;border:1px solid var(--border-mid);border-radius:var(--r);background:var(--bg);color:var(--text);font-size:13px;font-family:inherit;width:240px;font-weight:600;}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:flex;align-items:flex-start;justify-content:center;padding:32px 16px;overflow-y:auto;}
+.modal{background:var(--bg);border-radius:var(--rl);width:100%;max-width:660px;border:1px solid var(--border);}
+.modal-hdr{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--navy);border-radius:var(--rl) var(--rl) 0 0;}
+.modal-title{font-size:15px;font-weight:800;color:#fff;}
+.modal-body{padding:20px;max-height:72vh;overflow-y:auto;}
+.modal-foot{padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;}
+.xbtn{background:none;border:none;font-size:22px;cursor:pointer;color:rgba(255,255,255,.7);line-height:1;}
+.xbtn:hover{color:#fff;}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.fg3{display:grid;grid-template-columns:2fr 1fr 1fr;gap:14px;}
+.fgrp{display:flex;flex-direction:column;gap:5px;}
+.fgrp.full{grid-column:1/-1;}
+.flbl{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;}
+.finput{padding:8px 11px;border:1px solid var(--border-mid);border-radius:var(--r);background:var(--bg);color:var(--text);font-size:13px;font-family:inherit;font-weight:600;}
+.finput:focus{outline:none;border-color:var(--navy);}
+.fsec{font-size:11px;font-weight:800;color:var(--navy);margin:20px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--navy-light);text-transform:uppercase;letter-spacing:.06em;}
+textarea.finput{resize:vertical;min-height:70px;}
+.cblock{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:10px;position:relative;}
+.cblock-title{font-size:11px;font-weight:800;color:var(--navy);text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px;}
+.cbtn-remove{position:absolute;top:10px;right:10px;background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;line-height:1;}
+.add-c-btn{width:100%;padding:9px;border:1px dashed var(--border-mid);border-radius:var(--r);background:none;color:var(--navy);font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:4px;}
+.add-c-btn:hover{background:var(--navy-light);}
+.tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:18px;}
+.tab{padding:9px 18px;font-size:13px;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;font-weight:700;}
+.tab.active{color:var(--navy);border-bottom-color:var(--navy);}
+.dgrid{display:grid;grid-template-columns:160px 1fr;gap:8px 16px;font-size:13px;}
+.dlbl{color:var(--muted);font-weight:700;}
+.dval{font-weight:600;}
+.blbl{font-size:11px;font-weight:800;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em;}
+.empty{text-align:center;padding:48px 20px;color:var(--muted);font-size:13px;font-weight:600;}
 </style>
 </head>
 <body>
-
-<div id="config-screen" style="display:block;padding:20px;background:var(--bg-page);min-height:100vh;">
-  <div class="config-screen">
-    <div class="config-header">
-      <div class="config-title">InsightVR CRM</div>
-      <div class="config-sub">Connect your database to get started. You only need to do this once per device.</div>
-    </div>
-    <div class="config-body">
-      <div class="config-note"><strong>Where to find your credentials:</strong><br>1. Go to supabase.com and open your project<br>2. Go to Settings &rarr; API Keys<br>3. Copy the Project URL and Publishable key</div>
-      <label class="config-label">Supabase Project URL</label>
-      <input class="config-input" id="cfg-url" type="text" placeholder="https://xxxxxxxxxxxx.supabase.co">
-      <label class="config-label">Supabase Publishable Key</label>
-      <input class="config-input" id="cfg-key" type="text" placeholder="sb_publishable_...">
-      <div id="cfg-error" style="color:#9c1f1f;font-size:12px;margin-bottom:10px;display:none;"></div>
-      <button id="cfg-btn" class="btn btn-navy" style="width:100%;padding:11px;font-size:14px">Connect &amp; Launch CRM</button>
-    </div>
-  </div>
-</div>
-
-<div id="app" style="display:none;">
+<div id="app" style="display:none">
   <div class="app">
     <div class="sidebar">
       <div class="brand"><div class="brand-name">InsightVR CRM</div><div class="brand-sub">InSightVR</div></div>
-      <div class="nav-section">Overview</div>
+      <div class="nav-sec">Overview</div>
       <div class="nav-item active" id="nav-dashboard" onclick="nav('dashboard')"><span class="nav-dot"></span>Dashboard</div>
-      <div class="nav-section">Sales</div>
+      <div class="nav-sec">Sales</div>
       <div class="nav-item" id="nav-pipeline" onclick="nav('pipeline')"><span class="nav-dot"></span>Sales pipeline</div>
-      <div class="nav-section">Implementation</div>
+      <div class="nav-sec">Implementation</div>
       <div class="nav-item" id="nav-impl" onclick="nav('impl')"><span class="nav-dot"></span>Implementation</div>
-      <div class="nav-section">Accounts</div>
+      <div class="nav-sec">Accounts</div>
       <div class="nav-item" id="nav-active" onclick="nav('active')"><span class="nav-dot"></span>Active accounts</div>
-      <div class="nav-item" id="nav-renewals" onclick="nav('renewals')"><span class="nav-dot"></span>Renewals <span class="nav-badge" id="renewal-badge" style="display:none">0</span></div>
-      <div class="sidebar-footer">
-        <div class="sidebar-footer-text">Connected to Supabase</div>
-        <button class="btn btn-sm" style="width:100%;font-size:11px;background:rgba(255,255,255,0.1);color:#fff;border-color:rgba(255,255,255,0.2)" onclick="resetConfig()">Change database</button>
-      </div>
+      <div class="nav-item" id="nav-renewals" onclick="nav('renewals')"><span class="nav-dot"></span>Renewals<span class="nav-badge" id="rnb" style="display:none">0</span></div>
+      <div class="sf"><div class="sf-text">Connected to Supabase</div><button class="btn btn-sm" style="width:100%;font-size:11px;background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.2)" onclick="resetDB()">Change database</button></div>
     </div>
     <div class="main">
-      <div class="topbar">
-        <span class="page-title" id="topbar-title">Dashboard</span>
-        <div class="topbar-actions" id="topbar-actions"></div>
-      </div>
-      <div class="page-content" id="page-content"><div class="loading">Loading...</div></div>
+      <div class="topbar"><span class="page-title" id="ptitle">Dashboard</span><div id="pactions"></div></div>
+      <div class="content" id="pcontent"><div class="empty">Loading...</div></div>
     </div>
   </div>
 </div>
-<div id="modal-container"></div>
+<div id="mc"></div>
 
 <script>
-const SALES_STAGES=['Prospect','Intro meeting','Early diligence','Late diligence','Proposal sent','Deal won','Deal lost'];
-const IMPL_STAGES=['Discovery & planning','Go-live scheduled','60-day evaluation','Overdue'];
-const PROB={'Prospect':'—','Intro meeting':'—','Early diligence':'50%','Late diligence':'80%','Proposal sent':'90%','Deal won':'Closed','Deal lost':'Lost'};
-const ACCT_TYPES=['Practice','Private equity group','Industry partner','Other'];
-const STAGE_BADGE={'Prospect':'b-prospect','Intro meeting':'b-intro','Early diligence':'b-early','Late diligence':'b-late','Proposal sent':'b-proposal','Deal won':'b-won','Deal lost':'b-lost','Discovery & planning':'b-discovery','Go-live scheduled':'b-golive','60-day evaluation':'b-60day','Overdue':'b-overdue','Active':'b-active'};
-let supaClient=null,currentView='dashboard',accounts=[],searchTerm='',filterStage='all';
+const SB_URL='https://zqfctprzbcqxrbvgslkh.supabase.co';
+const SB_KEY='sb_publishable_i4w5l5cDDr9tmjNKvYlVlg_REgHxGOg';
+const SALES=['Prospect','Intro meeting','Early diligence','Late diligence','Proposal sent','Deal won','Deal lost'];
+const IMPL=['Discovery & planning','Go-live scheduled','60-day evaluation','Overdue'];
+const PROB={Prospect:'—','Intro meeting':'—','Early diligence':'50%','Late diligence':'80%','Proposal sent':'90%','Deal won':'Closed','Deal lost':'Lost'};
+const TYPES=['Practice','Private equity group','Industry partner','Other'];
+const SBADGE={Prospect:'b-prospect','Intro meeting':'b-intro','Early diligence':'b-early','Late diligence':'b-late','Proposal sent':'b-proposal','Deal won':'b-won','Deal lost':'b-lost','Discovery & planning':'b-discovery','Go-live scheduled':'b-golive','60-day evaluation':'b-60day',Overdue:'b-overdue',Active:'b-active'};
+let DB=null,view='dashboard',accs=[],q='',fs='all',ccount=1;
 
-class CRMClient{
-  constructor(url,key){this.url=url.replace(/\/$/,'');this.key=key;}
-  async request(method,table,body,filters,order){
-    let url=this.url+'/rest/v1/'+table;
-    const params=['select=*'];
-    if(order)params.push('order='+order);
-    if(filters)filters.forEach(f=>params.push(f));
-    url+='?'+params.join('&');
-    const headers={'apikey':this.key,'Authorization':'Bearer '+this.key,'Content-Type':'application/json'};
-    if(method==='POST')headers['Prefer']='resolution=merge-duplicates,return=minimal';
-    if(method==='DELETE')headers['Prefer']='return=minimal';
-    const opts={method,headers};
-    if(body)opts.body=JSON.stringify(body);
-    const res=await fetch(url,opts);
-    const text=await res.text();
-    if(!res.ok)throw new Error(text||res.statusText);
-    return text?JSON.parse(text):[];
-  }
-  async getAll(table,order){return this.request('GET',table,null,null,order);}
-  async upsert(table,row){return this.request('POST',table,Array.isArray(row)?row:[row],null,null);}
-  async del(table,id){return this.request('DELETE',table,null,['id=eq.'+id],null);}
+async function req(method,table,body,filters,order){
+  let url=SB_URL+'/rest/v1/'+table+'?select=*';
+  if(order)url+='&order='+order;
+  if(filters)filters.forEach(f=>url+='&'+f);
+  const h={'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'};
+  if(method==='POST')h.Prefer='resolution=merge-duplicates,return=minimal';
+  if(method==='DELETE')h.Prefer='return=minimal';
+  const o={method,headers:h};
+  if(body)o.body=JSON.stringify(body);
+  const r=await fetch(url,o);
+  const t=await r.text();
+  if(!r.ok)throw new Error(t||r.statusText);
+  return t?JSON.parse(t):[];
 }
 
-function saveConfig(){const url=document.getElementById('cfg-url').value.trim();const key=document.getElementById('cfg-key').value.trim();const errEl=document.getElementById('cfg-error');if(!url||!key){if(errEl){errEl.textContent='Please enter both fields.';errEl.style.display='block';}else{alert('Please enter both fields.');}return;}if(errEl)errEl.style.display='none';const btn=document.getElementById('cfg-btn');if(btn){btn.textContent='Connecting...';btn.disabled=true;}localStorage.setItem('sb_url',url);localStorage.setItem('sb_key',key);initCRM(url,key);}
-  localStorage.setItem('sb_url',url);localStorage.setItem('sb_key',key);
-  initCRM(url,key);
-}
-function resetConfig(){
-  if(!confirm('Change database connection?'))return;
-  localStorage.removeItem('sb_url');localStorage.removeItem('sb_key');location.reload();
-}
-function initCRM(url,key){
-  supaClient=new CRMClient(url,key);
-  document.getElementById('config-screen').style.display='none';
-  document.getElementById('app').style.display='block';
-  loadAccounts();
-}
+function resetDB(){if(!confirm('Change database?'))return;location.reload();}
 
 async function loadAccounts(){
   try{
-    accounts=await supaClient.getAll('accounts','updated_at.desc');
-    updateRenewalBadge();render();
+    accs=await req('GET','accounts',null,null,'updated_at.desc');
+    updRnb();render();
   }catch(e){
-    document.getElementById('page-content').innerHTML='<div class="empty">Could not load data.<br><small style="color:#e53e3e;display:block;margin-top:8px">'+e.message+'</small><br><button class="btn btn-navy" onclick="loadAccounts()" style="margin-top:12px">Retry</button></div>';
+    document.getElementById('pcontent').innerHTML='<div class="empty">Could not load data.<br><small style="color:#e53e3e;display:block;margin-top:8px">'+e.message+'</small><br><button class="btn btn-navy" onclick="loadAccounts()" style="margin-top:12px">Retry</button></div>';
   }
 }
-async function upsertAccount(acc){await supaClient.upsert('accounts',acc);await loadAccounts();}
-async function deleteAccount(id){
-  if(!confirm('Delete this account? This cannot be undone.'))return;
-  await supaClient.del('accounts',id);closeModal();await loadAccounts();
+async function upsertAcc(a){await req('POST','accounts',Array.isArray(a)?a:[a],null,null);await loadAccounts();}
+async function deleteAcc(id){
+  if(!confirm('Delete this account?'))return;
+  await req('DELETE','accounts',null,['id=eq.'+id],null);
+  closeModal();await loadAccounts();
 }
 
 function uid(){return 'a'+Date.now()+Math.random().toString(36).slice(2,7);}
 function daysFrom(d){if(!d)return null;return Math.round((new Date(d)-new Date())/86400000);}
-function addDays(s,n){if(!s)return '';const d=new Date(s);d.setDate(d.getDate()+n);return d.toISOString().split('T')[0];}
-function fmtDate(d){if(!d)return '—';return new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
-function badge(s){return '<span class="badge '+(STAGE_BADGE[s]||'b-prospect')+'">'+s+'</span>';}
-function daysLabel(d){if(d===null)return '';return d<0?'('+Math.abs(d)+'d overdue)':'('+d+'d)';}
-function esc(s){if(!s)return '';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-function updateRenewalBadge(){
-  const n=accounts.filter(a=>a.stage==='Active'&&daysFrom(a.renewal_date)!==null&&daysFrom(a.renewal_date)<=30&&daysFrom(a.renewal_date)>=0).length;
-  const el=document.getElementById('renewal-badge');
-  if(el){el.textContent=n;el.style.display=n?'':'none';}
+function addDays(s,n){if(!s)return'';const d=new Date(s);d.setDate(d.getDate()+n);return d.toISOString().split('T')[0];}
+function fmt(d){if(!d)return'—';return new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
+function badge(s){return'<span class="badge '+(SBADGE[s]||'b-prospect')+'">'+s+'</span>';}
+function dl(d){if(d===null)return'';return d<0?'('+Math.abs(d)+'d overdue)':'('+d+'d)';}
+function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function pcon(a){try{const c=JSON.parse(a.contacts_json||'[]');return c.length?c[0]:{}}catch{return{};}}
+function updRnb(){const n=accs.filter(a=>a.stage==='Active'&&daysFrom(a.renewal_date)!==null&&daysFrom(a.renewal_date)<=30&&daysFrom(a.renewal_date)>=0).length;const el=document.getElementById('rnb');if(el){el.textContent=n;el.style.display=n?'':'none';}}
+
+function ciStatus(a){
+  if(!a.checkin_30_date)return'—';
+  const d=daysFrom(a.checkin_30_date);
+  if(a.checkin_30_done)return'<span style="color:#0a7c4e;font-weight:700">&#10003; Done</span>';
+  if(d<0)return'<span style="color:#9c1f1f;font-weight:700">Missed ('+fmt(a.checkin_30_date)+')</span>';
+  if(d<=7)return'<span style="color:#7c5a0a;font-weight:700">Due in '+d+'d</span>';
+  return fmt(a.checkin_30_date);
 }
-function parseContacts(raw){try{return JSON.parse(raw||'[]');}catch(e){return[];}}
-function primaryContact(a){const c=parseContacts(a.contacts_json);return c.length?c[0]:{};}
+async function toggleCI(id){
+  const a=accs.find(x=>x.id===id);if(!a)return;
+  await upsertAcc(Object.assign({},a,{checkin_30_done:!a.checkin_30_done,updated_at:new Date().toISOString()}));
+}
 
 function nav(v){
-  currentView=v;searchTerm='';filterStage='all';
-  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
+  view=v;q='';fs='all';
+  document.querySelectorAll('.nav-item').forEach(e=>e.classList.remove('active'));
   const el=document.getElementById('nav-'+v);if(el)el.classList.add('active');
-  const titles={dashboard:'Dashboard',pipeline:'Sales pipeline',impl:'Implementation',active:'Active accounts',renewals:'Renewals'};
-  document.getElementById('topbar-title').textContent=titles[v]||'';
+  document.getElementById('ptitle').textContent={dashboard:'Dashboard',pipeline:'Sales pipeline',impl:'Implementation',active:'Active accounts',renewals:'Renewals'}[v]||'';
   render();
 }
 
 function render(){
-  const content=document.getElementById('page-content');
-  const actions=document.getElementById('topbar-actions');
-  actions.innerHTML='';
-  switch(currentView){
-    case 'dashboard':renderDashboard(content,actions);break;
-    case 'pipeline':renderPipeline(content,actions);break;
-    case 'impl':renderImpl(content,actions);break;
-    case 'active':renderActive(content,actions);break;
-    case 'renewals':renderRenewals(content,actions);break;
-  }
+  const c=document.getElementById('pcontent');
+  const a=document.getElementById('pactions');
+  a.innerHTML='';
+  if(view==='dashboard')rDash(c,a);
+  else if(view==='pipeline')rPipe(c,a);
+  else if(view==='impl')rImpl(c,a);
+  else if(view==='active')rActive(c,a);
+  else if(view==='renewals')rRenewals(c,a);
 }
 
-function renderDashboard(el,actions){
-  actions.innerHTML='<button class="btn btn-primary" onclick="openAddModal()">+ Add account</button>';
-  const pipeline=accounts.filter(a=>SALES_STAGES.includes(a.stage)&&a.stage!=='Deal won'&&a.stage!=='Deal lost');
-  const impl=accounts.filter(a=>IMPL_STAGES.includes(a.stage));
-  const active=accounts.filter(a=>a.stage==='Active');
-  const renewSoon=active.filter(a=>{const d=daysFrom(a.renewal_date);return d!==null&&d<=30&&d>=0;});
-  const overdue=impl.filter(a=>a.stage==='Overdue');
-  const evalExp=impl.filter(a=>{if(a.stage!=='60-day evaluation')return false;const d=daysFrom(a.eval_end_date);return d!==null&&d<=10&&d>=0;});
+function rDash(el,act){
+  act.innerHTML='<button class="btn btn-primary" onclick="openAdd()">+ Add account</button>';
+  const pipe=accs.filter(a=>SALES.includes(a.stage)&&a.stage!=='Deal won'&&a.stage!=='Deal lost');
+  const impl=accs.filter(a=>IMPL.includes(a.stage));
+  const active=accs.filter(a=>a.stage==='Active');
+  const rs=active.filter(a=>{const d=daysFrom(a.renewal_date);return d!==null&&d<=30&&d>=0;});
   let alerts='';
-  renewSoon.forEach(a=>{const d=daysFrom(a.renewal_date);alerts+='<div class="alert-banner '+(d<=7?'alert-danger':'alert-warn')+'"><span><strong>'+esc(a.name)+'</strong> — subscription renews in '+d+' day'+(d===1?'':'s')+' ('+fmtDate(a.renewal_date)+')</span><button class="btn btn-sm" onclick="openDetailModal(\''+a.id+'\')">View</button></div>';});
-  const missedCI=impl.filter(a=>a.stage==='60-day evaluation'&&daysFrom(a.checkin_30_date)!==null&&daysFrom(a.checkin_30_date)<0&&!a.checkin_30_done);const upcomCI=impl.filter(a=>a.stage==='60-day evaluation'&&daysFrom(a.checkin_30_date)!==null&&daysFrom(a.checkin_30_date)>=0&&daysFrom(a.checkin_30_date)<=7&&!a.checkin_30_done);missedCI.forEach(a=>{alerts+='<div class="alert-banner alert-danger"><span><strong>'+esc(a.name)+'</strong> — 30-day check-in missed (due '+fmtDate(a.checkin_30_date)+')</span><button class="btn btn-sm" onclick="openDetailModal(\''+a.id+'\')" style="background:#9c1f1f;color:#fff;border-color:#9c1f1f">View</button></div>';});upcomCI.forEach(a=>{const d=daysFrom(a.checkin_30_date);alerts+='<div class="alert-banner alert-warn"><span><strong>'+esc(a.name)+'</strong> — 30-day check-in due in '+d+' day'+(d===1?'':'s')+' ('+fmtDate(a.checkin_30_date)+')</span><button class="btn btn-sm" onclick="openDetailModal(\''+a.id+'\')" style="background:#7c5a0a;color:#fff;border-color:#7c5a0a">View</button></div>';});overdue.forEach(a=>{alerts+='<div class="alert-banner alert-danger"><span><strong>'+esc(a.name)+'</strong> — 60-day evaluation is overdue</span><button class="btn btn-sm" onclick="openDetailModal(\''+a.id+'\')">View</button></div>';});
-  evalExp.forEach(a=>{const d=daysFrom(a.eval_end_date);alerts+='<div class="alert-banner alert-warn"><span><strong>'+esc(a.name)+'</strong> — 60-day evaluation ends in '+d+' day'+(d===1?'':'s')+'</span><button class="btn btn-sm" onclick="openDetailModal(\''+a.id+'\')">View</button></div>';});
-  const recent=accounts.slice(0,8);
-  el.innerHTML='<div class="metrics"><div class="metric"><div class="metric-label">Active accounts</div><div class="metric-val">'+active.length+'</div><div class="metric-sub">Subscribed customers</div></div><div class="metric"><div class="metric-label">Sales pipeline</div><div class="metric-val">'+pipeline.length+'</div><div class="metric-sub">Prospects &amp; leads</div></div><div class="metric"><div class="metric-label">In implementation</div><div class="metric-val">'+impl.length+'</div><div class="metric-sub">Post-close</div></div><div class="metric"><div class="metric-label">Renewing (30 days)</div><div class="metric-val '+(renewSoon.length?'alert':'')+'">'+renewSoon.length+'</div><div class="metric-sub">Needs attention</div></div></div>'+(alerts?'<div class="card" style="margin-bottom:20px;overflow:hidden">'+alerts+'</div>':'')+'<div class="card"><div class="card-header"><span class="card-title">Recent activity</span></div><div style="overflow-x:auto"><table><thead><tr><th style="width:26%">Account</th><th style="width:16%">Stage</th><th style="width:16%">Key date</th><th style="width:10%">Kits</th><th style="width:18%">Contact</th><th style="width:14%"></th></tr></thead><tbody>'+(recent.length?recent.map(a=>{
-    const pc=primaryContact(a);
-    let kd='—';
-    if(a.stage==='Active'&&a.renewal_date){const d=daysFrom(a.renewal_date);kd='<span class="'+(d<=30?d<=7?'danger':'warn':'')+'">Renews '+fmtDate(a.renewal_date)+'</span>';}
-    else if(a.stage==='60-day evaluation'&&a.eval_end_date){const d=daysFrom(a.eval_end_date);kd='<span class="'+(d<=10?'warn':'')+'">Eval ends '+fmtDate(a.eval_end_date)+'</span>';}
-    else if(a.go_live_date)kd='Go-live '+fmtDate(a.go_live_date);
-    return '<tr onclick="openDetailModal(\''+a.id+'\')"><td><div class="acct-name">'+esc(a.name)+'</div><div class="acct-sub">'+esc(a.city||'')+(a.state?' &middot; '+esc(a.state):'')+'</div></td><td>'+badge(a.stage)+'</td><td>'+kd+'</td><td>'+(a.kit_count||'—')+'</td><td>'+esc(pc.name||'—')+'</td><td><button class="btn btn-sm btn-navy" onclick="event.stopPropagation();openEditModal(\''+a.id+'\')">Edit</button></td></tr>';
-  }).join(''):'<tr><td colspan="6" class="empty">No accounts yet. Click &quot;+ Add account&quot; to get started.</td></tr>')+'</tbody></table></div></div>';
+  rs.forEach(a=>{const d=daysFrom(a.renewal_date);alerts+='<div class="alert-row '+(d<=7?'alert-danger':'alert-warn')+'"><span><strong>'+esc(a.name)+'</strong> — renewal in '+d+' day'+(d===1?'':'s')+' ('+fmt(a.renewal_date)+')</span><button class="btn btn-sm" onclick="openDetail(\''+a.id+'\')">View</button></div>';});
+  impl.filter(a=>a.stage==='60-day evaluation'&&daysFrom(a.checkin_30_date)!==null&&daysFrom(a.checkin_30_date)<0&&!a.checkin_30_done).forEach(a=>{alerts+='<div class="alert-row alert-danger"><span><strong>'+esc(a.name)+'</strong> — 30-day check-in missed (due '+fmt(a.checkin_30_date)+')</span><button class="btn btn-sm" onclick="openDetail(\''+a.id+'\')">View</button></div>';});
+  impl.filter(a=>a.stage==='60-day evaluation'&&daysFrom(a.checkin_30_date)!==null&&daysFrom(a.checkin_30_date)>=0&&daysFrom(a.checkin_30_date)<=7&&!a.checkin_30_done).forEach(a=>{const d=daysFrom(a.checkin_30_date);alerts+='<div class="alert-row alert-warn"><span><strong>'+esc(a.name)+'</strong> — 30-day check-in due in '+d+'d ('+fmt(a.checkin_30_date)+')</span><button class="btn btn-sm" onclick="openDetail(\''+a.id+'\')">View</button></div>';});
+  impl.filter(a=>a.stage==='Overdue').forEach(a=>{alerts+='<div class="alert-row alert-danger"><span><strong>'+esc(a.name)+'</strong> — 60-day evaluation overdue</span><button class="btn btn-sm" onclick="openDetail(\''+a.id+'\')">View</button></div>';});
+  impl.filter(a=>a.stage==='60-day evaluation'&&daysFrom(a.eval_end_date)!==null&&daysFrom(a.eval_end_date)<=10&&daysFrom(a.eval_end_date)>=0).forEach(a=>{const d=daysFrom(a.eval_end_date);alerts+='<div class="alert-row alert-warn"><span><strong>'+esc(a.name)+'</strong> — 60-day evaluation ends in '+d+'d</span><button class="btn btn-sm" onclick="openDetail(\''+a.id+'\')">View</button></div>';});
+  const rec=accs.slice(0,8);
+  el.innerHTML='<div class="metrics"><div class="metric"><div class="metric-lbl">Active accounts</div><div class="metric-val">'+active.length+'</div><div class="metric-sub">Subscribed</div></div><div class="metric"><div class="metric-lbl">Sales pipeline</div><div class="metric-val">'+pipe.length+'</div><div class="metric-sub">Prospects &amp; leads</div></div><div class="metric"><div class="metric-lbl">In implementation</div><div class="metric-val">'+impl.length+'</div><div class="metric-sub">Post-close</div></div><div class="metric"><div class="metric-lbl">Renewing (30 days)</div><div class="metric-val '+(rs.length?'red':'')+'">'+rs.length+'</div><div class="metric-sub">Needs attention</div></div></div>'+(alerts?'<div class="card" style="overflow:hidden;margin-bottom:20px">'+alerts+'</div>':'')+'<div class="card"><div class="card-hdr"><span class="card-title">Recent activity</span></div><div style="overflow-x:auto"><table><thead><tr><th style="width:26%">Account</th><th style="width:16%">Stage</th><th style="width:18%">Key date</th><th style="width:10%">Kits</th><th style="width:16%">Contact</th><th style="width:14%"></th></tr></thead><tbody>'+(rec.length?rec.map(a=>{const pc=pcon(a);let kd='—';if(a.stage==='Active'&&a.renewal_date){const d=daysFrom(a.renewal_date);kd='<span class="'+(d<=30?d<=7?'danger':'warn':'')+'">Renews '+fmt(a.renewal_date)+'</span>';}else if(a.stage==='60-day evaluation'&&a.eval_end_date){const d=daysFrom(a.eval_end_date);kd='<span class="'+(d<=10?'warn':'')+'">Eval ends '+fmt(a.eval_end_date)+'</span>';}else if(a.go_live_date)kd='Go-live '+fmt(a.go_live_date);return'<tr onclick="openDetail(\''+a.id+'\')"><td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' &middot; '+esc(a.state):'')+'</div></td><td>'+badge(a.stage)+'</td><td>'+kd+'</td><td>'+(a.kit_count||'—')+'</td><td>'+esc(pc.name||'—')+'</td><td><button class="btn btn-sm btn-navy" onclick="event.stopPropagation();openEdit(\''+a.id+'\')">Edit</button></td></tr>';}).join(''):'<tr><td colspan="6" class="empty">No accounts yet — click "+ Add account" to start.</td></tr>')+'</tbody></table></div></div>';
 }
 
-function renderPipeline(el,actions){
-  actions.innerHTML='<button class="btn btn-primary" onclick="openAddModal()">+ Add account</button>';
-  let list=accounts.filter(a=>SALES_STAGES.includes(a.stage));
-  if(searchTerm)list=list.filter(a=>a.name.toLowerCase().includes(searchTerm.toLowerCase())||(a.city||'').toLowerCase().includes(searchTerm.toLowerCase()));
-  if(filterStage!=='all')list=list.filter(a=>a.stage===filterStage);
-  el.innerHTML='<div class="filter-bar"><input type="text" class="search" placeholder="Search accounts..." value="'+esc(searchTerm)+'" oninput="searchTerm=this.value;render()"><select class="form-input" style="width:190px" onchange="filterStage=this.value;render()"><option value="all">All stages</option>'+SALES_STAGES.map(s=>'<option value="'+s+'"'+(filterStage===s?' selected':'')+'>'+s+'</option>').join('')+'</select></div><div class="card"><div style="overflow-x:auto"><table><thead><tr><th style="width:22%">Account</th><th style="width:13%">Type</th><th style="width:14%">Stage</th><th style="width:8%">Prob.</th><th style="width:16%">Contact</th><th style="width:13%">Updated</th><th style="width:14%"></th></tr></thead><tbody>'+(list.length?list.map(a=>{
-    const pc=primaryContact(a);
-    return '<tr onclick="openDetailModal(\''+a.id+'\')"><td><div class="acct-name">'+esc(a.name)+'</div><div class="acct-sub">'+esc(a.city||'')+(a.state?' &middot; '+esc(a.state):'')+'</div></td><td><span style="font-size:12px;color:var(--text-muted)">'+esc(a.acct_type||'—')+'</span></td><td>'+badge(a.stage)+'</td><td>'+(PROB[a.stage]||'—')+'</td><td><div>'+esc(pc.name||'—')+'</div><div class="acct-sub">'+esc(pc.email||'')+'</div></td><td style="color:var(--text-muted)">'+fmtDate(a.updated_at)+'</td><td><button class="btn btn-sm btn-navy" onclick="event.stopPropagation();openEditModal(\''+a.id+'\')">Edit</button></td></tr>';
-  }).join(''):'<tr><td colspan="7" class="empty">No accounts match this filter.</td></tr>')+'</tbody></table></div></div>';
+function rPipe(el,act){
+  act.innerHTML='<button class="btn btn-primary" onclick="openAdd()">+ Add account</button>';
+  let list=accs.filter(a=>SALES.includes(a.stage));
+  if(q)list=list.filter(a=>a.name.toLowerCase().includes(q.toLowerCase())||(a.city||'').toLowerCase().includes(q.toLowerCase()));
+  if(fs!=='all')list=list.filter(a=>a.stage===fs);
+  el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search..." value="'+esc(q)+'" oninput="q=this.value;render()"><select class="finput" style="width:190px" onchange="fs=this.value;render()"><option value="all">All stages</option>'+SALES.map(s=>'<option value="'+s+'"'+(fs===s?' selected':'')+'>'+s+'</option>').join('')+'</select></div><div class="card"><div style="overflow-x:auto"><table><thead><tr><th style="width:22%">Account</th><th style="width:12%">Type</th><th style="width:14%">Stage</th><th style="width:8%">Prob.</th><th style="width:16%">Contact</th><th style="width:14%">Updated</th><th style="width:14%"></th></tr></thead><tbody>'+(list.length?list.map(a=>{const pc=pcon(a);return'<tr onclick="openDetail(\''+a.id+'\')"><td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' &middot; '+esc(a.state):'')+'</div></td><td style="font-size:12px;color:var(--muted)">'+esc(a.acct_type||'—')+'</td><td>'+badge(a.stage)+'</td><td>'+(PROB[a.stage]||'—')+'</td><td><div>'+esc(pc.name||'—')+'</div><div class="as">'+esc(pc.email||'')+'</div></td><td style="color:var(--muted)">'+fmt(a.updated_at)+'</td><td><button class="btn btn-sm btn-navy" onclick="event.stopPropagation();openEdit(\''+a.id+'\')">Edit</button></td></tr>';}).join(''):'<tr><td colspan="7" class="empty">No accounts found.</td></tr>')+'</tbody></table></div></div>';
 }
 
-function checkinStatus(a){if(!a.checkin_30_date)return '—';const d=daysFrom(a.checkin_30_date);if(a.checkin_30_done)return '<span style="color:#0a7c4e;font-weight:700;font-size:12px">✓ Done</span>';if(d<0)return '<span style="color:#9c1f1f;font-weight:700;font-size:12px">Missed — '+fmtDate(a.checkin_30_date)+'</span>';if(d<=7)return '<span style="color:#7c5a0a;font-weight:700;font-size:12px">Due in '+d+'d ('+fmtDate(a.checkin_30_date)+')</span>';return fmtDate(a.checkin_30_date);}
-async function toggleCheckin(id){const a=accounts.find(x=>x.id===id);if(!a)return;const updated=Object.assign({},a,{checkin_30_done:!a.checkin_30_done,updated_at:new Date().toISOString()});try{await upsertAccount(updated);}catch(e){alert('Error: '+e.message);}}
-function renderImpl(el,actions){
-  let list=accounts.filter(a=>IMPL_STAGES.includes(a.stage));
-  if(searchTerm)list=list.filter(a=>a.name.toLowerCase().includes(searchTerm.toLowerCase()));
-  if(filterStage!=='all')list=list.filter(a=>a.stage===filterStage);
-  el.innerHTML='<div class="filter-bar"><input type="text" class="search" placeholder="Search..." value="'+esc(searchTerm)+'" oninput="searchTerm=this.value;render()"><select class="form-input" style="width:210px" onchange="filterStage=this.value;render()"><option value="all">All stages</option>'+IMPL_STAGES.map(s=>'<option value="'+s+'"'+(filterStage===s?' selected':'')+'>'+s+'</option>').join('')+'</select></div><div class="card"><div style="overflow-x:auto"><table><thead><tr><th style="width:20%">Account</th><th style="width:15%">Stage</th><th style="width:13%">Go-live</th><th style="width:13%">30-day check-in</th><th style="width:13%">60-day eval end</th><th style="width:13%">Impl. manager</th><th style="width:8%">Kits</th><th style="width:5%"></th></tr></thead><tbody>'+(list.length?list.map(a=>{
-    const ed=daysFrom(a.eval_end_date);
-    return '<tr onclick="openDetailModal(\''+a.id+'\')"><td><div class="acct-name">'+esc(a.name)+'</div><div class="acct-sub">'+esc(a.city||'')+(a.state?' &middot; '+esc(a.state):'')+'</div></td><td>'+badge(a.stage)+'</td><td>'+fmtDate(a.go_live_date)+'</td><td>'+checkinStatus(a)+'</td><td>'+(a.eval_end_date?'<span class="'+(ed!==null&&ed<=10?'warn':'')+'">'+fmtDate(a.eval_end_date)+' '+daysLabel(ed)+'</span>':'—')+'</td><td>'+esc(a.impl_manager||'—')+'</td><td>'+(a.kit_count||'—')+'</td><td><button class="btn btn-sm btn-navy" onclick="event.stopPropagation();openEditModal(\''+a.id+'\')">Edit</button>+(a.stage==="60-day evaluation"?" <button class='btn btn-sm' style='"+(a.checkin_30_done?"background:#e6f7f0;color:#0a7c4e;border-color:#0a7c4e":"")+"' onclick='event.stopPropagation();toggleCheckin(\"'+a.id+'\")'>"+(a.checkin_30_done?"Undo":"Mark done")+"</button>":"")+'</td></tr>';
-  }).join(''):'<tr><td colspan="8" class="empty">No accounts in implementation.</td></tr>')+'</tbody></table></div></div>';
+function rImpl(el,act){
+  let list=accs.filter(a=>IMPL.includes(a.stage));
+  if(q)list=list.filter(a=>a.name.toLowerCase().includes(q.toLowerCase()));
+  if(fs!=='all')list=list.filter(a=>a.stage===fs);
+  el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search..." value="'+esc(q)+'" oninput="q=this.value;render()"><select class="finput" style="width:200px" onchange="fs=this.value;render()"><option value="all">All stages</option>'+IMPL.map(s=>'<option value="'+s+'"'+(fs===s?' selected':'')+'>'+s+'</option>').join('')+'</select></div><div class="card"><div style="overflow-x:auto"><table><thead><tr><th style="width:20%">Account</th><th style="width:14%">Stage</th><th style="width:12%">Go-live</th><th style="width:16%">30-day check-in</th><th style="width:13%">60-day eval end</th><th style="width:12%">Impl. mgr</th><th style="width:7%">Kits</th><th style="width:6%"></th></tr></thead><tbody>'+(list.length?list.map(a=>{const ed=daysFrom(a.eval_end_date);return'<tr onclick="openDetail(\''+a.id+'\')"><td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' &middot; '+esc(a.state):'')+'</div></td><td>'+badge(a.stage)+'</td><td>'+fmt(a.go_live_date)+'</td><td>'+ciStatus(a)+'</td><td>'+(a.eval_end_date?'<span class="'+(ed!==null&&ed<=10?'warn':'')+'">'+fmt(a.eval_end_date)+' '+dl(ed)+'</span>':'—')+'</td><td>'+esc(a.impl_manager||'—')+'</td><td>'+(a.kit_count||'—')+'</td><td>'+(a.stage==='60-day evaluation'?'<button class="btn btn-sm" style="'+(a.checkin_30_done?'background:#e6f7f0;color:#0a7c4e;border-color:#0a7c4e':'')+'" onclick="event.stopPropagation();toggleCI(\''+a.id+'\')">'+(a.checkin_30_done?'Undo':'Mark done')+'</button>':'')+'</td></tr>';}).join(''):'<tr><td colspan="8" class="empty">No accounts in implementation.</td></tr>')+'</tbody></table></div></div>';
 }
 
-function renderActive(el,actions){
-  let list=accounts.filter(a=>a.stage==='Active');
-  if(searchTerm)list=list.filter(a=>a.name.toLowerCase().includes(searchTerm.toLowerCase()));
-  el.innerHTML='<div class="filter-bar"><input type="text" class="search" placeholder="Search active accounts..." value="'+esc(searchTerm)+'" oninput="searchTerm=this.value;render()"></div><div class="card"><div style="overflow-x:auto"><table><thead><tr><th style="width:20%">Account</th><th style="width:11%">Subscription</th><th style="width:14%">Renewal date</th><th style="width:7%">Kits</th><th style="width:11%">HW cost</th><th style="width:11%">Sub amount</th><th style="width:14%">Contact</th><th style="width:12%"></th></tr></thead><tbody>'+(list.length?list.map(a=>{
-    const pc=primaryContact(a);const d=daysFrom(a.renewal_date);
-    return '<tr onclick="openDetailModal(\''+a.id+'\')"><td><div class="acct-name">'+esc(a.name)+'</div><div class="acct-sub">'+esc(a.city||'')+(a.state?' &middot; '+esc(a.state):'')+'</div></td><td>'+(a.sub_type?'<span class="badge '+(a.sub_type==='Monthly'?'b-monthly':'b-yearly')+'">'+a.sub_type+'</span>':'—')+'</td><td>'+(a.renewal_date?'<span class="'+(d!==null&&d<=30?d<=7?'danger':'warn':'')+'">'+fmtDate(a.renewal_date)+' '+daysLabel(d)+'</span>':'—')+'</td><td>'+(a.kit_count||'—')+'</td><td>'+(a.hardware_cost?'$'+Number(a.hardware_cost).toLocaleString():'—')+'</td><td>'+(a.sub_amount?'$'+Number(a.sub_amount).toLocaleString()+(a.sub_type==='Monthly'?'/mo':'/yr'):'—')+'</td><td>'+esc(pc.name||'—')+'</td><td><button class="btn btn-sm btn-navy" onclick="event.stopPropagation();openEditModal(\''+a.id+'\')">Edit</button></td></tr>';
-  }).join(''):'<tr><td colspan="8" class="empty">No active accounts yet.</td></tr>')+'</tbody></table></div></div>';
+function rActive(el,act){
+  let list=accs.filter(a=>a.stage==='Active');
+  if(q)list=list.filter(a=>a.name.toLowerCase().includes(q.toLowerCase()));
+  el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search..." value="'+esc(q)+'" oninput="q=this.value;render()"></div><div class="card"><div style="overflow-x:auto"><table><thead><tr><th style="width:20%">Account</th><th style="width:11%">Sub type</th><th style="width:14%">Renewal</th><th style="width:7%">Kits</th><th style="width:11%">HW cost</th><th style="width:11%">Sub amt</th><th style="width:14%">Contact</th><th style="width:12%"></th></tr></thead><tbody>'+(list.length?list.map(a=>{const pc=pcon(a);const d=daysFrom(a.renewal_date);return'<tr onclick="openDetail(\''+a.id+'\')"><td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' &middot; '+esc(a.state):'')+'</div></td><td>'+(a.sub_type?'<span class="badge '+(a.sub_type==='Monthly'?'b-monthly':'b-yearly')+'">'+a.sub_type+'</span>':'—')+'</td><td>'+(a.renewal_date?'<span class="'+(d!==null&&d<=30?d<=7?'danger':'warn':'')+'">'+fmt(a.renewal_date)+' '+dl(d)+'</span>':'—')+'</td><td>'+(a.kit_count||'—')+'</td><td>'+(a.hardware_cost?'$'+Number(a.hardware_cost).toLocaleString():'—')+'</td><td>'+(a.sub_amount?'$'+Number(a.sub_amount).toLocaleString()+(a.sub_type==='Monthly'?'/mo':'/yr'):'—')+'</td><td>'+esc(pc.name||'—')+'</td><td><button class="btn btn-sm btn-navy" onclick="event.stopPropagation();openEdit(\''+a.id+'\')">Edit</button></td></tr>';}).join(''):'<tr><td colspan="8" class="empty">No active accounts.</td></tr>')+'</tbody></table></div></div>';
 }
 
-function renderRenewals(el,actions){
-  const active=accounts.filter(a=>a.stage==='Active');
-  const buckets=[
-    {label:'Overdue',accts:active.filter(a=>{const d=daysFrom(a.renewal_date);return d!==null&&d<0;})},
-    {label:'Next 7 days',accts:active.filter(a=>{const d=daysFrom(a.renewal_date);return d!==null&&d>=0&&d<=7;})},
-    {label:'Next 30 days',accts:active.filter(a=>{const d=daysFrom(a.renewal_date);return d!==null&&d>7&&d<=30;})},
-    {label:'Next 90 days',accts:active.filter(a=>{const d=daysFrom(a.renewal_date);return d!==null&&d>30&&d<=90;})},
-    {label:'90+ days',accts:active.filter(a=>{const d=daysFrom(a.renewal_date);return d!==null&&d>90;})},
-  ];
-  const html=buckets.filter(b=>b.accts.length).map(b=>'<div class="bucket-label">'+b.label+' ('+b.accts.length+')</div><div class="card" style="margin-bottom:20px"><div style="overflow-x:auto"><table><thead><tr><th style="width:26%">Account</th><th style="width:16%">Renewal date</th><th style="width:14%">Subscription</th><th style="width:14%">Amount</th><th style="width:16%">Contact</th><th style="width:14%">Notes</th></tr></thead><tbody>'+b.accts.map(a=>{
-    const pc=primaryContact(a);const d=daysFrom(a.renewal_date);
-    return '<tr onclick="openDetailModal(\''+a.id+'\')"><td><div class="acct-name">'+esc(a.name)+'</div><div class="acct-sub">'+esc(a.city||'')+'</div></td><td><span class="'+(d!==null&&d<=7?'danger':d!==null&&d<=30?'warn':'')+'">'+fmtDate(a.renewal_date)+' '+daysLabel(d)+'</span></td><td>'+(a.sub_type?'<span class="badge '+(a.sub_type==='Monthly'?'b-monthly':'b-yearly')+'">'+a.sub_type+'</span>':'—')+'</td><td>'+(a.sub_amount?'$'+Number(a.sub_amount).toLocaleString():'—')+'</td><td>'+esc(pc.name||'—')+'</td><td class="col-muted">'+esc(a.notes||'—')+'</td></tr>';
-  }).join('')+'</tbody></table></div></div>').join('');
-  el.innerHTML=html||'<div class="empty">No active accounts to track yet.</div>';
+function rRenewals(el,act){
+  const active=accs.filter(a=>a.stage==='Active');
+  const bkts=[{l:'Overdue',f:a=>{const d=daysFrom(a.renewal_date);return d!==null&&d<0;}},{l:'Next 7 days',f:a=>{const d=daysFrom(a.renewal_date);return d!==null&&d>=0&&d<=7;}},{l:'Next 30 days',f:a=>{const d=daysFrom(a.renewal_date);return d!==null&&d>7&&d<=30;}},{l:'Next 90 days',f:a=>{const d=daysFrom(a.renewal_date);return d!==null&&d>30&&d<=90;}},{l:'90+ days',f:a=>{const d=daysFrom(a.renewal_date);return d!==null&&d>90;}}];
+  const html=bkts.map(b=>{const list=active.filter(b.f);if(!list.length)return'';return'<div class="blbl">'+b.l+' ('+list.length+')</div><div class="card" style="margin-bottom:20px"><table><thead><tr><th style="width:26%">Account</th><th style="width:16%">Renewal date</th><th style="width:14%">Sub type</th><th style="width:14%">Amount</th><th style="width:16%">Contact</th><th style="width:14%">Notes</th></tr></thead><tbody>'+list.map(a=>{const pc=pcon(a);const d=daysFrom(a.renewal_date);return'<tr onclick="openDetail(\''+a.id+'\')"><td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+'</div></td><td><span class="'+(d!==null&&d<=7?'danger':d!==null&&d<=30?'warn':'')+'">'+fmt(a.renewal_date)+' '+dl(d)+'</span></td><td>'+(a.sub_type?'<span class="badge '+(a.sub_type==='Monthly'?'b-monthly':'b-yearly')+'">'+a.sub_type+'</span>':'—')+'</td><td>'+(a.sub_amount?'$'+Number(a.sub_amount).toLocaleString():'—')+'</td><td>'+esc(pc.name||'—')+'</td><td style="color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:120px">'+esc(a.notes||'—')+'</td></tr>';}).join('')+'</tbody></table></div>';}).join('');
+  el.innerHTML=html||'<div class="empty">No active accounts to track.</div>';
 }
 
-function closeModal(){document.getElementById('modal-container').innerHTML='';}
-function openAddModal(){showFormModal(null);}
-function openEditModal(id){showFormModal(accounts.find(a=>a.id===id));}
+function closeModal(){document.getElementById('mc').innerHTML='';}
+function openAdd(){showForm(null);}
+function openEdit(id){showForm(accs.find(a=>a.id===id));}
 
-let contactCount=1;
-function contactBlockHTML(c,idx){
-  return '<div class="contact-block" id="contact-block-'+idx+'"><div class="contact-block-title">'+(idx===0?'Primary contact':'Additional contact')+'</div>'+(idx>0?'<button class="remove-contact" onclick="removeContact('+idx+')" type="button">&times;</button>':'')+'<div class="form-grid"><div class="form-group"><label class="form-label">Name</label><input class="form-input" id="c-name-'+idx+'" type="text" value="'+esc(c.name||'')+'"></div><div class="form-group"><label class="form-label">Title</label><input class="form-input" id="c-title-'+idx+'" type="text" value="'+esc(c.title||'')+'"></div><div class="form-group"><label class="form-label">Email</label><input class="form-input" id="c-email-'+idx+'" type="text" value="'+esc(c.email||'')+'"></div><div class="form-group"><label class="form-label">Phone</label><input class="form-input" id="c-phone-'+idx+'" type="text" value="'+esc(c.phone||'')+'"></div></div></div>';
-}
-function addContact(){
-  const container=document.getElementById('contacts-container');
-  const idx=contactCount++;
-  const div=document.createElement('div');
-  div.innerHTML=contactBlockHTML({},idx);
-  container.appendChild(div.firstElementChild);
-}
-function removeContact(idx){const el=document.getElementById('contact-block-'+idx);if(el)el.remove();}
+function cbHTML(c,i){return'<div class="cblock" id="cb-'+i+'"><div class="cblock-title">'+(i===0?'Primary contact':'Additional contact')+'</div>'+(i>0?'<button class="cbtn-remove" onclick="rmC('+i+')">&times;</button>':'')+'<div class="fg"><div class="fgrp"><label class="flbl">Name</label><input class="finput" id="cn-'+i+'" value="'+esc(c.name||'')+'"></div><div class="fgrp"><label class="flbl">Title</label><input class="finput" id="ct-'+i+'" value="'+esc(c.title||'')+'"></div><div class="fgrp"><label class="flbl">Email</label><input class="finput" id="ce-'+i+'" value="'+esc(c.email||'')+'"></div><div class="fgrp"><label class="flbl">Phone</label><input class="finput" id="cp-'+i+'" value="'+esc(c.phone||'')+'"></div></div></div>';}
+function addC(){const i=ccount++;const d=document.createElement('div');d.innerHTML=cbHTML({},i);document.getElementById('cc').appendChild(d.firstElementChild);}
+function rmC(i){const e=document.getElementById('cb-'+i);if(e)e.remove();}
+function gatherC(){const r=[];document.querySelectorAll('[id^="cb-"]').forEach(b=>{const i=b.id.split('-').pop();const n=(document.getElementById('cn-'+i)||{}).value||'';const t=(document.getElementById('ct-'+i)||{}).value||'';const e=(document.getElementById('ce-'+i)||{}).value||'';const p=(document.getElementById('cp-'+i)||{}).value||'';if(n||e||p)r.push({name:n,title:t,email:e,phone:p});});return r;}
 
-function showFormModal(acc){
-  const isEdit=!!acc;const a=acc||{};
-  const isImpl=a.stage&&IMPL_STAGES.includes(a.stage);
-  const isActive=a.stage==='Active';
-  const ptype=isActive?'active':isImpl?'impl':'sales';
-  const contacts=parseContacts(a.contacts_json);
+function showForm(acc){
+  const a=acc||{};const isEdit=!!acc;
+  const isImpl=a.stage&&IMPL.includes(a.stage);const isActive=a.stage==='Active';
+  const pt=isActive?'active':isImpl?'impl':'sales';
+  let contacts=[];try{contacts=JSON.parse(a.contacts_json||'[]');}catch{}
   if(!contacts.length)contacts.push({});
-  contactCount=contacts.length;
-  document.getElementById('modal-container').innerHTML='<div class="modal-overlay" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-header"><span class="modal-title">'+(isEdit?'Edit account':'Add account')+'</span><button class="close-btn" onclick="closeModal()">&times;</button></div><div class="modal-body"><div class="form-section">Account info</div><div class="form-grid"><div class="form-group full"><label class="form-label">Account name *</label><input class="form-input" id="f-name" type="text" value="'+esc(a.name||'')+'"></div><div class="form-group full"><label class="form-label">Type</label><select class="form-input" id="f-type"><option value="">— Select type —</option>'+ACCT_TYPES.map(t=>'<option value="'+t+'"'+(a.acct_type===t?' selected':'')+'>'+t+'</option>').join('')+'</select></div></div><div class="form-group full" style="margin-top:14px"><label class="form-label">Street address</label><input class="form-input" id="f-address" type="text" value="'+esc(a.address||'')+'"></div><div class="form-grid-3" style="margin-top:14px"><div class="form-group"><label class="form-label">City</label><input class="form-input" id="f-city" type="text" value="'+esc(a.city||'')+'"></div><div class="form-group"><label class="form-label">State</label><input class="form-input" id="f-state" type="text" value="'+esc(a.state||'')+'"></div><div class="form-group"><label class="form-label">Zip</label><input class="form-input" id="f-zip" type="text" value="'+esc(a.zip||'')+'"></div></div><div class="form-grid" style="margin-top:14px"><div class="form-group"><label class="form-label">Phone number</label><input class="form-input" id="f-phone" type="text" value="'+esc(a.phone||'')+'"></div><div class="form-group"><label class="form-label">Website</label><input class="form-input" id="f-website" type="text" value="'+esc(a.website||'')+'"></div></div><div class="form-section">Pipeline stage</div><div class="form-grid"><div class="form-group"><label class="form-label">Pipeline type</label><select class="form-input" id="f-ptype" onchange="updateStageSelect()"><option value="sales"'+(ptype==='sales'?' selected':'')+'>Sales pipeline</option><option value="impl"'+(ptype==='impl'?' selected':'')+'>Implementation</option><option value="active"'+(ptype==='active'?' selected':'')+'>Active account</option></select></div><div class="form-group"><label class="form-label">Stage</label><select class="form-input" id="f-stage">'+(ptype==='impl'?IMPL_STAGES.map(s=>'<option value="'+s+'"'+(a.stage===s?' selected':'')+'>'+s+'</option>').join(''):ptype==='active'?'<option value="Active" selected>Active</option>':SALES_STAGES.map(s=>'<option value="'+s+'"'+(a.stage===s?' selected':'')+'>'+s+'</option>').join(''))+'</select></div></div><div class="form-section">Contacts</div><div id="contacts-container">'+contacts.map((c,i)=>contactBlockHTML(c,i)).join('')+'</div><button class="add-contact-btn" onclick="addContact()" type="button">+ Add another contact</button><div class="form-section">Implementation &amp; hardware</div><div class="form-grid"><div class="form-group"><label class="form-label">Implementation manager</label><input class="form-input" id="f-impl" type="text" value="'+esc(a.impl_manager||'')+'"></div><div class="form-group"><label class="form-label">Signed / close date</label><input class="form-input" id="f-signed" type="date" value="'+(a.signed_date||'')+'"></div><div class="form-group"><label class="form-label">Go-live date (on-site)</label><input class="form-input" id="f-golive" type="date" value="'+(a.go_live_date||'')+'" onchange="autoCalcDates()"></div><div class="form-group"><label class="form-label">30-day check-in <span style="color:var(--green-dark);font-size:10px">(auto-fills)</span></label><input class="form-input" id="f-checkin30" type="date" value="'+(a.checkin_30_date||'')+'"></div><div class="form-group"><label class="form-label">60-day eval end <span style="color:var(--green-dark);font-size:10px">(auto-fills)</span></label><input class="form-input" id="f-evalend" type="date" value="'+(a.eval_end_date||'')+'"></div><div class="form-group"><label class="form-label">Number of kits</label><input class="form-input" id="f-kits" type="number" min="0" value="'+(a.kit_count||'')+'"></div><div class="form-group"><label class="form-label">Hardware cost ($)</label><input class="form-input" id="f-hwcost" type="number" min="0" value="'+(a.hardware_cost||'')+'"></div></div><div class="form-section">Subscription (active accounts)</div><div class="form-grid"><div class="form-group"><label class="form-label">Subscription type</label><select class="form-input" id="f-subtype"><option value=""'+((!a.sub_type)?' selected':'')+'>—</option><option value="Monthly"'+(a.sub_type==='Monthly'?' selected':'')+'>Monthly</option><option value="Yearly"'+(a.sub_type==='Yearly'?' selected':'')+'>Yearly</option></select></div><div class="form-group"><label class="form-label">Subscription amount ($)</label><input class="form-input" id="f-subamt" type="number" min="0" value="'+(a.sub_amount||'')+'"></div><div class="form-group"><label class="form-label">Renewal date</label><input class="form-input" id="f-renewal" type="date" value="'+(a.renewal_date||'')+'"></div></div><div class="form-section">Notes</div><textarea class="form-input" id="f-notes" style="width:100%">'+esc(a.notes||'')+'</textarea></div><div class="modal-footer">'+(isEdit?'<button class="btn btn-danger" onclick="deleteAccount(\''+a.id+'\')" style="margin-right:auto">Delete account</button>':'')+'<button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveAccount(\''+( a.id||'')+'\')">Save account</button></div></div></div>';
+  ccount=contacts.length;
+  document.getElementById('mc').innerHTML='<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-hdr"><span class="modal-title">'+(isEdit?'Edit account':'Add account')+'</span><button class="xbtn" onclick="closeModal()">&times;</button></div><div class="modal-body"><div class="fsec">Account info</div><div class="fg"><div class="fgrp full"><label class="flbl">Account name *</label><input class="finput" id="fn" value="'+esc(a.name||'')+'"></div><div class="fgrp full"><label class="flbl">Type</label><select class="finput" id="ft"><option value="">— Select type —</option>'+TYPES.map(t=>'<option value="'+t+'"'+(a.acct_type===t?' selected':'')+'>'+t+'</option>').join('')+'</select></div></div><div class="fgrp full" style="margin-top:14px"><label class="flbl">Street address</label><input class="finput" id="faddr" value="'+esc(a.address||'')+'"></div><div class="fg3" style="margin-top:14px"><div class="fgrp"><label class="flbl">City</label><input class="finput" id="fci" value="'+esc(a.city||'')+'"></div><div class="fgrp"><label class="flbl">State</label><input class="finput" id="fst" value="'+esc(a.state||'')+'"></div><div class="fgrp"><label class="flbl">Zip</label><input class="finput" id="fzp" value="'+esc(a.zip||'')+'"></div></div><div class="fg" style="margin-top:14px"><div class="fgrp"><label class="flbl">Phone</label><input class="finput" id="fph" value="'+esc(a.phone||'')+'"></div><div class="fgrp"><label class="flbl">Website</label><input class="finput" id="fwb" value="'+esc(a.website||'')+'"></div></div><div class="fsec">Pipeline stage</div><div class="fg"><div class="fgrp"><label class="flbl">Pipeline type</label><select class="finput" id="fpt" onchange="updStage()"><option value="sales"'+(pt==='sales'?' selected':'')+'>Sales pipeline</option><option value="impl"'+(pt==='impl'?' selected':'')+'>Implementation</option><option value="active"'+(pt==='active'?' selected':'')+'>Active account</option></select></div><div class="fgrp"><label class="flbl">Stage</label><select class="finput" id="fsg">'+(pt==='impl'?IMPL.map(s=>'<option value="'+s+'"'+(a.stage===s?' selected':'')+'>'+s+'</option>').join(''):pt==='active'?'<option value="Active" selected>Active</option>':SALES.map(s=>'<option value="'+s+'"'+(a.stage===s?' selected':'')+'>'+s+'</option>').join(''))+'</select></div></div><div class="fsec">Contacts</div><div id="cc">'+contacts.map((c,i)=>cbHTML(c,i)).join('')+'</div><button class="add-c-btn" onclick="addC()">+ Add another contact</button><div class="fsec">Implementation &amp; hardware</div><div class="fg"><div class="fgrp"><label class="flbl">Implementation manager</label><input class="finput" id="fim" value="'+esc(a.impl_manager||'')+'"></div><div class="fgrp"><label class="flbl">Signed / close date</label><input class="finput" id="fsd" type="date" value="'+(a.signed_date||'')+'"></div><div class="fgrp"><label class="flbl">Go-live date</label><input class="finput" id="fgl" type="date" value="'+(a.go_live_date||'')+'" onchange="autoD()"></div><div class="fgrp"><label class="flbl">30-day check-in <span style="color:var(--green-dark);font-size:10px">(auto)</span></label><input class="finput" id="fc3" type="date" value="'+(a.checkin_30_date||'')+'"></div><div class="fgrp"><label class="flbl">60-day eval end <span style="color:var(--green-dark);font-size:10px">(auto)</span></label><input class="finput" id="fe6" type="date" value="'+(a.eval_end_date||'')+'"></div><div class="fgrp"><label class="flbl">Number of kits</label><input class="finput" id="fkc" type="number" min="0" value="'+(a.kit_count||'')+'"></div><div class="fgrp"><label class="flbl">Hardware cost ($)</label><input class="finput" id="fhc" type="number" min="0" value="'+(a.hardware_cost||'')+'"></div></div><div class="fsec">Subscription</div><div class="fg"><div class="fgrp"><label class="flbl">Subscription type</label><select class="finput" id="fst2"><option value=""'+((!a.sub_type)?' selected':'')+'>—</option><option value="Monthly"'+(a.sub_type==='Monthly'?' selected':'')+'>Monthly</option><option value="Yearly"'+(a.sub_type==='Yearly'?' selected':'')+'>Yearly</option></select></div><div class="fgrp"><label class="flbl">Subscription amount ($)</label><input class="finput" id="fsa" type="number" min="0" value="'+(a.sub_amount||'')+'"></div><div class="fgrp"><label class="flbl">Renewal date</label><input class="finput" id="frd" type="date" value="'+(a.renewal_date||'')+'"></div></div><div class="fsec">Notes</div><textarea class="finput" id="fno" style="width:100%">'+esc(a.notes||'')+'</textarea></div><div class="modal-foot">'+(isEdit?'<button class="btn btn-danger" onclick="deleteAcc(\''+a.id+'\')" style="margin-right:auto">Delete</button>':'')+'<button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveAcc(\''+( a.id||'')+'\')">Save account</button></div></div></div>';
 }
 
-function autoCalcDates(){
-  const g=document.getElementById('f-golive').value;
-  if(g){document.getElementById('f-checkin30').value=addDays(g,30);document.getElementById('f-evalend').value=addDays(g,60);}
-}
-function updateStageSelect(){
-  const ptype=document.getElementById('f-ptype').value;
-  const sel=document.getElementById('f-stage');
-  if(ptype==='sales')sel.innerHTML=SALES_STAGES.map(s=>'<option value="'+s+'">'+s+'</option>').join('');
-  else if(ptype==='impl')sel.innerHTML=IMPL_STAGES.map(s=>'<option value="'+s+'">'+s+'</option>').join('');
-  else sel.innerHTML='<option value="Active">Active</option>';
-}
-function gatherContacts(){
-  const contacts=[];
-  document.querySelectorAll('[id^="contact-block-"]').forEach(block=>{
-    const idx=block.id.split('-').pop();
-    const name=(document.getElementById('c-name-'+idx)||{}).value||'';
-    const title=(document.getElementById('c-title-'+idx)||{}).value||'';
-    const email=(document.getElementById('c-email-'+idx)||{}).value||'';
-    const phone=(document.getElementById('c-phone-'+idx)||{}).value||'';
-    if(name||email||phone)contacts.push({name,title,email,phone});
-  });
-  return contacts;
-}
-async function saveAccount(existingId){
-  const name=document.getElementById('f-name').value.trim();
+function autoD(){const g=document.getElementById('fgl').value;if(g){document.getElementById('fc3').value=addDays(g,30);document.getElementById('fe6').value=addDays(g,60);}}
+function updStage(){const pt=document.getElementById('fpt').value;const s=document.getElementById('fsg');if(pt==='sales')s.innerHTML=SALES.map(x=>'<option>'+x+'</option>').join('');else if(pt==='impl')s.innerHTML=IMPL.map(x=>'<option>'+x+'</option>').join('');else s.innerHTML='<option value="Active">Active</option>';}
+
+async function saveAcc(eid){
+  const name=(document.getElementById('fn').value||'').trim();
   if(!name){alert('Account name is required.');return;}
   const now=new Date().toISOString();
-  const contacts=gatherContacts();
   const acc={
-    id:existingId||uid(),name,
-    acct_type:document.getElementById('f-type').value||null,
-    city:document.getElementById('f-city').value.trim()||null,
-    phone:document.getElementById('f-phone').value.trim()||null,
-    website:document.getElementById('f-website').value.trim()||null,
-    address:document.getElementById('f-address').value.trim()||null,
-    state:document.getElementById('f-state').value.trim()||null,
-    zip:document.getElementById('f-zip').value.trim()||null,
-    stage:document.getElementById('f-stage').value,
-    contacts_json:JSON.stringify(contacts),
-    impl_manager:document.getElementById('f-impl').value.trim()||null,
-    signed_date:document.getElementById('f-signed').value||null,
-    go_live_date:document.getElementById('f-golive').value||null,
-    checkin_30_date:document.getElementById('f-checkin30').value||null,
-    eval_end_date:document.getElementById('f-evalend').value||null,
-    kit_count:document.getElementById('f-kits').value?parseInt(document.getElementById('f-kits').value):null,
-    hardware_cost:document.getElementById('f-hwcost').value?parseFloat(document.getElementById('f-hwcost').value):null,
-    sub_type:document.getElementById('f-subtype').value||null,
-    sub_amount:document.getElementById('f-subamt').value?parseFloat(document.getElementById('f-subamt').value):null,
-    renewal_date:document.getElementById('f-renewal').value||null,
-    notes:document.getElementById('f-notes').value.trim()||null,
+    id:eid||uid(),name,
+    acct_type:document.getElementById('ft').value||null,
+    address:document.getElementById('faddr').value.trim()||null,
+    city:document.getElementById('fci').value.trim()||null,
+    state:document.getElementById('fst').value.trim()||null,
+    zip:document.getElementById('fzp').value.trim()||null,
+    phone:document.getElementById('fph').value.trim()||null,
+    website:document.getElementById('fwb').value.trim()||null,
+    stage:document.getElementById('fsg').value,
+    contacts_json:JSON.stringify(gatherC()),
+    impl_manager:document.getElementById('fim').value.trim()||null,
+    signed_date:document.getElementById('fsd').value||null,
+    go_live_date:document.getElementById('fgl').value||null,
+    checkin_30_date:document.getElementById('fc3').value||null,
+    eval_end_date:document.getElementById('fe6').value||null,
+    kit_count:document.getElementById('fkc').value?parseInt(document.getElementById('fkc').value):null,
+    hardware_cost:document.getElementById('fhc').value?parseFloat(document.getElementById('fhc').value):null,
+    sub_type:document.getElementById('fst2').value||null,
+    sub_amount:document.getElementById('fsa').value?parseFloat(document.getElementById('fsa').value):null,
+    renewal_date:document.getElementById('frd').value||null,
+    notes:document.getElementById('fno').value.trim()||null,
     updated_at:now,
-    created_at:existingId?(accounts.find(a=>a.id===existingId)||{}).created_at||now:now,
+    created_at:eid?(accs.find(a=>a.id===eid)||{}).created_at||now:now,
   };
   try{
-    const btn=document.querySelector('.modal-footer .btn-primary');
+    const btn=document.querySelector('.modal-foot .btn-primary');
     if(btn){btn.textContent='Saving...';btn.disabled=true;}
-    await upsertAccount(acc);closeModal();
-  }catch(e){alert('Error saving: '+e.message);}
+    await upsertAcc(acc);closeModal();
+  }catch(e){alert('Error: '+e.message);}
 }
 
-function openDetailModal(id){
-  const a=accounts.find(x=>x.id===id);if(!a)return;
-  const contacts=parseContacts(a.contacts_json);
+function openDetail(id){
+  const a=accs.find(x=>x.id===id);if(!a)return;
+  let contacts=[];try{contacts=JSON.parse(a.contacts_json||'[]');}catch{}
   const d=daysFrom(a.renewal_date);const ed=daysFrom(a.eval_end_date);
-  const cHTML=contacts.length?contacts.map((c,i)=>'<div style="margin-bottom:'+(i<contacts.length-1?'14px':'0')+';'+(i>0?'padding-top:14px;border-top:1px solid var(--border)':'')+'"><div style="font-size:11px;font-weight:800;color:var(--navy);margin-bottom:8px;text-transform:uppercase">'+(i===0?'Primary contact':'Contact '+(i+1))+'</div><div class="detail-grid"><div class="detail-label">Name</div><div class="detail-val">'+esc(c.name||'—')+'</div><div class="detail-label">Title</div><div class="detail-val">'+esc(c.title||'—')+'</div><div class="detail-label">Email</div><div class="detail-val">'+(c.email?'<a href="mailto:'+esc(c.email)+'" style="color:var(--navy)">'+esc(c.email)+'</a>':'—')+'</div><div class="detail-label">Phone</div><div class="detail-val">'+esc(c.phone||'—')+'</div></div></div>').join(''):'<div style="color:var(--text-muted);font-size:13px">No contacts added.</div>';
-  document.getElementById('modal-container').innerHTML='<div class="modal-overlay" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-header"><div><div class="modal-title">'+esc(a.name)+'</div><div style="font-size:11px;color:rgba(255,255,255,0.6);margin-top:2px">'+esc(a.acct_type||'')+(a.city?' &middot; '+esc(a.city):'')+(a.state?' '+esc(a.state):'')+'</div></div><div style="display:flex;align-items:center;gap:10px">'+badge(a.stage)+'<button class="close-btn" onclick="closeModal()">&times;</button></div></div><div class="modal-body"><div class="tabs"><div class="tab active" id="dtab-contacts" onclick="switchDetailTab(\'contacts\')">Contacts</div><div class="tab" id="dtab-impl" onclick="switchDetailTab(\'impl\')">Implementation</div><div class="tab" id="dtab-sub" onclick="switchDetailTab(\'sub\')">Subscription</div><div class="tab" id="dtab-notes" onclick="switchDetailTab(\'notes\')">Notes</div></div><div id="dtab-content-contacts">'+cHTML+'</div><div id="dtab-content-impl" style="display:none"><div class="detail-grid"><div class="detail-label">Impl. manager</div><div class="detail-val">'+esc(a.impl_manager||'—')+'</div><div class="detail-label">Signed date</div><div class="detail-val">'+fmtDate(a.signed_date)+'</div><div class="detail-label">Go-live date</div><div class="detail-val">'+fmtDate(a.go_live_date)+'</div><div class="detail-label">30-day check-in</div><div class="detail-val">'+checkinStatus(a)+'</div><div class="detail-label">60-day eval end</div><div class="detail-val">'+(a.eval_end_date?'<span class="'+(ed!==null&&ed<=10?'warn':'')+'">'+fmtDate(a.eval_end_date)+' '+daysLabel(ed)+'</span>':'—')+'</div><div class="detail-label">Kits</div><div class="detail-val">'+(a.kit_count||'—')+'</div><div class="detail-label">Hardware cost</div><div class="detail-val">'+(a.hardware_cost?'$'+Number(a.hardware_cost).toLocaleString():'—')+'</div></div></div><div id="dtab-content-sub" style="display:none"><div class="detail-grid"><div class="detail-label">Subscription type</div><div class="detail-val">'+(a.sub_type?'<span class="badge '+(a.sub_type==='Monthly'?'b-monthly':'b-yearly')+'">'+a.sub_type+'</span>':'—')+'</div><div class="detail-label">Amount</div><div class="detail-val">'+(a.sub_amount?'$'+Number(a.sub_amount).toLocaleString()+(a.sub_type==='Monthly'?'/mo':'/yr'):'—')+'</div><div class="detail-label">Renewal date</div><div class="detail-val">'+(a.renewal_date?'<span class="'+(d!==null&&d<=30?d<=7?'danger':'warn':'')+'">'+fmtDate(a.renewal_date)+' '+daysLabel(d)+'</span>':'—')+'</div></div></div><div id="dtab-content-notes" style="display:none"><div style="font-size:13px;white-space:pre-wrap;color:var(--text)">'+( esc(a.notes)||'<span style="color:var(--text-muted)">No notes added.</span>')+'</div></div></div><div class="modal-footer"><button class="btn" onclick="closeModal()">Close</button><button class="btn btn-primary" onclick="closeModal();openEditModal(\''+a.id+'\')">Edit account</button></div></div></div>';
+  const ch=contacts.length?contacts.map((c,i)=>'<div style="'+(i>0?'padding-top:14px;border-top:1px solid var(--border);margin-top:14px':'')+'"><div style="font-size:11px;font-weight:800;color:var(--navy);margin-bottom:8px;text-transform:uppercase">'+(i===0?'Primary contact':'Contact '+(i+1))+'</div><div class="dgrid"><div class="dlbl">Name</div><div class="dval">'+esc(c.name||'—')+'</div><div class="dlbl">Title</div><div class="dval">'+esc(c.title||'—')+'</div><div class="dlbl">Email</div><div class="dval">'+(c.email?'<a href="mailto:'+esc(c.email)+'" style="color:var(--navy)">'+esc(c.email)+'</a>':'—')+'</div><div class="dlbl">Phone</div><div class="dval">'+esc(c.phone||'—')+'</div></div></div>').join(''):'<div style="color:var(--muted);font-size:13px">No contacts added.</div>';
+  document.getElementById('mc').innerHTML='<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-hdr"><div><div class="modal-title">'+esc(a.name)+'</div><div style="font-size:11px;color:rgba(255,255,255,.6);margin-top:2px">'+esc(a.acct_type||'')+(a.city?' &middot; '+esc(a.city):'')+(a.state?' '+esc(a.state):'')+'</div></div><div style="display:flex;align-items:center;gap:10px">'+badge(a.stage)+'<button class="xbtn" onclick="closeModal()">&times;</button></div></div><div class="modal-body"><div class="tabs"><div class="tab active" id="dt-c" onclick="stab(\'c\')">Contacts</div><div class="tab" id="dt-i" onclick="stab(\'i\')">Implementation</div><div class="tab" id="dt-s" onclick="stab(\'s\')">Subscription</div><div class="tab" id="dt-n" onclick="stab(\'n\')">Notes</div></div><div id="dc-c">'+ch+'</div><div id="dc-i" style="display:none"><div class="dgrid"><div class="dlbl">Impl. manager</div><div class="dval">'+esc(a.impl_manager||'—')+'</div><div class="dlbl">Signed date</div><div class="dval">'+fmt(a.signed_date)+'</div><div class="dlbl">Go-live date</div><div class="dval">'+fmt(a.go_live_date)+'</div><div class="dlbl">30-day check-in</div><div class="dval">'+ciStatus(a)+'</div><div class="dlbl">60-day eval end</div><div class="dval">'+(a.eval_end_date?'<span class="'+(ed!==null&&ed<=10?'warn':'')+'">'+fmt(a.eval_end_date)+' '+dl(ed)+'</span>':'—')+'</div><div class="dlbl">Kits</div><div class="dval">'+(a.kit_count||'—')+'</div><div class="dlbl">Hardware cost</div><div class="dval">'+(a.hardware_cost?'$'+Number(a.hardware_cost).toLocaleString():'—')+'</div></div></div><div id="dc-s" style="display:none"><div class="dgrid"><div class="dlbl">Sub type</div><div class="dval">'+(a.sub_type?'<span class="badge '+(a.sub_type==='Monthly'?'b-monthly':'b-yearly')+'">'+a.sub_type+'</span>':'—')+'</div><div class="dlbl">Amount</div><div class="dval">'+(a.sub_amount?'$'+Number(a.sub_amount).toLocaleString()+(a.sub_type==='Monthly'?'/mo':'/yr'):'—')+'</div><div class="dlbl">Renewal date</div><div class="dval">'+(a.renewal_date?'<span class="'+(d!==null&&d<=30?d<=7?'danger':'warn':'')+'">'+fmt(a.renewal_date)+' '+dl(d)+'</span>':'—')+'</div></div></div><div id="dc-n" style="display:none"><div style="font-size:13px;white-space:pre-wrap">'+esc(a.notes)||'<span style="color:var(--muted)">No notes.</span>'+'</div></div></div><div class="modal-foot"><button class="btn" onclick="closeModal()">Close</button><button class="btn btn-primary" onclick="closeModal();openEdit(\''+a.id+'\')">Edit account</button></div></div></div>';
 }
-function switchDetailTab(t){
-  ['contacts','impl','sub','notes'].forEach(x=>{
-    document.getElementById('dtab-'+x).classList.toggle('active',x===t);
-    document.getElementById('dtab-content-'+x).style.display=x===t?'':'none';
-  });
-}
+function stab(t){['c','i','s','n'].forEach(x=>{document.getElementById('dt-'+x).classList.toggle('active',x===t);document.getElementById('dc-'+x).style.display=x===t?'':'none';});}
 
-function boot(){
-  const SUPABASE_URL='https://zqfctprzbcqxrbvgslkh.supabase.co';
-  const SUPABASE_KEY='sb_publishable_i4w5l5cDDr9tmjNKvYlVlg_REgHxGOg';
-  const cfgBtn=document.getElementById('cfg-btn');
-  if(cfgBtn)cfgBtn.addEventListener('click',saveConfig);
-  const cfgUrl=document.getElementById('cfg-url');
-  const cfgKey=document.getElementById('cfg-key');
-  if(cfgUrl)cfgUrl.addEventListener('keydown',function(e){if(e.key==='Enter')saveConfig();});
-  if(cfgKey)cfgKey.addEventListener('keydown',function(e){if(e.key==='Enter')saveConfig();});
-  const savedUrl=localStorage.getItem('sb_url')||SUPABASE_URL;
-  const savedKey=localStorage.getItem('sb_key')||SUPABASE_KEY;
-  localStorage.setItem('sb_url',savedUrl);
-  localStorage.setItem('sb_key',savedKey);
-  initCRM(savedUrl,savedKey);
-const cfgBtn=document.getElementById('cfg-btn');if(cfgBtn)cfgBtn.addEventListener('click',saveConfig);const cfgUrl=document.getElementById('cfg-url');const cfgKey=document.getElementById('cfg-key');if(cfgUrl)cfgUrl.addEventListener('keydown',function(e){if(e.key==='Enter')saveConfig();});if(cfgKey)cfgKey.addEventListener('keydown',function(e){if(e.key==='Enter')saveConfig();});const cfgBtn=document.getElementById('cfg-btn');if(cfgBtn)cfgBtn.addEventListener('click',saveConfig);
-  const url=localStorage.getItem('sb_url');const key=localStorage.getItem('sb_key');
-  if(url&&key)initCRM(url,key);
-}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+document.addEventListener('DOMContentLoaded',function(){
+  document.getElementById('app').style.display='block';
+  loadAccounts();
+});
 </script>
 </body>
 </html>
