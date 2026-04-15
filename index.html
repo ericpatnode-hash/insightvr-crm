@@ -209,32 +209,7 @@ textarea.finput{resize:vertical;min-height:60px;}
       <div class="topbar">
         <div style="display:flex;align-items:center;gap:14px">
           <span class="page-title" id="ptitle">Dashboard</span>
-          <div id="ring-container" style="display:none;width:32px;height:48px;flex-shrink:0">
-            <svg viewBox="0 0 62 100" width="32" height="48" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <linearGradient id="topGrad" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stop-color="#B5FF5A"/>
-                  <stop offset="100%" stop-color="#00FEA2"/>
-                </linearGradient>
-                <linearGradient id="midGrad" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stop-color="#00FEA2"/>
-                  <stop offset="100%" stop-color="#00C9B1"/>
-                </linearGradient>
-                <linearGradient id="botGrad" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stop-color="#00A8C8"/>
-                  <stop offset="100%" stop-color="#1F5E9C"/>
-                </linearGradient>
-              </defs>
-              <!-- Vertical bar (full height) -->
-              <rect x="42" y="0" width="20" height="100" rx="4" fill="url(#topGrad)"/>
-              <!-- Top half-circle -->
-              <path d="M42,0 A31,31 0 0,0 42,62 L42,0 Z" fill="url(#midGrad)"/>
-              <!-- Middle overlap arc -->
-              <path d="M42,38 A24,24 0 0,0 42,86 L42,38 Z" fill="url(#midGrad)" opacity="0.85"/>
-              <!-- Bottom D shape -->
-              <path d="M42,60 A31,38 0 0,1 42,100 L42,60 Z" fill="url(#botGrad)"/>
-            </svg>
-          </div>
+          
         </div>
         <div id="pactions" style="display:flex;gap:8px;align-items:center"></div>
       </div>
@@ -368,7 +343,7 @@ function nav(v){
   document.querySelectorAll('.nav-item').forEach(function(e){e.classList.remove('active');});
   var el=document.getElementById('nav-'+v);if(el)el.classList.add('active');
   document.getElementById('ptitle').textContent=TITLES[v]||'';
-  var rc=document.getElementById('ring-container');if(rc)rc.style.display=v==='dashboard'?'block':'none';
+
   render();
 }
 function navFilter(v,stage){
@@ -377,7 +352,7 @@ function navFilter(v,stage){
   document.querySelectorAll('.nav-item').forEach(function(e){e.classList.remove('active');});
   var el=document.getElementById('nav-'+v);if(el)el.classList.add('active');
   document.getElementById('ptitle').textContent=TITLES[v]||'';
-  var rc=document.getElementById('ring-container');if(rc)rc.style.display='none';
+
   render();
 }
 function render(){
@@ -463,22 +438,55 @@ function rDash(el,act){
 
 function rPipe(el,act){
   act.innerHTML='<button class="btn btn-navy" onclick="exportPipeline()" style="margin-right:8px">Export CSV</button><button class="btn btn-primary" onclick="openAdd()">+ Add account</button>';
+  // Stage filter - stored in window._pipeStages as a Set
+  if(!window._pipeStages){
+    window._pipeStages=new Set(['Prospect','Intro meeting','Early diligence','Late diligence','Proposal sent']);
+  }
+  var activeStages=window._pipeStages;
   var list=accs.filter(function(a){return SALES.includes(a.stage);});
   if(q)list=list.filter(function(a){return a.name.toLowerCase().includes(q.toLowerCase())||(a.city||'').toLowerCase().includes(q.toLowerCase());});
-  if(fs==='active')list=list.filter(function(a){return a.stage!=='Deal won'&&a.stage!=='Deal lost';});
-  else if(fs!=='all')list=list.filter(function(a){return a.stage===fs;});
+  list=list.filter(function(a){return activeStages.has(a.stage);});
   list=srt(list,{name:function(a){return a.name;},stage:function(a){return a.stage;},contact:function(a){return cname(a);},deal_value:function(a){return parseC(a.deal_value)||0;},updated:function(a){return a.updated_at;}});
   var totalVal=list.reduce(function(s,a){return s+(parseC(a.deal_value)||0);},0);
   var rows='';
   list.forEach(function(a){
     var pc=pcon(a);
     var emailHTML=pc.email?'<div class="as"><a href="mailto:'+esc(pc.email)+'" style="color:var(--navy)" onclick="event.stopPropagation()">'+esc(pc.email)+'</a></div>':'';
-    rows+=trO(a.id)+'<td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' &middot; '+esc(a.state):'')+'</div></td><td>'+badge(a.stage)+'</td><td><div>'+esc(cname(a))+'</div>'+emailHTML+'</td><td>'+(a.deal_value?'$'+fmtC(a.deal_value):'\u2014')+'</td><td style="color:var(--muted)">'+fmt(a.updated_at)+'</td><td>'+eBtn(a.id)+'</td></tr>';
+    rows+=trO(a.id)+'<td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' &middot; '+esc(a.state):'')+'</div></td><td>'+badge(a.stage)+'</td><td><div>'+esc(cname(a))+'</div>'+emailHTML+'</td><td>'+(a.deal_value?'$'+fmtC(a.deal_value):'—')+'</td><td style="color:var(--muted)">'+fmt(a.updated_at)+'</td><td>'+eBtn(a.id)+'</td></tr>';
   });
-  var stageOpts='<option value="active"'+(fs==='active'?' selected':'')+'>All active</option><option value="all"'+(fs==='all'?' selected':'')+'>All stages</option><option disabled>──────────</option>'+SALES.map(function(s){return '<option value="'+s+'"'+(fs===s?' selected':'')+'>'+s+'</option>';}).join('');
   var totalSpan=totalVal?'<span style="margin-left:auto;font-size:13px;font-weight:700;color:var(--navy)">Total pipeline: $'+fmtC(totalVal)+'</span>':'';
-  el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search..." value="'+esc(q)+'" oninput="q=this.value;render()"><select class="finput" style="width:190px" onchange="fs=this.value;render()">'+stageOpts+'</select>'+totalSpan+'</div>'+'<div class="card"><div style="overflow-x:auto"><table><thead><tr>'+th('name','Account','28%')+th('stage','Stage','16%')+th('contact','Contact','22%')+th('deal_value','Deal value','14%')+th('updated','Updated','12%')+'<th style="width:8%"></th></tr></thead><tbody>'+(list.length?rows:'<tr><td colspan="6" class="empty">No accounts found.</td></tr>')+'</tbody></table></div></div>';
+  // Build stage checkboxes
+  var checkboxes=SALES.map(function(s){
+    var checked=activeStages.has(s)?'checked':'';
+    var color=s==='Deal won'?'var(--ok)':s==='Deal lost'?'var(--danger)':'var(--text)';
+    return '<label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px;font-weight:600;color:'+color+';white-space:nowrap"><input type="checkbox" '+checked+' data-stage="'+s+'" onchange="togglePipeStage(this.dataset.stage,this.checked)" style="cursor:pointer"> '+s+'</label>';
+  }).join('');
+  el.innerHTML=
+    '<div class="fbar" style="flex-wrap:wrap;gap:10px;margin-bottom:12px">'+
+    '<input type="text" class="search" placeholder="Search..." value="'+esc(q)+'" oninput="q=this.value;render()">'+
+    '</div>'+
+    '<div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px;margin-bottom:16px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;box-shadow:var(--shadow-xs)">'+
+    '<span style="font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-right:4px">Show stages:</span>'+
+    checkboxes+
+    '<button onclick="resetPipeStages()" style="margin-left:auto;font-size:11px;font-weight:700;color:var(--navy);background:none;border:none;cursor:pointer;text-decoration:underline">Reset</button>'+
+    '</div>'+
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">'+
+    '<span style="font-size:12px;color:var(--muted);font-weight:600">'+list.length+' account'+(list.length===1?'':'s')+'</span>'+
+    totalSpan+
+    '</div>'+
+    '<div class="card"><div style="overflow-x:auto"><table><thead><tr>'+th('name','Account','28%')+th('stage','Stage','16%')+th('contact','Contact','22%')+th('deal_value','Deal value','14%')+th('updated','Updated','12%')+'<th style="width:8%"></th></tr></thead><tbody>'+(list.length?rows:'<tr><td colspan="6" class="empty">No accounts found.</td></tr>')+'</tbody></table></div></div>';
 }
+function resetPipeStages(){
+  window._pipeStages=new Set(['Prospect','Intro meeting','Early diligence','Late diligence','Proposal sent']);
+  render();
+}
+function togglePipeStage(stage,checked){
+  if(!window._pipeStages)window._pipeStages=new Set();
+  if(checked)window._pipeStages.add(stage);
+  else window._pipeStages.delete(stage);
+  render();
+}
+
 function exportPipeline(){
   exportCSV(accs.filter(function(a){return SALES.includes(a.stage);}),
     [{label:'Account',fn:function(a){return a.name;}},{label:'Stage',fn:function(a){return a.stage;}},{label:'Source',fn:function(a){return a.source;}},
@@ -676,6 +684,42 @@ function rSettings(el,act){
 function showAddMgr(){var name=prompt('Enter implementation manager name:');if(!name||!name.trim())return;implMgrs.push(name.trim());localStorage.setItem('crm_impl_mgrs',JSON.stringify(implMgrs));render();}
 function removeMgr(i){if(!confirm('Remove '+implMgrs[i]+'?'))return;implMgrs.splice(i,1);localStorage.setItem('crm_impl_mgrs',JSON.stringify(implMgrs));render();}
 
+function openLogEmail(id){
+  var a=accs.find(function(x){return x.id===id;});
+  if(!a)return;
+  var contacts=[];try{contacts=JSON.parse(a.contacts_json||'[]');}catch(e){}
+  var contactOpts=contacts.filter(function(c){return c.first||c.last||c.email;}).map(function(c,i){
+    var nm=((c.first||'')+' '+(c.last||'')).trim()||c.email||'Contact '+(i+1);
+    return '<option value="'+esc(nm)+'">'+esc(nm)+'</option>';
+  }).join('');
+  if(!contactOpts)contactOpts='<option value="All contacts">All contacts</option>';
+  document.getElementById('mc').innerHTML=
+    '<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal" style="max-width:480px">'+
+    '<div class="modal-hdr"><span class="modal-title">Log email</span><button class="xbtn" onclick="closeModal()">&times;</button></div>'+
+    '<div class="modal-body">'+
+    '<div style="font-size:12px;color:var(--muted);font-weight:600;margin-bottom:16px">— '+esc(a.name)+'</div>'+
+    '<div class="fgrp" style="margin-bottom:14px"><label class="flbl">To</label><select class="finput" id="elog-to"><option value="All contacts">All contacts</option>'+contactOpts+'</select></div>'+
+    '<div class="fgrp" style="margin-bottom:14px"><label class="flbl">Subject</label><input class="finput" id="elog-subj" placeholder="e.g. Follow-up on demo"></div>'+
+    '<div class="fgrp" style="margin-bottom:14px"><label class="flbl">Summary</label><textarea class="finput" id="elog-body" rows="3" placeholder="Brief notes on what was sent..."></textarea></div>'+
+    '</div>'+
+    '<div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" data-id="'+a.id+'" onclick="saveLogEmail(this.dataset.id)">Save</button></div>'+
+    '</div></div>';
+}
+async function saveLogEmail(id){
+  var a=accs.find(function(x){return x.id===id;});
+  if(!a)return;
+  var to=(document.getElementById('elog-to').value||'').trim();
+  var subj=(document.getElementById('elog-subj').value||'').trim();
+  var body=(document.getElementById('elog-body').value||'').trim();
+  if(!subj){alert('Please enter a subject.');return;}
+  var what='📧 Email to '+to+' — '+subj+(body?' | '+body:'');
+  var updated=Object.assign({},a,{activity_log:logActivity(a,what),updated_at:new Date().toISOString()});
+  try{
+    var btn=document.querySelector('.modal-foot .btn-primary');
+    if(btn){btn.textContent='Saving...';btn.disabled=true;}
+    await upsertAcc(updated);closeModal();openDetail(id);stab('a');
+  }catch(e){alert('Error: '+e.message);}
+}
 function closeModal(){document.getElementById('mc').innerHTML='';}
 function openAdd(){showForm(null);}
 function openEdit(id){showForm(accs.find(function(a){return a.id===id;}));}
@@ -841,7 +885,10 @@ function openDetail(id){
   var notesHTML='<div class="note-input-area"><textarea id="note-input" placeholder="Add a note..." rows="3"></textarea><div class="note-input-area-foot"><button class="btn btn-primary btn-sm" data-id="'+a.id+'" id="note-save-btn" onclick="addNote(this.dataset.id)">Add note</button></div></div>'+(notesItems||'<div style="color:var(--muted);font-size:13px;padding:8px 0">No notes yet.</div>');
   var actItems='';
   activity.forEach(function(e){actItems+='<div class="activity-entry"><span style="font-weight:700;color:var(--navy)">'+esc(e.who||'Unknown')+'</span><span style="color:var(--muted);margin-left:6px">&middot; '+fmtDT(e.ts)+'</span><div style="color:var(--text);margin-top:2px;font-size:12px">'+esc(e.what)+'</div></div>';});
-  var actHTML=actItems||'<div style="color:var(--muted);font-size:13px;padding:8px 0">No activity recorded yet.</div>';
+  var contacts_emails=contacts.filter(function(c){return c.email;}).map(function(c){return c.email;});
+  var logEmailBtn='<button class="btn btn-sm btn-primary" data-id="'+a.id+'" onclick="openLogEmail(this.dataset.id)">+ Log email</button>';
+  var emailAllLink=contacts_emails.length?'<a href="mailto:'+contacts_emails.join(',')+'" class="btn btn-sm btn-navy" style="text-decoration:none">Email all contacts</a>':'';
+  var actHTML='<div style="display:flex;gap:8px;margin-bottom:14px">'+logEmailBtn+emailAllLink+'</div>'+(actItems||'<div style="color:var(--muted);font-size:13px;padding:8px 0">No activity recorded yet.</div>');
   document.getElementById('mc').innerHTML=
     '<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal">'+
     '<div class="modal-hdr"><div><div class="modal-title">'+esc(a.name)+'</div><div style="font-size:11px;color:rgba(255,255,255,.6);margin-top:2px">'+esc(a.acct_type||'')+(a.source?' &middot; '+esc(a.source):'')+(a.city?' &middot; '+esc(a.city):'')+(a.state?' '+esc(a.state):'')+'</div></div><div style="display:flex;align-items:center;gap:10px">'+badge(a.stage)+'<button class="xbtn" onclick="closeModal()">&times;</button></div></div>'+
