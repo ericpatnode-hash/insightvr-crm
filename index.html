@@ -86,6 +86,7 @@ tbody tr:hover td{background:var(--navy-lighter);}
 .b-active{background:#d1fae5;color:#065f46;border:1px solid var(--ok-border);}
 .b-monthly{background:#dbeafe;color:#1e40af;border:1px solid #bfdbfe;}
 .b-yearly{background:var(--navy);color:#fff;}
+.b-nocharge{background:#fef2f2;color:#991b1b;border:1px solid #fecaca;}
 .alert-row{padding:12px 20px;font-size:12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);font-weight:600;}
 .alert-warn{background:var(--warn-bg);color:var(--warn-text);border-left:3px solid #f59e0b;}
 .alert-danger{background:var(--danger-bg);color:var(--danger);border-left:3px solid #ef4444;}
@@ -579,7 +580,7 @@ function rActive(el,act){
   var rows='';
   list.forEach(function(a){
     var d=daysFrom(a.renewal_date);
-    var subBadge=a.sub_type?'<span class="badge '+(a.sub_type==='Monthly'?'b-monthly':'b-yearly')+'">'+a.sub_type+'</span>':'\u2014';
+    var subBadge=a.sub_type?'<span class="badge '+(a.sub_type==='Monthly'?'b-monthly':a.sub_type==='No charge'?'b-nocharge':'b-yearly')+'">'+a.sub_type+'</span>':'\u2014';
     var renewCell=a.renewal_date?'<span class="'+(d!==null&&d<=30?d<=7?'danger':'warn':'')+'">'+fmt(a.renewal_date)+' '+dl(d)+'</span>':'\u2014';
     rows+=trO(a.id)+'<td><div class="an">'+esc(a.name)+'</div></td><td style="color:var(--muted)">'+esc(a.city||'\u2014')+'</td><td style="color:var(--muted)">'+esc(a.state||'\u2014')+'</td><td>'+subBadge+'</td><td>'+renewCell+'</td><td>'+(a.kit_count||'\u2014')+'</td><td>'+(a.hardware_cost?'$'+fmtC(a.hardware_cost):'\u2014')+'</td><td>'+(a.sub_amount?'$'+fmtC(a.sub_amount)+(a.sub_type==='Monthly'?'/mo':'/yr'):'\u2014')+'</td><td>'+esc(cname(a))+'</td><td>'+eBtn(a.id)+'</td></tr>';
   });
@@ -616,7 +617,7 @@ function rRenewals(el,act){
       var d=daysFrom(a.renewal_date);
       var notes=getNotes(a);
       var ln=notes.length?notes[0]:'';
-      var subBadge=a.sub_type?'<span class="badge '+(a.sub_type==='Monthly'?'b-monthly':'b-yearly')+'">'+a.sub_type+'</span>':'\u2014';
+      var subBadge=a.sub_type?'<span class="badge '+(a.sub_type==='Monthly'?'b-monthly':a.sub_type==='No charge'?'b-nocharge':'b-yearly')+'">'+a.sub_type+'</span>':'\u2014';
       rows+=trO(a.id)+'<td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' &middot; '+esc(a.state):'')+'</div></td><td><span class="'+(d!==null&&d<=7?'danger':d!==null&&d<=30?'warn':'')+'">'+fmt(a.renewal_date)+' '+dl(d)+'</span></td><td>'+subBadge+'</td><td>'+(a.sub_amount?'$'+fmtC(a.sub_amount):'\u2014')+'</td><td>'+esc(cname(a))+'</td><td style="color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px">'+(ln?esc(ln.text):'\u2014')+'</td></tr>';
     });
     html+='<div class="blbl">'+b.l+' ('+list.length+')</div><div class="card" style="margin-bottom:20px"><table><thead><tr>'+th('name','Account','24%')+th('renewal_date','Renewal date','16%')+th('sub_type','Sub type','12%')+th('sub_amount','Amount','12%')+th('contact','Contact','14%')+'<th style="width:22%">Latest note</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
