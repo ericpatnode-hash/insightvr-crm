@@ -956,18 +956,18 @@ function rSnap(el,act){
       type==='subscription'?(a.sub_amount?'$'+fmtC(a.sub_amount)+(a.sub_type==='Monthly'?'/mo':a.sub_type==='Yearly'?'/yr':''):'—'):
       (a.kit_count||'—');
     var subBadge=a.sub_type?'<span class="badge '+(a.sub_type==='Monthly'?'b-monthly':a.sub_type==='No charge'?'b-nocharge':'b-yearly')+'">'+(a.sub_type)+'</span>':'';
-    rows+=trO(a.id)+'<td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' &middot; '+esc(a.state):'')+'</div></td>';
-    if(type==='hardware')rows+='<td>'+badge(a.stage)+'</td><td style="font-weight:700;color:var(--navy)">'+val+'</td>';
-    else if(type==='subscription')rows+='<td>'+subBadge+'</td><td style="font-weight:700;color:var(--navy)">'+val+'</td><td style="color:var(--muted)">'+fmt(a.renewal_date)+'</td>';
-    else rows+='<td style="font-weight:700;color:var(--navy)">'+val+'</td><td>'+badge(a.stage)+'</td>';
-    rows+=eBtn(a.id)+'</tr>';
+    var rowData='<td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' &middot; '+esc(a.state):'')+'</div></td>';
+    if(type==='hardware')rowData+='<td>'+badge(a.stage)+'</td><td style="font-weight:700;color:var(--navy)">'+val+'</td>';
+    else if(type==='subscription')rowData+='<td>'+subBadge+'</td><td style="font-weight:700;color:var(--navy)">'+val+'</td><td style="color:var(--muted)">'+fmt(a.renewal_date)+'</td>';
+    else rowData+='<td style="font-weight:700;color:var(--navy)">'+val+'</td><td>'+badge(a.stage)+'</td>';
+    rowData+='<td>'+eBtn(a.id)+'</td>';
+    rows+=trO(a.id)+rowData+'</tr>';
   });
   var cols=type==='hardware'?'<th>Stage</th><th>Hardware cost</th>':
     type==='subscription'?'<th>Sub type</th><th>Amount</th><th>Renewal</th>':
     '<th>Kits</th><th>Stage</th>';
   el.innerHTML=
-    '<div class="fbar"><input type="text" class="search" placeholder="Search..." value="'+esc(q)+'" oninput="searchInput(this.value)">'+
-    '<span style="margin-left:auto;font-size:13px;font-weight:700;color:var(--navy)">Total: '+totalLabel+'</span></div>'+
+    '<div class="fbar" style="margin-bottom:16px"><input type="text" class="search" placeholder="Search..." value="'+esc(q)+'" oninput="searchInput(this.value)"><span style="margin-left:auto;font-size:13px;font-weight:700;color:var(--navy)">Total: '+totalLabel+'</span></div>'+
     '<div class="card"><div style="overflow-x:auto"><table><thead><tr><th style="width:30%">Account</th>'+cols+'<th></th></tr></thead><tbody>'+
     (list.length?rows:'<tr><td colspan="4" class="empty">No accounts found.</td></tr>')+
     '</tbody></table></div></div>';
