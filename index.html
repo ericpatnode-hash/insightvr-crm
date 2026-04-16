@@ -420,7 +420,7 @@ function rDash(el,act){
   var active=accs.filter(function(a){return a.stage==='Active';});
   var rs=active.filter(function(a){var d=daysFrom(a.renewal_date);return d!==null&&d<=30&&d>=0;});
   var hwRev=active.reduce(function(s,a){return s+(parseC(a.hardware_cost)||0);},0);
-  var subRev=active.reduce(function(s,a){return s+(parseC(a.sub_amount)||0);},0);
+  var subRev=active.reduce(function(s,a){var amt=parseC(a.sub_amount)||0;return s+(a.sub_type==='Monthly'?amt*12:amt);},0);
   var pipeVal=pipe.reduce(function(s,a){return s+(parseC(a.deal_value)||0);},0);
   var totalKits=active.reduce(function(s,a){return s+(a.kit_count||0);},0);
   var alerts='';
@@ -626,7 +626,7 @@ function rReports(el,act){
   var pipe=accs.filter(function(a){return SALES.includes(a.stage)&&a.stage!=='Deal won'&&a.stage!=='Deal lost';});
   var lost=accs.filter(function(a){return a.stage==='Deal lost';});
   var hwRev=active.reduce(function(s,a){return s+(parseC(a.hardware_cost)||0);},0);
-  var subRev=active.reduce(function(s,a){return s+(parseC(a.sub_amount)||0);},0);
+  var subRev=active.reduce(function(s,a){var amt=parseC(a.sub_amount)||0;return s+(a.sub_type==='Monthly'?amt*12:amt);},0);
   var pipeVal=pipe.reduce(function(s,a){return s+(parseC(a.deal_value)||0);},0);
   var monthly=active.filter(function(a){return a.sub_type==='Monthly';});
   var yearly=active.filter(function(a){return a.sub_type==='Yearly';});
@@ -666,7 +666,7 @@ function rReports(el,act){
   el.innerHTML=
     '<div class="report-grid">'+
     mCard('Total hardware revenue',hwRev?'$'+fmtC(hwRev):'$0','All active accounts','drill-hw')+
-    mCard('Annual subscription revenue',subRev?'$'+fmtC(subRev):'$0','Active accounts combined','drill-sub')+
+    mCard('Annual subscription revenue',subRev?'$'+fmtC(subRev):'$0','Annualized','drill-sub')+
     mCard('Pipeline value',pipeVal?'$'+fmtC(pipeVal):'$0',pipe.length+' open deals','drill-pipe')+
     mCard('Monthly subscribers',monthly.length,'of '+active.length+' active','drill-monthly')+
     mCard('Yearly subscribers',yearly.length,'of '+active.length+' active','drill-yearly')+
