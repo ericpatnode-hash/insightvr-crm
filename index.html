@@ -487,10 +487,10 @@ function rDash(el,act){
     '<div style="display:flex;flex-direction:column"><div class="card" style="flex:1;margin-bottom:0"><div class="card-hdr"><span class="card-title">Pipeline Breakdown</span><button class="btn btn-sm btn-navy" onclick="nav(\'pipeline\')">View all</button></div><div style="padding:8px 18px">'+pipeHTML+'</div></div></div>'+
     '<div style="display:flex;flex-direction:column"><div class="card" style="flex:1;margin-bottom:0"><div class="card-hdr"><span class="card-title">Revenue Snapshot</span><button class="btn btn-sm btn-navy" onclick="nav(\'reports\')">Full reports</button></div>'+
     '<div style="padding:16px 18px"><div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">'+
-    '<div class="snap-box" onclick=\"navDrill(\'drill-hw\')\"><div class="snap-lbl">Hardware revenue</div><div class="snap-val">'+(hwRev?'$'+fmtC(hwRev):'\u2014')+'</div></div>'+
-    '<div class="snap-box" onclick=\"navDrill(\'drill-sub\')\"><div class="snap-lbl">Subscription revenue</div><div class="snap-val">'+(subRev?'$'+fmtC(subRev):'\u2014')+'</div></div>'+
+    '<div class="snap-box" onclick=\"nav(\'reports\')\"><div class="snap-lbl">Hardware revenue</div><div class="snap-val">'+(hwRev?'$'+fmtC(hwRev):'\u2014')+'</div></div>'+
+    '<div class="snap-box" onclick=\"nav(\'reports\')\"><div class="snap-lbl">Subscription revenue</div><div class="snap-val">'+(subRev?'$'+fmtC(subRev):'\u2014')+'</div></div>'+
     '<div class="snap-box" onclick=\"navPipeVal()\"><div class="snap-lbl">Pipeline value</div><div class="snap-val">'+(pipeVal?'$'+fmtC(pipeVal):'\u2014')+'</div></div>'+
-    '<div class="snap-box" onclick=\"navDrill(\'drill-kits\')\"><div class="snap-lbl">Kits deployed</div><div class="snap-val">'+totalKits+'</div></div>'+
+    '<div class="snap-box" onclick=\"nav(\'reports\')\"><div class="snap-lbl">Kits deployed</div><div class="snap-val">'+totalKits+'</div></div>'+
     '</div></div></div></div>'+
     '</div>';
 }
