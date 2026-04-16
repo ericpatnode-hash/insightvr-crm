@@ -424,7 +424,7 @@ function rDash(el,act){
   var impl=accs.filter(function(a){return IMPL.includes(a.stage);});
   var active=accs.filter(function(a){return a.stage==='Active';});
   var rs=active.filter(function(a){var d=daysFrom(a.renewal_date);return d!==null&&d<=30;});
-  var hwRev=active.reduce(function(s,a){return s+(parseC(a.hardware_cost)||0);},0);
+  var hwRev=accs.filter(function(a){return a.stage==='Active'||IMPL.includes(a.stage);}).reduce(function(s,a){return s+(parseC(a.hardware_cost)||0);},0);
   var subRev=active.reduce(function(s,a){var amt=parseC(a.sub_amount)||0;return s+(a.sub_type==='Monthly'?amt*12:amt);},0);
   var pipeVal=pipe.reduce(function(s,a){return s+(parseC(a.deal_value)||0);},0);
   var totalKits=active.reduce(function(s,a){return s+(a.kit_count||0);},0);
@@ -630,7 +630,7 @@ function rReports(el,act){
   var active=accs.filter(function(a){return a.stage==='Active';});
   var pipe=accs.filter(function(a){return SALES.includes(a.stage)&&a.stage!=='Deal won'&&a.stage!=='Deal lost';});
   var lost=accs.filter(function(a){return a.stage==='Deal lost';});
-  var hwRev=active.reduce(function(s,a){return s+(parseC(a.hardware_cost)||0);},0);
+  var hwRev=accs.filter(function(a){return a.stage==='Active'||IMPL.includes(a.stage);}).reduce(function(s,a){return s+(parseC(a.hardware_cost)||0);},0);
   var subRev=active.reduce(function(s,a){var amt=parseC(a.sub_amount)||0;return s+(a.sub_type==='Monthly'?amt*12:amt);},0);
   var pipeVal=pipe.reduce(function(s,a){return s+(parseC(a.deal_value)||0);},0);
   var monthly=active.filter(function(a){return a.sub_type==='Monthly';});
