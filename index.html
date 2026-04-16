@@ -488,17 +488,18 @@ function rPipe(el,act){
   list=list.filter(function(a){return activeStages.has(a.stage);});
   if(fs==='hasvalue')list=list.filter(function(a){return parseC(a.deal_value)>0;});
   var STAGE_ORDER={'Proposal sent':0,'Late diligence':1,'Early diligence':2,'Intro meeting':3,'Prospect':4,'Deal won':5,'Deal lost':6};
-  if(!sortCol){
-    // Pipeline Value click: sort by stage priority, then deal value desc, then name asc
+  if(sortCol){
+    list=srt(list,{name:function(a){return a.name;},stage:function(a){return a.stage;},contact:function(a){return cname(a);},deal_value:function(a){return parseC(a.deal_value)||0;},updated:function(a){return a.updated_at;}});
+  } else {
+    // Default: stage priority, then deal value desc, then name asc
     list=list.slice().sort(function(a,b){
-      var sp=(STAGE_ORDER[a.stage]||99)-(STAGE_ORDER[b.stage]||99);
-      if(sp!==0)return sp;
+      var sa=STAGE_ORDER.hasOwnProperty(a.stage)?STAGE_ORDER[a.stage]:99;
+      var sb=STAGE_ORDER.hasOwnProperty(b.stage)?STAGE_ORDER[b.stage]:99;
+      if(sa!==sb)return sa-sb;
       var dv=(parseC(b.deal_value)||0)-(parseC(a.deal_value)||0);
       if(dv!==0)return dv;
       return (a.name||'').localeCompare(b.name||'');
     });
-  } else {
-    list=srt(list,{name:function(a){return a.name;},stage:function(a){return a.stage;},contact:function(a){return cname(a);},deal_value:function(a){return parseC(a.deal_value)||0;},updated:function(a){return a.updated_at;}});
   }
   var totalVal=list.reduce(function(s,a){return s+(parseC(a.deal_value)||0);},0);
   var rows='';
