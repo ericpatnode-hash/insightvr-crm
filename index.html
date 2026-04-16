@@ -422,7 +422,7 @@ function rDash(el,act){
   var pipe=accs.filter(function(a){return SALES.includes(a.stage)&&a.stage!=='Deal won'&&a.stage!=='Deal lost';});
   var impl=accs.filter(function(a){return IMPL.includes(a.stage);});
   var active=accs.filter(function(a){return a.stage==='Active';});
-  var rs=active.filter(function(a){var d=daysFrom(a.renewal_date);return d!==null&&d<=30&&d>=0;});
+  var rs=active.filter(function(a){var d=daysFrom(a.renewal_date);return d!==null&&d<=30;});
   var hwRev=active.reduce(function(s,a){return s+(parseC(a.hardware_cost)||0);},0);
   var subRev=active.reduce(function(s,a){var amt=parseC(a.sub_amount)||0;return s+(a.sub_type==='Monthly'?amt*12:amt);},0);
   var pipeVal=pipe.reduce(function(s,a){return s+(parseC(a.deal_value)||0);},0);
@@ -440,7 +440,7 @@ function rDash(el,act){
   });
   rs.forEach(function(a){
     var d=daysFrom(a.renewal_date);
-    alerts+='<div class="alert-row '+(d<=7?'alert-danger':'alert-warn')+'"><span><strong>'+esc(a.name)+'</strong> \u2014 renewal in '+d+' day'+(d===1?'':'s')+' ('+fmt(a.renewal_date)+')</span>'+vBtn(a.id)+'</div>';
+    alerts+='<div class="alert-row alert-danger"><span><strong>'+esc(a.name)+'</strong> \u2014 '+(d<0?'renewal OVERDUE by '+Math.abs(d)+' day'+(Math.abs(d)===1?'':'s')+' — '+fmt(a.renewal_date):'renewal in '+d+' day'+(d===1?'':'s')+' ('+fmt(a.renewal_date)+')')+'</span>'+vBtn(a.id)+'</div>';
   });
   impl.filter(function(a){return a.stage==='60-day evaluation'&&daysFrom(a.checkin_30_date)!==null&&daysFrom(a.checkin_30_date)<0&&!a.checkin_30_done;}).forEach(function(a){
     alerts+='<div class="alert-row alert-danger"><span><strong>'+esc(a.name)+'</strong> \u2014 30-day check-in missed (due '+fmt(a.checkin_30_date)+')</span>'+vBtn(a.id)+'</div>';
