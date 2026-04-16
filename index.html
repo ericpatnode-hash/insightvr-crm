@@ -234,7 +234,7 @@ const TYPES=['Practice','Private equity group','Industry partner','Other'];
 const SOURCES=['Website / inbound','Referral','Outbound / cold outreach','Conference / event','Industry partner','Alcon - Field','B&L - Field','J&J - Field','Other'];
 const LOST_REASONS=['Price','Timing','Competition','No decision / went silent','Returned during eval','Budget cut','Other'];
 const SBADGE={Prospect:'b-prospect','Intro meeting':'b-intro','Early diligence':'b-early','Late diligence':'b-late','Proposal sent':'b-proposal','Deal won':'b-won','Deal lost':'b-lost','Discovery & planning':'b-discovery','Go-live scheduled':'b-golive','60-day evaluation':'b-60day',Overdue:'b-overdue',Active:'b-active'};
-const TITLES={dashboard:'Dashboard',pipeline:'Sales Pipeline',impl:'Implementation',active:'Active Accounts',renewals:'Renewals',reports:'Reports',activity:'Activity',settings:'Settings',followups:'My Follow-ups'};
+const TITLES={dashboard:'Dashboard',pipeline:'Sales Pipeline',impl:'Implementation',active:'Active Accounts',renewals:'Renewals',reports:'Reports',activity:'Activity',settings:'Settings',followups:'My Follow-ups',snap:''};
 let accs=[],view='dashboard',q='',fs='all',ccount=1,sortCol='',sortDir=1,implMgrs=[];
 
 function getUser(){return localStorage.getItem('crm_user_name')||'Unknown';}
@@ -373,6 +373,13 @@ function navDrill(drillId){
     if(d){d.style.display='block';d.scrollIntoView({behavior:'smooth',block:'center'});}
   },200);
 }
+function navSnap(type){
+  view='snap';window._snapType=type;q='';sortCol='';sortDir=1;
+  document.querySelectorAll('.nav-item').forEach(function(e){e.classList.remove('active');});
+  var titles={hardware:'Hardware Revenue',subscription:'Subscription Revenue',kits:'Kits Deployed'};
+  document.getElementById('ptitle').textContent=titles[type]||'';
+  render();
+}
 function nav(v){
   view=v;q='';fs=(v==='pipeline'?'active':'all');sortCol='';sortDir=1;
   window._lf='all';window._sf='all';
@@ -416,6 +423,7 @@ function render(){
   else if(view==='activity')rActivity(c,a);
   else if(view==='settings')rSettings(c,a);
   else if(view==='followups')rFollowups(c,a);
+  else if(view==='snap')rSnap(c,a);
 }
 function exportCSV(rows,cols,filename){
   var header=cols.map(function(c){return c.label;}).join(',');
@@ -487,10 +495,10 @@ function rDash(el,act){
     '<div style="display:flex;flex-direction:column"><div class="card" style="flex:1;margin-bottom:0"><div class="card-hdr"><span class="card-title">Pipeline Breakdown</span><button class="btn btn-sm btn-navy" onclick="nav(\'pipeline\')">View all</button></div><div style="padding:8px 18px">'+pipeHTML+'</div></div></div>'+
     '<div style="display:flex;flex-direction:column"><div class="card" style="flex:1;margin-bottom:0"><div class="card-hdr"><span class="card-title">Revenue Snapshot</span><button class="btn btn-sm btn-navy" onclick="nav(\'reports\')">Full reports</button></div>'+
     '<div style="padding:16px 18px"><div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">'+
-    '<div class="snap-box" onclick=\"nav(\'active\')\"><div class="snap-lbl">Hardware revenue</div><div class="snap-val">'+(hwRev?'$'+fmtC(hwRev):'\u2014')+'</div></div>'+
-    '<div class="snap-box" onclick=\"nav(\'active\')\"><div class="snap-lbl">Subscription revenue</div><div class="snap-val">'+(subRev?'$'+fmtC(subRev):'\u2014')+'</div></div>'+
+    '<div class="snap-box" onclick=\"navSnap(\'hardware\')\"><div class="snap-lbl">Hardware revenue</div><div class="snap-val">'+(hwRev?'$'+fmtC(hwRev):'\u2014')+'</div></div>'+
+    '<div class="snap-box" onclick=\"navSnap(\'subscription\')\"><div class="snap-lbl">Subscription revenue</div><div class="snap-val">'+(subRev?'$'+fmtC(subRev):'\u2014')+'</div></div>'+
     '<div class="snap-box" onclick=\"navPipeVal()\"><div class="snap-lbl">Pipeline value</div><div class="snap-val">'+(pipeVal?'$'+fmtC(pipeVal):'\u2014')+'</div></div>'+
-    '<div class="snap-box" onclick=\"nav(\'active\')\"><div class="snap-lbl">Kits deployed</div><div class="snap-val">'+totalKits+'</div></div>'+
+    '<div class="snap-box" onclick=\"navSnap(\'kits\')\"><div class="snap-lbl">Kits deployed</div><div class="snap-val">'+totalKits+'</div></div>'+
     '</div></div></div></div>'+
     '</div>';
 }
@@ -927,6 +935,42 @@ function rFollowups(el,act){
     '</div>'+
     '<div class="card" style="margin-bottom:20px"><div class="card-hdr"><span class="card-title">Pending ('+pending.length+')</span></div>'+pendingHTML+'</div>'+
     (doneHTML?'<div class="card"><div class="card-hdr"><span class="card-title">Completed</span></div>'+doneHTML+'</div>':'');
+}
+function rSnap(el,act){
+  var type=window._snapType||'hardware';
+  var hwAccs=accs.filter(function(a){return (a.stage==='Active'||IMPL.includes(a.stage))&&parseC(a.hardware_cost)>0;});
+  var subAccs=accs.filter(function(a){return a.stage==='Active'&&parseC(a.sub_amount)>0;});
+  var kitsAccs=accs.filter(function(a){return a.stage==='Active'&&a.kit_count>0;});
+  var list=type==='hardware'?hwAccs:type==='subscription'?subAccs:kitsAccs;
+  if(q)list=list.filter(function(a){return a.name.toLowerCase().includes(q.toLowerCase());});
+  list=list.slice().sort(function(a,b){return (a.name||'').localeCompare(b.name||'');});
+  var total=type==='hardware'?
+    list.reduce(function(s,a){return s+(parseC(a.hardware_cost)||0);},0):
+    type==='subscription'?
+    list.reduce(function(s,a){var amt=parseC(a.sub_amount)||0;return s+(a.sub_type==='Monthly'?amt*12:amt);},0):
+    list.reduce(function(s,a){return s+(a.kit_count||0);},0);
+  var totalLabel=type==='kits'?total+' kits':'$'+fmtC(total)+(type==='subscription'?' (annualized)':'');
+  var rows='';
+  list.forEach(function(a){
+    var val=type==='hardware'?(a.hardware_cost?'$'+fmtC(a.hardware_cost):'—'):
+      type==='subscription'?(a.sub_amount?'$'+fmtC(a.sub_amount)+(a.sub_type==='Monthly'?'/mo':a.sub_type==='Yearly'?'/yr':''):'—'):
+      (a.kit_count||'—');
+    var subBadge=a.sub_type?'<span class="badge '+(a.sub_type==='Monthly'?'b-monthly':a.sub_type==='No charge'?'b-nocharge':'b-yearly')+'">'+(a.sub_type)+'</span>':'';
+    rows+=trO(a.id)+'<td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' &middot; '+esc(a.state):'')+'</div></td>';
+    if(type==='hardware')rows+='<td>'+badge(a.stage)+'</td><td style="font-weight:700;color:var(--navy)">'+val+'</td>';
+    else if(type==='subscription')rows+='<td>'+subBadge+'</td><td style="font-weight:700;color:var(--navy)">'+val+'</td><td style="color:var(--muted)">'+fmt(a.renewal_date)+'</td>';
+    else rows+='<td style="font-weight:700;color:var(--navy)">'+val+'</td><td>'+badge(a.stage)+'</td>';
+    rows+=eBtn(a.id)+'</tr>';
+  });
+  var cols=type==='hardware'?'<th>Stage</th><th>Hardware cost</th>':
+    type==='subscription'?'<th>Sub type</th><th>Amount</th><th>Renewal</th>':
+    '<th>Kits</th><th>Stage</th>';
+  el.innerHTML=
+    '<div class="fbar"><input type="text" class="search" placeholder="Search..." value="'+esc(q)+'" oninput="searchInput(this.value)">'+
+    '<span style="margin-left:auto;font-size:13px;font-weight:700;color:var(--navy)">Total: '+totalLabel+'</span></div>'+
+    '<div class="card"><div style="overflow-x:auto"><table><thead><tr><th style="width:30%">Account</th>'+cols+'<th></th></tr></thead><tbody>'+
+    (list.length?rows:'<tr><td colspan="4" class="empty">No accounts found.</td></tr>')+
+    '</tbody></table></div></div>';
 }
 function closeModal(){document.getElementById('mc').innerHTML='';}
 function openAdd(){showForm(null);}
