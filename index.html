@@ -570,6 +570,7 @@ function rActive(el,act){
   act.innerHTML='<button class="btn btn-navy" onclick="exportActive()">Export CSV</button>';
   var list=accs.filter(function(a){return a.stage==='Active';});
   if(q)list=list.filter(function(a){return a.name.toLowerCase().includes(q.toLowerCase());});
+  if(!sortCol)sortCol='name';
   list=srt(list,{name:function(a){return a.name;},city:function(a){return a.city||'';},state:function(a){return a.state||'';},sub_type:function(a){return a.sub_type||'';},renewal_date:function(a){return a.renewal_date||'';},kit_count:function(a){return a.kit_count||0;},hardware_cost:function(a){return parseC(a.hardware_cost)||0;},sub_amount:function(a){return parseC(a.sub_amount)||0;},contact:function(a){return cname(a);}});
   var rows='';
   list.forEach(function(a){
@@ -951,20 +952,20 @@ function showForm(acc){
     '<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal">'+
     '<div class="modal-hdr"><span class="modal-title">'+(isEdit?'Edit account':'Add account')+'</span><button class="xbtn" onclick="closeModal()">&times;</button></div>'+
     '<div class="modal-body">'+
-    '<div class="fsec">&#9679; Account info</div>'+
+    '<div class="fsec">Account info</div>'+
     '<div class="fg"><div class="fgrp full"><label class="flbl">Account name *</label><input class="finput" id="fn" value="'+esc(a.name||'')+'"></div>'+
     '<div class="fgrp"><label class="flbl">Type</label><select class="finput" id="ft" onchange="updPEField()"><option value="">— Select type —</option>'+typeOpts+'</select></div>'+
     '<div class="fgrp"><label class="flbl">Source</label><select class="finput" id="fsrc"><option value="">— Select source —</option>'+srcOpts+'</select></div></div>'+
     '<div id="pe-group-field" style="display:'+(a.acct_type==="Private equity group"?"block":"none")+';margin-top:14px"><div class="fgrp"><label class="flbl">PE Group name</label><input class="finput" id="fpe" placeholder="e.g. Warburg Pincus" value="'+(a.pe_group||'')+'" ></div></div>'+'<div class="fgrp full" style="margin-top:14px"><label class="flbl">Street address</label><input class="finput" id="faddr" value="'+esc(a.address||'')+'"></div>'+
     '<div class="fg3" style="margin-top:14px"><div class="fgrp"><label class="flbl">City</label><input class="finput" id="fci" value="'+esc(a.city||'')+'"></div><div class="fgrp"><label class="flbl">State</label><input class="finput" id="fst" value="'+esc(a.state||'')+'"></div><div class="fgrp"><label class="flbl">Zip</label><input class="finput" id="fzp" value="'+esc(a.zip||'')+'"></div></div>'+
     '<div class="fg" style="margin-top:14px"><div class="fgrp"><label class="flbl">Phone</label><input class="finput" id="fph" value="'+esc(a.phone||'')+'"></div><div class="fgrp"><label class="flbl">Website</label><input class="finput" id="fwb" value="'+esc(a.website||'')+'"></div></div>'+
-    '<div class="fsec">&#9679; Pipeline stage</div>'+
+    '<div class="fsec">Pipeline stage</div>'+
     '<div class="fg"><div class="fgrp"><label class="flbl">Pipeline type</label><select class="finput" id="fpt" onchange="updStage()"><option value="sales"'+(pt==='sales'?' selected':'')+'>Sales Pipeline</option><option value="impl"'+(pt==='impl'?' selected':'')+'>Implementation</option><option value="active"'+(pt==='active'?' selected':'')+'>Active account</option></select></div>'+
     '<div class="fgrp"><label class="flbl">Stage</label><select class="finput" id="fsg">'+stageOpts+'</select></div>'+
     '<div class="fgrp"><label class="flbl">Deal value ($)</label><input class="finput" id="fdv" type="text" placeholder="e.g. 25,000" value="'+(a.deal_value?fmtC(a.deal_value):'')+'"><div style="font-size:11px;color:var(--muted);margin-top:4px;font-weight:600">e.g. hardware cost + first year subscription</div></div>'+
     '<div class="fgrp"><label class="flbl">Lost reason</label><select class="finput" id="flr" onchange="autoLostStage()"><option value="">—</option>'+lostOpts+'</select></div></div>'+
     '<div class="fsec">Contacts</div><div id="cc">'+contactsHTML+'</div><button class="add-c-btn" onclick="addC()">+ Add another contact</button>'+
-    '<div class="fsec">&#9679; Implementation &amp; hardware</div>'+
+    '<div class="fsec">Implementation &amp; hardware</div>'+
     '<div class="fg"><div class="fgrp"><label class="flbl">Implementation manager</label><select class="finput" id="fim">'+mgrsOpts(a.impl_manager)+'</select></div>'+
     '<div class="fgrp"><label class="flbl">Signed / close date</label><input class="finput" id="fsd" type="date" value="'+(a.signed_date||'')+'"></div>'+
     '<div class="fgrp"><label class="flbl">Go-live date</label><input class="finput" id="fgl" type="date" value="'+(a.go_live_date||'')+'" onchange="autoD()"></div>'+
@@ -973,7 +974,7 @@ function showForm(acc){
     '<div class="fgrp"></div>'+
     '<div class="fgrp"><label class="flbl">Number of kits</label><input class="finput" id="fkc" type="text" value="'+(a.kit_count||'')+'"></div>'+
     '<div class="fgrp"><label class="flbl">Hardware cost ($)</label><input class="finput" id="fhc" type="text" placeholder="e.g. 5,000" value="'+(a.hardware_cost?fmtC(a.hardware_cost):'')+'"></div></div>'+
-    '<div class="fsec">&#9679; Subscription</div>'+
+    '<div class="fsec">Subscription</div>'+
     '<div class="fg"><div class="fgrp"><label class="flbl">Subscription type</label><select class="finput" id="fst2"><option value=""'+((!a.sub_type)?' selected':'')+'>—</option><option value="Monthly"'+(a.sub_type==='Monthly'?' selected':'')+'>Monthly</option><option value="Yearly"'+(a.sub_type==='Yearly'?' selected':'')+'>Yearly</option></select></div>'+
     '<div class="fgrp"><label class="flbl">Subscription amount ($)</label><input class="finput" id="fsa" type="text" placeholder="e.g. 1,200" value="'+(a.sub_amount?fmtC(a.sub_amount):'')+'"></div>'+
     '<div class="fgrp full"><label class="flbl">Subscription start date <span style="color:var(--green-dark);font-size:10px">(auto-fills renewal)</span></label><input class="finput" id="fssd" type="date" value="'+(a.sub_start_date||'')+'" onchange="autoRenewal()"></div>'+
