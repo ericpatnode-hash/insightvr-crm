@@ -368,7 +368,7 @@ function nav(v){
   render();
 }
 function navPipeVal(){
-  view='pipeline';q='';fs='hasvalue';sortCol='deal_value';sortDir=-1;
+  view='pipeline';q='';fs='hasvalue';sortCol='';sortDir=1;
   window._lf='all';window._sf='all';
   document.querySelectorAll('.nav-item').forEach(function(e){e.classList.remove('active');});
   var el=document.getElementById('nav-pipeline');if(el)el.classList.add('active');
