@@ -286,6 +286,23 @@ async function deleteAcc(id){
   closeModal();await loadAll();
 }
 function uid(){return 'a'+Date.now()+Math.random().toString(36).slice(2,7);}
+var _searchTimer=null;
+function searchInput(val){
+  q=val;
+  clearTimeout(_searchTimer);
+  _searchTimer=setTimeout(function(){
+    var activeEl=document.activeElement;
+    var selStart=activeEl?activeEl.selectionStart:null;
+    var selEnd=activeEl?activeEl.selectionEnd:null;
+    render();
+    // Restore focus to search input
+    var inp=document.querySelector('input.search');
+    if(inp){
+      inp.focus();
+      try{inp.setSelectionRange(selStart,selEnd);}catch(e){}
+    }
+  },10);
+}
 function sortBy(col){if(sortCol===col){sortDir*=-1;}else{sortCol=col;sortDir=1;}render();}
 function srt(list,getters){
   if(!sortCol||!getters[sortCol])return list;
@@ -478,7 +495,7 @@ function rPipe(el,act){
   }).join('');
   el.innerHTML=
     '<div class="fbar" style="flex-wrap:wrap;gap:10px;margin-bottom:12px">'+
-    '<input type="text" class="search" placeholder="Search..." value="'+esc(q)+'" oninput="q=this.value;render()">'+
+    '<input type="text" class="search" placeholder="Search..." value="'+esc(q)+'" oninput="searchInput(this.value)">'+
     '</div>'+
     '<div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px;margin-bottom:16px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;box-shadow:var(--shadow-xs)">'+
     '<span style="font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-right:4px">Show stages:</span>'+
@@ -522,7 +539,7 @@ function rImpl(el,act){
     rows+=trO(a.id)+'<td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' &middot; '+esc(a.state):'')+'</div></td><td>'+badge(a.stage)+'</td><td>'+fmt(a.go_live_date)+'</td><td>'+ciStatus(a)+ciBtn+'</td><td>'+(a.eval_end_date?'<span class="'+(ed!==null&&ed<=10?'warn':'')+'">'+fmt(a.eval_end_date)+' '+dl(ed)+'</span>':'\u2014')+'</td><td>'+esc(a.impl_manager||'\u2014')+'</td><td>'+(a.kit_count||'\u2014')+'</td><td>'+eBtn(a.id)+'</td></tr>';
   });
   var stageOpts=IMPL.map(function(s){return '<option value="'+s+'"'+(fs===s?' selected':'')+'>'+s+'</option>';}).join('');
-  el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search..." value="'+esc(q)+'" oninput="q=this.value;render()"><select class="finput" style="width:200px" onchange="fs=this.value;render()"><option value="all">All stages</option>'+stageOpts+'</select></div><div class="card"><div style="overflow-x:auto"><table><thead><tr>'+th('name','Account','20%')+th('stage','Stage','13%')+th('go_live','Go-live','10%')+th('checkin','30-day check-in','18%')+th('eval_end','60-day end','13%')+th('impl_manager','Impl. mgr','11%')+th('kit_count','Kits','6%')+'<th style="width:9%"></th></tr></thead><tbody>'+(list.length?rows:'<tr><td colspan="8" class="empty">No accounts in implementation.</td></tr>')+'</tbody></table></div></div>';
+  el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search..." value="'+esc(q)+'" oninput="searchInput(this.value)"><select class="finput" style="width:200px" onchange="fs=this.value;render()"><option value="all">All stages</option>'+stageOpts+'</select></div><div class="card"><div style="overflow-x:auto"><table><thead><tr>'+th('name','Account','20%')+th('stage','Stage','13%')+th('go_live','Go-live','10%')+th('checkin','30-day check-in','18%')+th('eval_end','60-day end','13%')+th('impl_manager','Impl. mgr','11%')+th('kit_count','Kits','6%')+'<th style="width:9%"></th></tr></thead><tbody>'+(list.length?rows:'<tr><td colspan="8" class="empty">No accounts in implementation.</td></tr>')+'</tbody></table></div></div>';
 }
 
 function rActive(el,act){
@@ -537,7 +554,7 @@ function rActive(el,act){
     var renewCell=a.renewal_date?'<span class="'+(d!==null&&d<=30?d<=7?'danger':'warn':'')+'">'+fmt(a.renewal_date)+' '+dl(d)+'</span>':'\u2014';
     rows+=trO(a.id)+'<td><div class="an">'+esc(a.name)+'</div></td><td style="color:var(--muted)">'+esc(a.city||'\u2014')+'</td><td style="color:var(--muted)">'+esc(a.state||'\u2014')+'</td><td>'+subBadge+'</td><td>'+renewCell+'</td><td>'+(a.kit_count||'\u2014')+'</td><td>'+(a.hardware_cost?'$'+fmtC(a.hardware_cost):'\u2014')+'</td><td>'+(a.sub_amount?'$'+fmtC(a.sub_amount)+(a.sub_type==='Monthly'?'/mo':'/yr'):'\u2014')+'</td><td>'+esc(cname(a))+'</td><td>'+eBtn(a.id)+'</td></tr>';
   });
-  el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search..." value="'+esc(q)+'" oninput="q=this.value;render()"></div><div class="card"><div style="overflow-x:auto"><table><thead><tr>'+th('name','Account','18%')+th('city','City','9%')+th('state','State','7%')+th('sub_type','Sub type','9%')+th('renewal_date','Renewal','12%')+th('kit_count','Kits','6%')+th('hardware_cost','HW cost','9%')+th('sub_amount','Sub amt','9%')+th('contact','Contact','12%')+'<th style="width:9%"></th></tr></thead><tbody>'+(list.length?rows:'<tr><td colspan="10" class="empty">No active accounts.</td></tr>')+'</tbody></table></div></div>';
+  el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search..." value="'+esc(q)+'" oninput="searchInput(this.value)"></div><div class="card"><div style="overflow-x:auto"><table><thead><tr>'+th('name','Account','18%')+th('city','City','9%')+th('state','State','7%')+th('sub_type','Sub type','9%')+th('renewal_date','Renewal','12%')+th('kit_count','Kits','6%')+th('hardware_cost','HW cost','9%')+th('sub_amount','Sub amt','9%')+th('contact','Contact','12%')+'<th style="width:9%"></th></tr></thead><tbody>'+(list.length?rows:'<tr><td colspan="10" class="empty">No active accounts.</td></tr>')+'</tbody></table></div></div>';
 }
 function exportActive(){
   exportCSV(accs.filter(function(a){return a.stage==='Active';}),
