@@ -361,6 +361,18 @@ async function toggleCI(id){
   var done=!a.checkin_30_done;
   await upsertAcc(Object.assign({},a,{checkin_30_done:done,activity_log:logActivity(a,done?'Marked 30-day check-in complete':'Undid 30-day check-in'),updated_at:new Date().toISOString()}));
 }
+function navDrill(drillId){
+  view='reports';q='';sortCol='';sortDir=1;
+  window._lf='all';window._sf='all';
+  document.querySelectorAll('.nav-item').forEach(function(e){e.classList.remove('active');});
+  var el=document.getElementById('nav-reports');if(el)el.classList.add('active');
+  document.getElementById('ptitle').textContent='Reports';
+  render();
+  setTimeout(function(){
+    var d=document.getElementById(drillId);
+    if(d){d.style.display='block';d.scrollIntoView({behavior:'smooth',block:'center'});}
+  },200);
+}
 function nav(v){
   view=v;q='';fs=(v==='pipeline'?'active':'all');sortCol='';sortDir=1;
   window._lf='all';window._sf='all';
@@ -475,10 +487,10 @@ function rDash(el,act){
     '<div style="display:flex;flex-direction:column"><div class="card" style="flex:1;margin-bottom:0"><div class="card-hdr"><span class="card-title">Pipeline Breakdown</span><button class="btn btn-sm btn-navy" onclick="nav(\'pipeline\')">View all</button></div><div style="padding:8px 18px">'+pipeHTML+'</div></div></div>'+
     '<div style="display:flex;flex-direction:column"><div class="card" style="flex:1;margin-bottom:0"><div class="card-hdr"><span class="card-title">Revenue Snapshot</span><button class="btn btn-sm btn-navy" onclick="nav(\'reports\')">Full reports</button></div>'+
     '<div style="padding:16px 18px"><div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">'+
-    '<div class="snap-box" onclick="nav(\'active\')"><div class="snap-lbl">Hardware revenue</div><div class="snap-val">'+(hwRev?'$'+fmtC(hwRev):'\u2014')+'</div></div>'+
-    '<div class="snap-box" onclick="nav(\'active\')"><div class="snap-lbl">Subscription revenue</div><div class="snap-val">'+(subRev?'$'+fmtC(subRev):'\u2014')+'</div></div>'+
+    '<div class="snap-box" onclick=\"navDrill(\'drill-hw\')\"><div class="snap-lbl">Hardware revenue</div><div class="snap-val">'+(hwRev?'$'+fmtC(hwRev):'\u2014')+'</div></div>'+
+    '<div class="snap-box" onclick=\"navDrill(\'drill-sub\')\"><div class="snap-lbl">Subscription revenue</div><div class="snap-val">'+(subRev?'$'+fmtC(subRev):'\u2014')+'</div></div>'+
     '<div class="snap-box" onclick=\"navPipeVal()\"><div class="snap-lbl">Pipeline value</div><div class="snap-val">'+(pipeVal?'$'+fmtC(pipeVal):'\u2014')+'</div></div>'+
-    '<div class="snap-box" onclick="nav(\'active\')"><div class="snap-lbl">Kits deployed</div><div class="snap-val">'+totalKits+'</div></div>'+
+    '<div class="snap-box" onclick=\"navDrill(\'drill-kits\')\"><div class="snap-lbl">Kits deployed</div><div class="snap-val">'+totalKits+'</div></div>'+
     '</div></div></div></div>'+
     '</div>';
 }
@@ -698,7 +710,7 @@ function rReports(el,act){
 
   setTimeout(function(){
     var drills={
-      'drill-hw':{rows:accs.filter(function(a){return (a.stage==='Active'||IMPL.includes(a.stage))&&a.hardware_cost;}).sort(function(a,b){return (parseC(b.hardware_cost)||0)-(parseC(a.hardware_cost)||0);}),cols:[{label:'Account',fn:function(a){return esc(a.name);}},{label:'City',fn:function(a){return esc(a.city||'');}},{label:'HW cost',fn:function(a){return a.hardware_cost?'$'+fmtC(a.hardware_cost):'\u2014';}}]},
+      'drill-hw':{rows:accs.filter(function(a){return (a.stage==='Active'||IMPL.includes(a.stage))&&parseC(a.hardware_cost)>0;}).sort(function(a,b){return (parseC(b.hardware_cost)||0)-(parseC(a.hardware_cost)||0);}),cols:[{label:'Account',fn:function(a){return esc(a.name);}},{label:'Stage',fn:function(a){return a.stage;}},{label:'City',fn:function(a){return esc(a.city||'');}},{label:'HW cost',fn:function(a){return a.hardware_cost?'$'+fmtC(a.hardware_cost):'\u2014';}}]},
       'drill-sub':{rows:active.filter(function(a){return a.sub_amount;}).sort(function(a,b){return (parseC(b.sub_amount)||0)-(parseC(a.sub_amount)||0);}),cols:[{label:'Account',fn:function(a){return esc(a.name);}},{label:'Sub type',fn:function(a){return a.sub_type||'\u2014';}},{label:'Amount',fn:function(a){return a.sub_amount?'$'+fmtC(a.sub_amount)+(a.sub_type==='Monthly'?'/mo':'/yr'):'\u2014';}}]},
       'drill-pipe':{rows:pipe.filter(function(a){return a.deal_value;}).sort(function(a,b){return (parseC(b.deal_value)||0)-(parseC(a.deal_value)||0);}),cols:[{label:'Account',fn:function(a){return esc(a.name);}},{label:'Stage',fn:function(a){return a.stage;}},{label:'Deal value',fn:function(a){return a.deal_value?'$'+fmtC(a.deal_value):'\u2014';}}]},
       'drill-monthly':{rows:monthly,cols:[{label:'Account',fn:function(a){return esc(a.name);}},{label:'Amount',fn:function(a){return a.sub_amount?'$'+fmtC(a.sub_amount)+'/mo':'\u2014';}},{label:'Renewal',fn:function(a){return fmt(a.renewal_date);}}]},
