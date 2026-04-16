@@ -601,6 +601,7 @@ function rRenewals(el,act){
     {l:'90+ days',f:function(a){var d=daysFrom(a.renewal_date);return d!==null&&d>90;}}
   ];
   var getters={name:function(a){return a.name;},renewal_date:function(a){return a.renewal_date||'';},sub_type:function(a){return a.sub_type||'';},sub_amount:function(a){return parseC(a.sub_amount)||0;},contact:function(a){return cname(a);}};
+  if(!sortCol){sortCol='renewal_date';sortDir=1;}
   var html='';
   bkts.forEach(function(b){
     var list=active.filter(b.f);
