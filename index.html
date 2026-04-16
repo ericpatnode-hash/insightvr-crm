@@ -378,12 +378,16 @@ function navPipeVal(){
   render();
 }
 function navFilter(v,stage){
-  view=v;q='';fs=stage||'active';sortCol='';sortDir=1;
+  view=v;q='';fs='all';sortCol='';sortDir=1;
   window._lf='all';window._sf='all';
+  if(stage&&stage!=='all'){
+    window._pipeStages=new Set([stage]);
+  } else {
+    window._pipeStages=new Set(['Prospect','Intro meeting','Early diligence','Late diligence','Proposal sent']);
+  }
   document.querySelectorAll('.nav-item').forEach(function(e){e.classList.remove('active');});
   var el=document.getElementById('nav-'+v);if(el)el.classList.add('active');
   document.getElementById('ptitle').textContent=TITLES[v]||'';
-
   render();
 }
 function render(){
