@@ -367,6 +367,14 @@ function nav(v){
 
   render();
 }
+function navPipeVal(){
+  view='pipeline';q='';fs='hasvalue';sortCol='deal_value';sortDir=-1;
+  window._lf='all';window._sf='all';
+  document.querySelectorAll('.nav-item').forEach(function(e){e.classList.remove('active');});
+  var el=document.getElementById('nav-pipeline');if(el)el.classList.add('active');
+  document.getElementById('ptitle').textContent='Sales Pipeline';
+  render();
+}
 function navFilter(v,stage){
   view=v;q='';fs=stage||'active';sortCol='';sortDir=1;
   window._lf='all';window._sf='all';
@@ -462,7 +470,7 @@ function rDash(el,act){
     '<div style="padding:16px 18px"><div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">'+
     '<div class="snap-box" onclick="nav(\'active\')"><div class="snap-lbl">Hardware revenue</div><div class="snap-val">'+(hwRev?'$'+fmtC(hwRev):'\u2014')+'</div></div>'+
     '<div class="snap-box" onclick="nav(\'active\')"><div class="snap-lbl">Subscription revenue</div><div class="snap-val">'+(subRev?'$'+fmtC(subRev):'\u2014')+'</div></div>'+
-    '<div class="snap-box" onclick="nav(\'pipeline\')"><div class="snap-lbl">Pipeline value</div><div class="snap-val">'+(pipeVal?'$'+fmtC(pipeVal):'\u2014')+'</div></div>'+
+    '<div class="snap-box" onclick=\"navPipeVal()\"><div class="snap-lbl">Pipeline value</div><div class="snap-val">'+(pipeVal?'$'+fmtC(pipeVal):'\u2014')+'</div></div>'+
     '<div class="snap-box" onclick="nav(\'active\')"><div class="snap-lbl">Kits deployed</div><div class="snap-val">'+totalKits+'</div></div>'+
     '</div></div></div></div>'+
     '</div>';
@@ -478,6 +486,7 @@ function rPipe(el,act){
   var list=accs.filter(function(a){return SALES.includes(a.stage);});
   if(q)list=list.filter(function(a){return a.name.toLowerCase().includes(q.toLowerCase())||(a.city||'').toLowerCase().includes(q.toLowerCase());});
   list=list.filter(function(a){return activeStages.has(a.stage);});
+  if(fs==='hasvalue')list=list.filter(function(a){return parseC(a.deal_value)>0;});
   list=srt(list,{name:function(a){return a.name;},stage:function(a){return a.stage;},contact:function(a){return cname(a);},deal_value:function(a){return parseC(a.deal_value)||0;},updated:function(a){return a.updated_at;}});
   var totalVal=list.reduce(function(s,a){return s+(parseC(a.deal_value)||0);},0);
   var rows='';
