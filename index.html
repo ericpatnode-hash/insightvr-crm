@@ -490,7 +490,6 @@ function rDash(el,act){
     '<div class="metric" onclick="nav(\'impl\')" style="cursor:pointer"><div class="metric-lbl">Implementation</div><div class="metric-val">'+impl.length+'</div><div class="metric-sub" style="color:var(--navy)">View \u2192</div></div>'+
     '<div class="metric" onclick="nav(\'renewals\')" style="cursor:pointer"><div class="metric-lbl">Renewing (30 days)</div><div class="metric-val '+(rs.length?'red':'')+'">'+rs.length+'</div><div class="metric-sub" style="color:'+(rs.length?'var(--danger)':'var(--navy)')+'">View \u2192</div></div>'+
     '</div>'+
-    '<div class="card" style="overflow:hidden;margin-bottom:20px"><div class="card-hdr"><span class="card-title">Alerts</span></div>'+(alerts?alerts:'<div style="padding:14px 18px;font-size:13px;font-weight:600;color:var(--ok)">&#10003; All clear \u2014 no items need attention right now.</div>')+'</div>'+
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">'+
     '<div style="display:flex;flex-direction:column"><div class="card" style="flex:1;margin-bottom:0"><div class="card-hdr"><span class="card-title">Pipeline Breakdown</span><button class="btn btn-sm btn-navy" onclick="nav(\'pipeline\')">View all</button></div><div style="padding:8px 18px">'+pipeHTML+'</div></div></div>'+
     '<div style="display:flex;flex-direction:column"><div class="card" style="flex:1;margin-bottom:0"><div class="card-hdr"><span class="card-title">Revenue Snapshot</span><button class="btn btn-sm btn-navy" onclick="nav(\'reports\')">Full reports</button></div>'+
@@ -500,7 +499,8 @@ function rDash(el,act){
     '<div class="snap-box" onclick=\"navPipeVal()\"><div class="snap-lbl">Pipeline value</div><div class="snap-val">'+(pipeVal?'$'+fmtC(pipeVal):'\u2014')+'</div></div>'+
     '<div class="snap-box" onclick=\"navSnap(\'kits\')\"><div class="snap-lbl">Kits deployed</div><div class="snap-val">'+totalKits+'</div></div>'+
     '</div></div></div></div>'+
-    '</div>';
+    '</div>'+
+    '<div class="card" style="overflow:hidden;margin-bottom:20px;margin-top:20px"><div class="card-hdr"><span class="card-title">Alerts</span></div>'+(alerts?alerts:'<div style="padding:14px 18px;font-size:13px;font-weight:600;color:var(--ok)">&#10003; All clear \u2014 no items need attention right now.</div>')+'</div>';
 }
 
 function rPipe(el,act){
