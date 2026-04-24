@@ -1622,22 +1622,25 @@ function collectEvents(year,month){
     var s=parseDateLocal(e.start_date);
     var en=parseDateLocal(e.end_date||e.start_date);
     if(!s)return;
+    if(!e.event_type)return;
     if(en<monthStart||s>monthEnd)return;
     all.push({
       id:e.id,
       manager:e.manager||'Other / Guest',
       type:e.event_type||'Other',
       start:s,end:en,
-      title:e.account_name||'(no account)',
+      title:e.account_name||e.event_type||'(untitled)',
       notes:e.notes||'',
       accountId:e.account_id||null,
       source:'manual'
     });
   });
-  // CRM auto-populated events
+  // CRM auto-populated events — only for accounts actively in implementation or active
   accs.forEach(function(a){
     var mgr=a.impl_manager;
     if(!mgr)return;
+    // Skip accounts not in implementation or active stage — avoids ghost events from old/lost deals
+    if(!IMPL.includes(a.stage)&&a.stage!=='Active')return;
     // Go-live (may span multiple days if go_live_end_date is set)
     if(a.go_live_date){
       var gd=parseDateLocal(a.go_live_date);
