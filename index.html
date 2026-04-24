@@ -1904,8 +1904,8 @@ function showForm(acc){
     '<div class="fsec">Implementation & hardware</div>'+
     '<div class="fg"><div class="fgrp"><label class="flbl">Implementation manager</label><select class="finput" id="fim">'+mgrsOpts(a.impl_manager)+'</select></div>'+
     '<div class="fgrp"><label class="flbl">Signed / close date</label><input class="finput" id="fsd" type="date" value="'+(a.signed_date||'')+'"></div>'+
-    '<div class="fgrp"><label class="flbl">Go-live date</label><input class="finput" id="fgl" type="date" value="'+(a.go_live_date||'')+'" onchange="autoD()"></div>'+
-    '<div class="fgrp"><label class="flbl">Go-live end date <span style="color:var(--lime-ink);font-size:10px">auto · for multi-day installs</span></label><input class="finput" id="fgle" type="date" value="'+(a.go_live_end_date||'')+'"></div>'+
+    '<div class="fgrp"><label class="flbl">Go-live date</label><input class="finput" id="fgl" type="date" value="'+(a.go_live_date||'')+'" data-prev="'+(a.go_live_date||'')+'" onchange="autoD()"></div>'+
+    '<div class="fgrp"><label class="flbl">Go-live end date <span style="color:var(--lime-ink);font-size:10px">auto · for multi-day installs</span></label><input class="finput" id="fgle" type="date" value="'+(a.go_live_end_date||(a.go_live_date?addDays(a.go_live_date,2):''))+'" data-prev-start="'+(a.go_live_date||'')+'"></div>'+
     '<div class="fgrp"><label class="flbl">30-day check-in <span style="color:var(--lime-ink);font-size:10px">auto</span></label><input class="finput" id="fc3" type="date" value="'+(a.checkin_30_date||'')+'"></div>'+
     '<div class="fgrp"><label class="flbl">60-day eval end <span style="color:var(--lime-ink);font-size:10px">auto</span></label><input class="finput" id="fe6" type="date" value="'+(a.eval_end_date||'')+'"></div>'+
     '<div class="fgrp"></div>'+
@@ -1920,7 +1920,26 @@ function showForm(acc){
     '<div class="modal-foot">'+delBtn+'<button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" data-eid="'+(a.id||'')+'" onclick="saveAcc(this.dataset.eid)">Save account</button></div>'+
     '</div></div>';
 }
-function autoD(){var g=document.getElementById('fgl').value;if(g){document.getElementById('fgle').value=addDays(g,2);document.getElementById('fc3').value=addDays(g,30);document.getElementById('fe6').value=addDays(g,60);}}
+function autoD(){
+  var g=document.getElementById('fgl').value;
+  if(!g)return;
+  var gleEl=document.getElementById('fgle');
+  var prev=gleEl.getAttribute('data-prev-start')||'';
+  var curEnd=gleEl.value||'';
+  if(!curEnd){
+    gleEl.value=addDays(g,2);
+  }else if(prev){
+    // Preserve duration: shift end by the same delta the start moved
+    var prevStart=new Date(prev);var newStart=new Date(g);
+    var delta=Math.round((newStart-prevStart)/86400000);
+    if(delta!==0)gleEl.value=addDays(curEnd,delta);
+  }else{
+    gleEl.value=addDays(g,2);
+  }
+  gleEl.setAttribute('data-prev-start',g);
+  document.getElementById('fc3').value=addDays(g,30);
+  document.getElementById('fe6').value=addDays(g,60);
+}
 function autoRenewal(){var s=document.getElementById('fssd').value;if(s){var d=new Date(s);d.setFullYear(d.getFullYear()+1);document.getElementById('frd').value=d.toISOString().split('T')[0];}}
 function autoLostStage(){var r=document.getElementById('flr').value;if(r){var pt=document.getElementById('fpt');var sg=document.getElementById('fsg');if(pt&&sg&&pt.value!=='sales'){pt.value='sales';updStage();}if(sg)sg.value='Deal lost';}}
 function updStage(){var pt=document.getElementById('fpt').value;var s=document.getElementById('fsg');if(pt==='sales')s.innerHTML=SALES.map(function(x){return '<option>'+x+'</option>';}).join('');else if(pt==='impl')s.innerHTML=IMPL.map(function(x){return '<option>'+x+'</option>';}).join('');else s.innerHTML='<option value="Active">Active</option>';}
