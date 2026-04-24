@@ -660,7 +660,7 @@ textarea.finput{resize:vertical;min-height:64px;font-family:var(--f-ui);}
   font-family:var(--f-ui);font-size:13px;font-weight:600;color:var(--ink);
   background:var(--bg);
   border-right:1px solid var(--line-2);
-  position:sticky;left:0;z-index:3;
+  position:sticky;left:0;z-index:8;
   display:flex;align-items:center;
   width:150px;min-width:150px;flex-shrink:0;
   box-shadow:1px 0 0 var(--line-2);
@@ -1764,7 +1764,7 @@ function rCal(el,act){
   html+='</div>';
 
   // Build header (matches body structure: manager cell + day-area with N equal day cells)
-  html+='<div class="cal-grid-wrap">';
+  html+='<div class="cal-grid-wrap" id="cal-grid-wrap">';
   html+='<div class="cal-row-flex cal-header-row">';
   html+='<div class="cal-mgr-head">Manager</div>';
   html+='<div class="cal-day-area">';
@@ -1819,6 +1819,25 @@ function rCal(el,act){
     'Dashed borders = auto-populated from CRM (go-lives, check-ins, eval ends). Click to open the account. Edit account dates to change these.</div>';
 
   el.innerHTML=html;
+
+  // Auto-scroll: if viewing the current month, scroll so today is visible; otherwise scroll to day 1
+  setTimeout(function(){
+    var wrap=document.getElementById('cal-grid-wrap');
+    if(!wrap)return;
+    var now=new Date();
+    var viewingCurrentMonth=(now.getFullYear()===c.year&&now.getMonth()===c.month);
+    var targetDay=viewingCurrentMonth?now.getDate():1;
+    // Find the header cell for the target day
+    var headCells=wrap.querySelectorAll('.cal-header-row .cal-head-cell');
+    var target=headCells[targetDay-1];
+    if(!target)return;
+    // Scroll so target is ~25% from the left edge (gives context of preceding days)
+    var wrapWidth=wrap.clientWidth;
+    var mgrWidth=150;
+    var targetLeft=target.offsetLeft;
+    var scrollTo=Math.max(0,targetLeft-mgrWidth-Math.round((wrapWidth-mgrWidth)*0.25));
+    wrap.scrollLeft=scrollTo;
+  },50);
 }
 function handleEventClick(id,source,accId){
   if(source==='crm'&&accId){openDetail(accId);return;}
