@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1641,9 +1641,13 @@ function rCal(el,act){
   var daysInMonth=new Date(c.year,c.month+1,0).getDate();
   var today=new Date();today.setHours(0,0,0,0);
   var todayKey=dateKey(today);
-  // Rows = implMgrs + "Other / Guest"
-  var rows=implMgrs.slice();
-  if(!rows.includes('Other / Guest'))rows.push('Other / Guest');
+  // Rows = implMgrs in custom calendar order + "Other / Guest"
+  var CAL_MGR_ORDER=['Chris Morgan','Leah Orr','Eric Patnode','Matt Larson'];
+  var rows=[];
+  CAL_MGR_ORDER.forEach(function(m){if(implMgrs.includes(m))rows.push(m);});
+  // Append any managers not in the custom order, alphabetically
+  implMgrs.filter(function(m){return !CAL_MGR_ORDER.includes(m);}).sort().forEach(function(m){rows.push(m);});
+  rows.push('Other / Guest');
   // Collect events
   var monthEvents=collectEvents(c.year,c.month).filter(function(e){return !c.hidden.has(e.type);});
   // Group events by manager + day
