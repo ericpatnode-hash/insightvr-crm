@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -825,7 +825,7 @@ async function loadAll(){
       req('GET','events',null,null,'start_date.asc').catch(function(){return[];})
     ]);
     accs=res[0];
-    implMgrs=res[1].length?res[1].map(function(x){return x.name;}):['Leah Orr','Chris Morgan'];
+    implMgrs=res[1].length?res[1].map(function(x){return x.name;}):['Leah Orr','Chris Morgan','Eric Patnode','Matt Larson'];
     events=res[2]||[];
     updRnb();updFUBadge();render();
   }catch(e){
@@ -1000,16 +1000,6 @@ function rDash(el,act){
   var pipeVal=pipe.reduce(function(s,a){return s+(parseC(a.deal_value)||0);},0);
   var totalKits=active.reduce(function(s,a){return s+(a.kit_count||0);},0);
 
-  // Build sparkline from pipeline by stage (visual, not literal time-series)
-  var stageBars=SALES.filter(function(s){return s!=='Deal won'&&s!=='Deal lost';})
-    .map(function(s){return pipe.filter(function(a){return a.stage===s;}).length;});
-  var maxBar=Math.max.apply(null,stageBars.concat([1]));
-  var sparkHTML=stageBars.map(function(n,i){
-    var h=Math.max(8,Math.round(n/maxBar*100));
-    var hi=i>=3?' hi':'';
-    return '<div class="spark-bar'+hi+'" style="height:'+h+'%"></div>';
-  }).join('');
-
   // Alerts
   var alerts='';
   var me=getUser();
@@ -1054,7 +1044,6 @@ function rDash(el,act){
         '<div class="metric-lbl">Pipeline value</div>'+
         '<div class="metric-val huge">'+(pipeVal?'$'+fmtC(pipeVal):'—')+'</div>'+
         '<div class="metric-sub"><strong>'+pipe.length+'</strong> open deal'+(pipe.length===1?'':'s')+' across the pipeline</div>'+
-        '<div class="spark">'+sparkHTML+'</div>'+
       '</div>'+
       '<div class="metric" onclick="nav(\'active\')">'+
         '<div class="metric-lbl">Active accounts</div>'+
@@ -1324,13 +1313,28 @@ function rActivity(el,act){
 
 function rSettings(el,act){
   var mgrs='';
-  implMgrs.forEach(function(m,i){
-    mgrs+='<div class="mgr-row"><span>'+esc(m)+'</span><button class="btn btn-sm btn-danger" data-i="'+i+'" onclick="removeMgr(parseInt(this.dataset.i))">Remove</button></div>';
+  implMgrs.forEach(function(m){
+    mgrs+='<div class="mgr-row"><span>'+esc(m)+'</span><button class="btn btn-sm btn-danger" data-name="'+esc(m)+'" onclick="removeMgr(this.dataset.name)">Remove</button></div>';
   });
-  el.innerHTML='<div style="max-width:560px"><div class="card"><div class="card-hdr"><span class="card-title">Implementation managers</span><button class="btn btn-sm btn-primary" onclick="showAddMgr()">+ Add</button></div><div id="mgr-list">'+mgrs+'</div></div></div>';
+  el.innerHTML='<div style="max-width:560px"><div class="card"><div class="card-hdr"><span class="card-title">Implementation managers</span><button class="btn btn-sm btn-primary" onclick="showAddMgr()">+ Add</button></div><div id="mgr-list">'+mgrs+'</div></div><div style="font-size:11.5px;color:var(--muted);margin-top:10px;font-weight:500">Shared across all users. Changes are visible to everyone on your team.</div></div>';
 }
-function showAddMgr(){var name=prompt('Enter implementation manager name:');if(!name||!name.trim())return;implMgrs.push(name.trim());localStorage.setItem('crm_impl_mgrs',JSON.stringify(implMgrs));render();}
-function removeMgr(i){if(!confirm('Remove '+implMgrs[i]+'?'))return;implMgrs.splice(i,1);localStorage.setItem('crm_impl_mgrs',JSON.stringify(implMgrs));render();}
+async function showAddMgr(){
+  var name=prompt('Enter implementation manager name:');
+  if(!name||!name.trim())return;
+  name=name.trim();
+  if(implMgrs.includes(name)){alert(name+' is already in the list.');return;}
+  try{
+    await req('POST','impl_managers',[{name:name}],null,null);
+    await loadAll();
+  }catch(e){alert('Could not add manager: '+e.message);}
+}
+async function removeMgr(name){
+  if(!confirm('Remove '+name+'? Accounts previously assigned to them will keep the name but it won\'t appear in dropdowns.'))return;
+  try{
+    await req('DELETE','impl_managers',null,['name=eq.'+encodeURIComponent(name)],null);
+    await loadAll();
+  }catch(e){alert('Could not remove manager: '+e.message);}
+}
 
 function openLogEmail(id){
   var a=accs.find(function(x){return x.id===id;});
@@ -2072,8 +2076,6 @@ function stab(t){
 }
 
 document.addEventListener('DOMContentLoaded',function(){
-  var saved=localStorage.getItem('crm_impl_mgrs');
-  if(saved){try{implMgrs=JSON.parse(saved);}catch(e){}}
   var name=getUser();
   if(name&&name!=='Unknown'){
     document.getElementById('sf-name').textContent=name;
