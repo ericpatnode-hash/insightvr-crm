@@ -613,10 +613,9 @@ textarea.finput{resize:vertical;min-height:64px;font-family:var(--f-ui);}
   min-width:100%;
   font-size:12px;
 }
-/* New: each manager row is its own grid with events overlaid */
+/* New: each manager row is its own grid with events overlaid via grid-row */
 .cal-row{
   display:grid;
-  position:relative;
   min-width:100%;
   border-bottom:1px solid var(--line);
 }
@@ -667,11 +666,10 @@ textarea.finput{resize:vertical;min-height:64px;font-family:var(--f-ui);}
 .cal-day-cell:hover{background:var(--navy-soft);}
 .cal-day-cell.weekend:hover{background:oklch(94% 0.02 255);}
 
-/* Event bar — absolutely positioned within the row, grid-column span for width */
+/* Event bar — grid-placed across its date range, not absolutely positioned */
 .cal-event-bar{
-  position:absolute;
-  padding:4px 10px;
-  border-radius:3px;
+  padding:5px 10px;
+  border-radius:4px;
   font-size:11px;font-weight:600;
   line-height:1.2;
   cursor:pointer;
@@ -679,8 +677,10 @@ textarea.finput{resize:vertical;min-height:64px;font-family:var(--f-ui);}
   border:1px solid transparent;
   transition:transform .1s, box-shadow .1s;
   display:flex;flex-direction:column;justify-content:center;
-  left:2px;right:2px; /* small gutter from cell edges */
+  margin:2px 3px;
+  min-width:0; /* allow truncation inside grid */
   z-index:1;
+  align-self:start;
 }
 .cal-event-bar:hover{
   transform:translateY(-1px);
@@ -694,7 +694,7 @@ textarea.finput{resize:vertical;min-height:64px;font-family:var(--f-ui);}
   font-size:11.5px;
 }
 .cal-event-bar .cal-event-sub{
-  display:block;font-size:9.5px;font-weight:500;opacity:.85;margin-top:1px;
+  display:block;font-size:9.5px;font-weight:500;opacity:.85;margin-top:2px;
   font-family:var(--f-mono);letter-spacing:.02em;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 }
@@ -1732,14 +1732,9 @@ function rCal(el,act){
   });
   html+='</div>';
 
-  // Layout constants
-  var MGR_COL=150; // px
-  var DAY_COL_MIN=58; // px
-  var LANE_H=26; // px per event lane
-  var LANE_GAP=3;
-  var ROW_PAD=6; // top+bottom padding for each row
-
-  // Overall width of the grid portion
+  // Layout: manager col + day columns
+  var MGR_COL=150;
+  var DAY_COL_MIN=60;
   var gridCols=MGR_COL+'px repeat('+daysInMonth+',minmax('+DAY_COL_MIN+'px,1fr))';
 
   // Build header
@@ -1755,33 +1750,36 @@ function rCal(el,act){
   }
   html+='</div>'; // close header grid
 
-  // Body — one row per manager, with absolutely positioned event bars
+  // Body — one row per manager
   rows.forEach(function(mgr){
     var items=byMgr[mgr];
-    var laneCount=byMgr[mgr+'_lanes']||0;
-    var rowH=Math.max(54,laneCount*(LANE_H+LANE_GAP)-LANE_GAP+ROW_PAD*2);
-    // Row wrapper is a grid for cells, and we overlay events with absolute positioning
-    html+='<div class="cal-row" style="grid-template-columns:'+gridCols+';height:'+rowH+'px">';
-    html+='<div class="cal-mgr-cell">'+esc(mgr)+'</div>';
+    var laneCount=Math.max(1,byMgr[mgr+'_lanes']||0);
+    // Row grid: first row = day-cell background (fills full height), then one row per lane
+    // We use a grid with rows: [cells (full-span)] [lane 1] [lane 2] ...
+    // Actually simpler: day cells fill the entire row via grid-row span, events occupy lane rows
+    var rowH=Math.max(54,laneCount*30+16);
+    html+='<div class="cal-row" style="grid-template-columns:'+gridCols+';grid-template-rows:repeat('+laneCount+',30px);min-height:'+rowH+'px">';
+    // Manager cell spans all lanes
+    html+='<div class="cal-mgr-cell" style="grid-row:1 / span '+laneCount+'">'+esc(mgr)+'</div>';
+    // Day cells each span all lanes — these form the background grid
     for(var dd=1;dd<=daysInMonth;dd++){
       var dt2=new Date(c.year,c.month,dd);
       var dow2=dt2.getDay();
       var weekend2=(dow2===0||dow2===6)?' weekend':'';
       var isToday2=dateKey(dt2)===todayKey?' today':'';
-      html+='<div class="cal-day-cell'+weekend2+isToday2+'" data-mgr="'+esc(mgr)+'" data-day="'+dd+'" onclick="openAddEventPre(\''+esc(mgr)+'\','+c.year+','+c.month+','+dd+')"></div>';
+      html+='<div class="cal-day-cell'+weekend2+isToday2+'" style="grid-row:1 / span '+laneCount+'" data-mgr="'+esc(mgr)+'" data-day="'+dd+'" onclick="openAddEventPre(\''+esc(mgr)+'\','+c.year+','+c.month+','+dd+')"></div>';
     }
-    // Overlay event bars
+    // Event bars — placed on top via grid-column + grid-row
     items.forEach(function(it){
       var ev=it.ev;
       var cls=EVENT_TYPE_CLASS[ev.type]||'ev-other';
       var readOnlyCls=ev.source==='crm'?' readonly':'';
-      // Grid column: manager col = col 1, day N = col 1+N
-      var colStart=1+it.startDay; // +1 because of manager col
-      var colEnd=1+it.endDay+1;   // grid-column end is exclusive
-      var topPx=ROW_PAD+it.lane*(LANE_H+LANE_GAP);
+      var colStart=2+it.startDay; // manager col = col 1, day 1 = col 2
+      var colEnd=3+it.endDay;     // end is exclusive
+      var laneRow=it.lane+1;       // grid-row is 1-indexed
       var title=esc(ev.title+' · '+ev.type+(ev.notes?' · '+ev.notes:''));
       html+='<span class="cal-event-bar '+cls+readOnlyCls+'" '+
-        'style="grid-column:'+colStart+' / '+colEnd+';top:'+topPx+'px;height:'+LANE_H+'px" '+
+        'style="grid-column:'+colStart+' / '+colEnd+';grid-row:'+laneRow+'" '+
         'title="'+title+'" '+
         'onclick="event.stopPropagation();handleEventClick(\''+esc(ev.id)+'\',\''+esc(ev.source)+'\',\''+esc(ev.accountId||'')+'\')">'+
         '<span class="cal-event-label">'+esc(ev.title)+'</span>'+
