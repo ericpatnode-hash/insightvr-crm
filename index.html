@@ -1140,7 +1140,7 @@ function rImpl(el,act){
   list.forEach(function(a){
     var ed=daysFrom(a.eval_end_date);
     var ciBtn=a.stage==='60-day evaluation'?'<button class="btn btn-sm" style="margin-left:8px;'+(a.checkin_30_done?'background:var(--lime-wash);color:var(--lime-ink);border-color:var(--lime)':'')+'" data-id="'+a.id+'" onclick="event.stopPropagation();toggleCI(this.dataset.id)">'+(a.checkin_30_done?'Undo check-in':'Check-in done')+'</button>':'';
-    rows+=trO(a.id)+'<td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' · '+esc(a.state):'')+'</div></td><td>'+badge(a.stage)+'</td><td>'+fmt(a.go_live_date)+'</td><td>'+ciStatus(a)+ciBtn+'</td><td>'+(a.eval_end_date?'<span class="'+(ed!==null&&ed<=10?'warn':'')+'">'+fmt(a.eval_end_date)+' '+dl(ed)+'</span>':'—')+'</td><td>'+esc(a.impl_manager||'—')+'</td><td>'+(a.kit_count||'—')+'</td><td>'+eBtn(a.id)+'</td></tr>';
+    rows+=trO(a.id)+'<td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' · '+esc(a.state):'')+'</div></td><td>'+badge(a.stage)+'</td><td>'+(a.go_live_end_date&&a.go_live_end_date!==a.go_live_date?fmt(a.go_live_date)+' → '+fmt(a.go_live_end_date):fmt(a.go_live_date))+'</td><td>'+ciStatus(a)+ciBtn+'</td><td>'+(a.eval_end_date?'<span class="'+(ed!==null&&ed<=10?'warn':'')+'">'+fmt(a.eval_end_date)+' '+dl(ed)+'</span>':'—')+'</td><td>'+esc(a.impl_manager||'—')+'</td><td>'+(a.kit_count||'—')+'</td><td>'+eBtn(a.id)+'</td></tr>';
   });
   var stageOpts=IMPL.map(function(s){return '<option value="'+s+'"'+(fs===s?' selected':'')+'>'+s+'</option>';}).join('');
   el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search…" value="'+esc(q)+'" oninput="searchInput(this.value)"><select class="finput" style="width:200px" onchange="fs=this.value;render()"><option value="all">All stages</option>'+stageOpts+'</select></div><div class="card"><div style="overflow-x:auto"><table><thead><tr>'+th('name','Account','20%')+th('stage','Stage','13%')+th('go_live','Go-live','10%')+th('checkin','30-day check-in','18%')+th('eval_end','60-day end','13%')+th('impl_manager','Impl. mgr','11%')+th('kit_count','Kits','6%')+'<th style="width:9%"></th></tr></thead><tbody>'+(list.length?rows:'<tr><td colspan="8" class="empty">No accounts in implementation.</td></tr>')+'</tbody></table></div></div>';
@@ -1610,11 +1610,12 @@ function collectEvents(year,month){
   accs.forEach(function(a){
     var mgr=a.impl_manager;
     if(!mgr)return;
-    // Go-live
+    // Go-live (may span multiple days if go_live_end_date is set)
     if(a.go_live_date){
       var gd=parseDateLocal(a.go_live_date);
-      if(gd&&gd>=monthStart&&gd<=monthEnd){
-        all.push({id:'auto-gl-'+a.id,manager:mgr,type:'Go-live',start:gd,end:gd,title:a.name,notes:'Go-live date',accountId:a.id,source:'crm'});
+      var gde=parseDateLocal(a.go_live_end_date)||gd;
+      if(gd&&!(gde<monthStart||gd>monthEnd)){
+        all.push({id:'auto-gl-'+a.id,manager:mgr,type:'Go-live',start:gd,end:gde,title:a.name,notes:'Go-live / implementation',accountId:a.id,source:'crm'});
       }
     }
     // 30-day check-in
@@ -1904,6 +1905,7 @@ function showForm(acc){
     '<div class="fg"><div class="fgrp"><label class="flbl">Implementation manager</label><select class="finput" id="fim">'+mgrsOpts(a.impl_manager)+'</select></div>'+
     '<div class="fgrp"><label class="flbl">Signed / close date</label><input class="finput" id="fsd" type="date" value="'+(a.signed_date||'')+'"></div>'+
     '<div class="fgrp"><label class="flbl">Go-live date</label><input class="finput" id="fgl" type="date" value="'+(a.go_live_date||'')+'" onchange="autoD()"></div>'+
+    '<div class="fgrp"><label class="flbl">Go-live end date <span style="color:var(--lime-ink);font-size:10px">auto · for multi-day installs</span></label><input class="finput" id="fgle" type="date" value="'+(a.go_live_end_date||'')+'"></div>'+
     '<div class="fgrp"><label class="flbl">30-day check-in <span style="color:var(--lime-ink);font-size:10px">auto</span></label><input class="finput" id="fc3" type="date" value="'+(a.checkin_30_date||'')+'"></div>'+
     '<div class="fgrp"><label class="flbl">60-day eval end <span style="color:var(--lime-ink);font-size:10px">auto</span></label><input class="finput" id="fe6" type="date" value="'+(a.eval_end_date||'')+'"></div>'+
     '<div class="fgrp"></div>'+
@@ -1918,7 +1920,7 @@ function showForm(acc){
     '<div class="modal-foot">'+delBtn+'<button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" data-eid="'+(a.id||'')+'" onclick="saveAcc(this.dataset.eid)">Save account</button></div>'+
     '</div></div>';
 }
-function autoD(){var g=document.getElementById('fgl').value;if(g){document.getElementById('fc3').value=addDays(g,30);document.getElementById('fe6').value=addDays(g,60);}}
+function autoD(){var g=document.getElementById('fgl').value;if(g){document.getElementById('fgle').value=addDays(g,2);document.getElementById('fc3').value=addDays(g,30);document.getElementById('fe6').value=addDays(g,60);}}
 function autoRenewal(){var s=document.getElementById('fssd').value;if(s){var d=new Date(s);d.setFullYear(d.getFullYear()+1);document.getElementById('frd').value=d.toISOString().split('T')[0];}}
 function autoLostStage(){var r=document.getElementById('flr').value;if(r){var pt=document.getElementById('fpt');var sg=document.getElementById('fsg');if(pt&&sg&&pt.value!=='sales'){pt.value='sales';updStage();}if(sg)sg.value='Deal lost';}}
 function updStage(){var pt=document.getElementById('fpt').value;var s=document.getElementById('fsg');if(pt==='sales')s.innerHTML=SALES.map(function(x){return '<option>'+x+'</option>';}).join('');else if(pt==='impl')s.innerHTML=IMPL.map(function(x){return '<option>'+x+'</option>';}).join('');else s.innerHTML='<option value="Active">Active</option>';}
@@ -1952,6 +1954,7 @@ async function saveAcc(eid){
     impl_manager:document.getElementById('fim').value||null,
     signed_date:document.getElementById('fsd').value||null,
     go_live_date:document.getElementById('fgl').value||null,
+    go_live_end_date:document.getElementById('fgle').value||null,
     checkin_30_date:document.getElementById('fc3').value||null,
     eval_end_date:document.getElementById('fe6').value||null,
     kit_count:document.getElementById('fkc').value?parseInt(document.getElementById('fkc').value):null,
@@ -2046,7 +2049,7 @@ function openDetail(id){
     '<div id="dc-i" style="display:none"><div class="dgrid">'+
     '<div class="dlbl">Impl. manager</div><div class="dval">'+esc(a.impl_manager||'—')+'</div>'+
     '<div class="dlbl">Signed date</div><div class="dval">'+fmt(a.signed_date)+'</div>'+
-    '<div class="dlbl">Go-live date</div><div class="dval">'+fmt(a.go_live_date)+'</div>'+
+    '<div class="dlbl">Go-live date</div><div class="dval">'+(a.go_live_end_date&&a.go_live_end_date!==a.go_live_date?fmt(a.go_live_date)+' → '+fmt(a.go_live_end_date):fmt(a.go_live_date))+'</div>'+
     '<div class="dlbl">30-day check-in</div><div class="dval">'+ciStatus(a)+'</div>'+
     '<div class="dlbl">60-day eval end</div><div class="dval">'+(a.eval_end_date?'<span class="'+(ed!==null&&ed<=10?'warn':'')+'">'+fmt(a.eval_end_date)+' '+dl(ed)+'</span>':'—')+'</div>'+
     '<div class="dlbl">Kits</div><div class="dval">'+(a.kit_count||'—')+'</div>'+
