@@ -777,6 +777,7 @@ textarea.finput{resize:vertical;min-height:64px;font-family:var(--f-ui);}
 .cal-event-bar.ev-checkin{background:oklch(92% 0.10 70);color:oklch(42% 0.12 65);border-color:oklch(78% 0.14 65);}
 .cal-event-bar.ev-evalend{background:oklch(92% 0.08 45);color:oklch(40% 0.13 40);border-color:oklch(78% 0.14 45);}
 .cal-event-bar.ev-pto{background:oklch(90% 0.01 255);color:var(--muted);border-color:var(--line-3);font-style:italic;}
+.cal-event-bar.ev-retrain{background:oklch(90% 0.10 95);color:oklch(38% 0.14 90);border-color:oklch(76% 0.14 92);}
 .cal-event-bar.ev-travel{background:oklch(90% 0.08 190);color:oklch(38% 0.10 200);border-color:oklch(76% 0.12 195);}
 .cal-event-bar.ev-unavailable{background:oklch(88% 0.01 255);color:var(--muted);border-color:var(--line-3);font-style:italic;}
 .cal-event-bar.ev-other{background:oklch(92% 0.02 255);color:var(--navy);border-color:var(--line-3);}
@@ -792,6 +793,7 @@ textarea.finput{resize:vertical;min-height:64px;font-family:var(--f-ui);}
 .cal-legend-swatch.ev-checkin{background:oklch(92% 0.10 70);}
 .cal-legend-swatch.ev-evalend{background:oklch(92% 0.08 45);}
 .cal-legend-swatch.ev-pto{background:oklch(90% 0.01 255);}
+.cal-legend-swatch.ev-retrain{background:oklch(90% 0.10 95);}
 .cal-legend-swatch.ev-travel{background:oklch(90% 0.08 190);}
 .cal-legend-swatch.ev-unavailable{background:oklch(88% 0.01 255);}
 .cal-legend-swatch.ev-other{background:oklch(92% 0.02 255);}
@@ -1637,7 +1639,7 @@ function rSnap(el,act){
     '</tbody></table></div></div>';
 }
 // ============ CALENDAR ============
-const EVENT_TYPES=['30 Day Check-In','Alcon Evaluation','Implementation','No Charge Evaluation','Other','Patient Demos','Practice Demo','PTO','Travel','Unavailable','UVP Evaluation'];
+const EVENT_TYPES=['30 Day Check-In','Alcon Evaluation','Implementation','No Charge Evaluation','Other','Patient Demos','Practice Demo','PTO','Retrain','Travel','Unavailable','UVP Evaluation'];
 const EVENT_TYPE_CLASS={
   '30 Day Check-In':'ev-checkin',
   'Alcon Evaluation':'ev-alcon',
@@ -1647,6 +1649,7 @@ const EVENT_TYPE_CLASS={
   'Patient Demos':'ev-patient',
   'Practice Demo':'ev-practice',
   'PTO':'ev-pto',
+  'Retrain':'ev-retrain',
   'Travel':'ev-travel',
   'Unavailable':'ev-unavailable',
   'UVP Evaluation':'ev-uvp',
@@ -1969,7 +1972,7 @@ function openAddEvent(pre){
     '<div class="modal-hdr"><span class="modal-title">Add event</span><button class="xbtn" onclick="closeModal()">×</button></div>'+
     '<div class="modal-body">'+
     '<div class="fg">'+
-    '<div class="fgrp"><label class="flbl">Start date *</label><input class="finput" id="ev-start" type="date" value="'+(pre.start||'')+'"></div>'+
+    '<div class="fgrp"><label class="flbl">Start date *</label><input class="finput" id="ev-start" type="date" value="'+(pre.start||'')+'" onchange="syncEventEndDate()"></div>'+
     '<div class="fgrp"><label class="flbl">End date <span style="color:var(--muted);font-size:10px">optional · multi-day</span></label><input class="finput" id="ev-end" type="date"></div>'+
     '<div class="fgrp full"><label class="flbl">Manager *</label><select class="finput" id="ev-mgr">'+mgrOpts+'</select></div>'+
     '<div class="fgrp full"><label class="flbl">Event type *</label><select class="finput" id="ev-type">'+typeOpts+'</select></div>'+
@@ -1980,6 +1983,20 @@ function openAddEvent(pre){
     '</div>'+
     '<div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveEvent()">Save event</button></div>'+
     '</div></div>';
+  setTimeout(syncEventEndDate,0);
+}
+function syncEventEndDate(){
+  var startEl=document.getElementById('ev-start');
+  var endEl=document.getElementById('ev-end');
+  if(!startEl||!endEl)return;
+  var s=startEl.value;
+  if(!s)return;
+  // Always set min so user can't pick an earlier end
+  endEl.setAttribute('min',s);
+  // Auto-fill end only if it's empty or earlier than start
+  if(!endEl.value||endEl.value<s){
+    endEl.value=s;
+  }
 }
 function fillEventName(){
   var sel=document.getElementById('ev-acc');
@@ -2000,6 +2017,8 @@ async function saveEvent(){
   if(!mgr){alert('Manager is required.');return;}
   if(!type){alert('Event type is required.');return;}
   if(end&&end<start){alert('End date cannot be before start date.');return;}
+  // Treat same-day as single-day event (no end stored)
+  if(end&&end===start)end=null;
   if(!name&&accId){var a=accs.find(function(x){return x.id===accId;});if(a)name=a.name;}
   var existingId=window._editEventId||null;
   var ev={
@@ -2036,7 +2055,7 @@ function openEditEvent(id){
     '<div class="modal-hdr"><span class="modal-title">Edit event</span><button class="xbtn" onclick="closeModal()">×</button></div>'+
     '<div class="modal-body">'+
     '<div class="fg">'+
-    '<div class="fgrp"><label class="flbl">Start date *</label><input class="finput" id="ev-start" type="date" value="'+(ev.start_date?String(ev.start_date).split('T')[0]:'')+'"></div>'+
+    '<div class="fgrp"><label class="flbl">Start date *</label><input class="finput" id="ev-start" type="date" value="'+(ev.start_date?String(ev.start_date).split('T')[0]:'')+'" onchange="syncEventEndDate()"></div>'+
     '<div class="fgrp"><label class="flbl">End date</label><input class="finput" id="ev-end" type="date" value="'+(ev.end_date?String(ev.end_date).split('T')[0]:'')+'"></div>'+
     '<div class="fgrp full"><label class="flbl">Manager *</label><select class="finput" id="ev-mgr">'+mgrOpts+'</select></div>'+
     '<div class="fgrp full"><label class="flbl">Event type *</label><select class="finput" id="ev-type">'+typeOpts+'</select></div>'+
@@ -2047,6 +2066,7 @@ function openEditEvent(id){
     '</div>'+
     '<div class="modal-foot"><button class="btn btn-danger" onclick="deleteEvent(\''+esc(id)+'\')" style="margin-right:auto">Delete</button><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveEvent()">Save event</button></div>'+
     '</div></div>';
+  setTimeout(syncEventEndDate,0);
 }
 
 function closeModal(){document.getElementById('mc').innerHTML='';window._editEventId=null;}
