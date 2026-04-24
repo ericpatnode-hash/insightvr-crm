@@ -695,9 +695,9 @@ textarea.finput{resize:vertical;min-height:64px;font-family:var(--f-ui);}
 .ev-other{background:var(--navy-soft);color:var(--navy);border-color:var(--line-3);}
 
 /* Multi-day span pill */
-.cal-event.span-start{border-top-right-radius:0;border-bottom-right-radius:0;margin-right:-1px;}
-.cal-event.span-mid{border-radius:0;border-left:none;border-right:none;margin-right:-1px;margin-left:-1px;}
-.cal-event.span-end{border-top-left-radius:0;border-bottom-left-radius:0;margin-left:-1px;}
+.cal-event.span-start{border-top-right-radius:0;border-bottom-right-radius:0;margin-right:-4px;padding-right:8px;}
+.cal-event.span-mid{border-radius:0;border-left-color:transparent;border-right-color:transparent;margin-right:-4px;margin-left:-4px;padding-left:8px;padding-right:8px;}
+.cal-event.span-end{border-top-left-radius:0;border-bottom-left-radius:0;margin-left:-4px;padding-left:8px;border-left-color:transparent;}
 
 .cal-more{
   display:block;font-family:var(--f-mono);font-size:9.5px;font-weight:600;
@@ -1729,10 +1729,9 @@ function rCal(el,act){
           else if(x.isEnd&&!x.isStart)spanCls=' span-end';
         }
         var readOnlyCls=ev.source==='crm'?' readonly':'';
-        // Only show title on first day of span or single-day
-        var showLabel=!x.isSpan||x.isStart;
-        var label=showLabel?esc(ev.title):'';
-        var sub=showLabel?'<span class="cal-event-sub">'+esc(ev.type)+'</span>':'';
+        // Show title on every day of the span so it reads across
+        var label=esc(ev.title);
+        var sub='<span class="cal-event-sub">'+esc(ev.type)+'</span>';
         html+='<span class="cal-event '+cls+spanCls+readOnlyCls+'" title="'+esc(ev.title+' · '+ev.type+(ev.notes?' · '+ev.notes:''))+'" onclick="event.stopPropagation();handleEventClick(\''+esc(ev.id)+'\',\''+esc(ev.source)+'\',\''+esc(ev.accountId||'')+'\')">'+label+sub+'</span>';
       });
       if(extra>0)html+='<span class="cal-more" onclick="event.stopPropagation();alert(\''+extra+' more event'+(extra===1?'':'s')+' on this day\')">+'+extra+' more</span>';
