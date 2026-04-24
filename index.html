@@ -610,10 +610,17 @@ textarea.finput{resize:vertical;min-height:64px;font-family:var(--f-ui);}
 }
 .cal-grid{
   display:grid;
-  /* Manager column + N day columns set inline */
   min-width:100%;
   font-size:12px;
 }
+/* New: each manager row is its own grid with events overlaid */
+.cal-row{
+  display:grid;
+  position:relative;
+  min-width:100%;
+  border-bottom:1px solid var(--line);
+}
+.cal-row:last-child{border-bottom:none;}
 .cal-head-cell{
   padding:8px 6px;
   font-family:var(--f-mono);
@@ -643,61 +650,82 @@ textarea.finput{resize:vertical;min-height:64px;font-family:var(--f-ui);}
 .cal-mgr-cell{
   padding:10px 14px;
   font-family:var(--f-ui);font-size:13px;font-weight:600;color:var(--ink);
-  background:var(--bg);border-right:1px solid var(--line-2);border-bottom:1px solid var(--line);
+  background:var(--bg);
+  border-right:1px solid var(--line-2);
   position:sticky;left:0;z-index:1;
   display:flex;align-items:center;
   min-width:150px;
 }
 .cal-day-cell{
-  border-right:1px solid var(--line);border-bottom:1px solid var(--line);
-  min-height:54px;
-  position:relative;
-  padding:3px;
+  border-right:1px solid var(--line);
   background:var(--bg);
+  position:relative;
+  cursor:pointer;
 }
 .cal-day-cell.weekend{background:var(--navy-softer);}
 .cal-day-cell.today{background:oklch(96% 0.06 155 / .4);}
-.cal-day-cell:hover{background:var(--navy-soft);cursor:pointer;}
+.cal-day-cell:hover{background:var(--navy-soft);}
 .cal-day-cell.weekend:hover{background:oklch(94% 0.02 255);}
 
-/* Event pill */
-.cal-event{
-  display:block;
-  padding:3px 6px;
+/* Event bar — absolutely positioned within the row, grid-column span for width */
+.cal-event-bar{
+  position:absolute;
+  padding:4px 10px;
   border-radius:3px;
-  font-size:10.5px;font-weight:600;
+  font-size:11px;font-weight:600;
   line-height:1.2;
-  margin-bottom:2px;
   cursor:pointer;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  overflow:hidden;
   border:1px solid transparent;
   transition:transform .1s, box-shadow .1s;
+  display:flex;flex-direction:column;justify-content:center;
+  left:2px;right:2px; /* small gutter from cell edges */
+  z-index:1;
 }
-.cal-event:hover{transform:translateY(-1px);box-shadow:0 2px 4px oklch(50% 0.04 255 / .18);}
-.cal-event .cal-event-sub{
+.cal-event-bar:hover{
+  transform:translateY(-1px);
+  box-shadow:0 2px 6px oklch(50% 0.04 255 / .22);
+  z-index:2;
+}
+.cal-event-bar.readonly{border-style:dashed;}
+.cal-event-label{
+  display:block;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font-size:11.5px;
+}
+.cal-event-bar .cal-event-sub{
   display:block;font-size:9.5px;font-weight:500;opacity:.85;margin-top:1px;
   font-family:var(--f-mono);letter-spacing:.02em;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 }
-.cal-event.readonly{border-style:dashed;opacity:.9;}
 
-/* Event type colors — aligned to app palette */
-.ev-implementation{background:var(--lime-wash);color:var(--lime-ink);border-color:var(--lime);}
-.ev-golive{background:oklch(88% 0.18 155);color:var(--ink);border-color:var(--lime);}
-.ev-alcon{background:oklch(94% 0.08 50);color:oklch(38% 0.12 50);border-color:oklch(80% 0.12 50);}
-.ev-uvp{background:oklch(94% 0.06 30);color:oklch(40% 0.13 30);border-color:oklch(80% 0.10 30);}
-.ev-nocharge{background:oklch(95% 0.05 220);color:oklch(38% 0.10 220);border-color:oklch(80% 0.08 220);}
-.ev-practice{background:oklch(94% 0.06 280);color:oklch(40% 0.13 280);border-color:oklch(80% 0.10 280);}
-.ev-patient{background:oklch(94% 0.06 320);color:oklch(42% 0.13 320);border-color:oklch(80% 0.10 320);}
-.ev-checkin{background:oklch(94% 0.08 70);color:oklch(42% 0.12 65);border-color:oklch(80% 0.12 65);}
-.ev-evalend{background:oklch(94% 0.06 45);color:oklch(40% 0.13 40);border-color:oklch(80% 0.12 45);}
-.ev-pto{background:oklch(92% 0.01 255);color:var(--muted);border-color:var(--line-3);font-style:italic;}
-.ev-unavailable{background:oklch(90% 0.01 255);color:var(--muted);border-color:var(--line-3);font-style:italic;}
-.ev-other{background:var(--navy-soft);color:var(--navy);border-color:var(--line-3);}
+/* Event type colors — aligned to app palette. Applied to .cal-event-bar */
+.cal-event-bar.ev-implementation{background:var(--lime-wash);color:var(--lime-ink);border-color:var(--lime);}
+.cal-event-bar.ev-golive{background:oklch(88% 0.18 155);color:var(--ink);border-color:var(--lime);}
+.cal-event-bar.ev-alcon{background:oklch(94% 0.08 50);color:oklch(38% 0.12 50);border-color:oklch(80% 0.12 50);}
+.cal-event-bar.ev-uvp{background:oklch(94% 0.06 30);color:oklch(40% 0.13 30);border-color:oklch(80% 0.10 30);}
+.cal-event-bar.ev-nocharge{background:oklch(95% 0.05 220);color:oklch(38% 0.10 220);border-color:oklch(80% 0.08 220);}
+.cal-event-bar.ev-practice{background:oklch(94% 0.06 280);color:oklch(40% 0.13 280);border-color:oklch(80% 0.10 280);}
+.cal-event-bar.ev-patient{background:oklch(94% 0.06 320);color:oklch(42% 0.13 320);border-color:oklch(80% 0.10 320);}
+.cal-event-bar.ev-checkin{background:oklch(94% 0.08 70);color:oklch(42% 0.12 65);border-color:oklch(80% 0.12 65);}
+.cal-event-bar.ev-evalend{background:oklch(94% 0.06 45);color:oklch(40% 0.13 40);border-color:oklch(80% 0.12 45);}
+.cal-event-bar.ev-pto{background:oklch(92% 0.01 255);color:var(--muted);border-color:var(--line-3);font-style:italic;}
+.cal-event-bar.ev-unavailable{background:oklch(90% 0.01 255);color:var(--muted);border-color:var(--line-3);font-style:italic;}
+.cal-event-bar.ev-other{background:var(--navy-soft);color:var(--navy);border-color:var(--line-3);}
 
-/* Multi-day span pill */
-.cal-event.span-start{border-top-right-radius:0;border-bottom-right-radius:0;margin-right:-4px;padding-right:8px;}
-.cal-event.span-mid{border-radius:0;border-left-color:transparent;border-right-color:transparent;margin-right:-4px;margin-left:-4px;padding-left:8px;padding-right:8px;}
-.cal-event.span-end{border-top-left-radius:0;border-bottom-left-radius:0;margin-left:-4px;padding-left:8px;border-left-color:transparent;}
+/* Legend swatches use the same palette */
+.cal-legend-swatch.ev-implementation{background:var(--lime-wash);}
+.cal-legend-swatch.ev-golive{background:oklch(88% 0.18 155);}
+.cal-legend-swatch.ev-alcon{background:oklch(94% 0.08 50);}
+.cal-legend-swatch.ev-uvp{background:oklch(94% 0.06 30);}
+.cal-legend-swatch.ev-nocharge{background:oklch(95% 0.05 220);}
+.cal-legend-swatch.ev-practice{background:oklch(94% 0.06 280);}
+.cal-legend-swatch.ev-patient{background:oklch(94% 0.06 320);}
+.cal-legend-swatch.ev-checkin{background:oklch(94% 0.08 70);}
+.cal-legend-swatch.ev-evalend{background:oklch(94% 0.06 45);}
+.cal-legend-swatch.ev-pto{background:oklch(92% 0.01 255);}
+.cal-legend-swatch.ev-unavailable{background:oklch(90% 0.01 255);}
+.cal-legend-swatch.ev-other{background:var(--navy-soft);}
 
 .cal-more{
   display:block;font-family:var(--f-mono);font-size:9.5px;font-weight:600;
@@ -1642,37 +1670,47 @@ function rCal(el,act){
   var daysInMonth=new Date(c.year,c.month+1,0).getDate();
   var today=new Date();today.setHours(0,0,0,0);
   var todayKey=dateKey(today);
-  // Rows = implMgrs in custom calendar order + "Other / Guest"
+  // Row order
   var CAL_MGR_ORDER=['Chris Morgan','Leah Orr','Eric Patnode','Matt Larson'];
   var rows=[];
   CAL_MGR_ORDER.forEach(function(m){if(implMgrs.includes(m))rows.push(m);});
-  // Append any managers not in the custom order, alphabetically
   implMgrs.filter(function(m){return !CAL_MGR_ORDER.includes(m);}).sort().forEach(function(m){rows.push(m);});
   rows.push('Other / Guest');
+
   // Collect events
   var monthEvents=collectEvents(c.year,c.month).filter(function(e){return !c.hidden.has(e.type);});
-  // Group events by manager + day
-  var byMgrDay={};
-  rows.forEach(function(m){byMgrDay[m]={};for(var i=1;i<=daysInMonth;i++)byMgrDay[m][i]=[];});
+  // Group events by manager, clamped to this month
+  var byMgr={};
+  rows.forEach(function(m){byMgr[m]=[];});
+  var monthStart=new Date(c.year,c.month,1);
+  var monthEnd=new Date(c.year,c.month+1,0);
   monthEvents.forEach(function(ev){
-    var mgr=byMgrDay[ev.manager]?ev.manager:'Other / Guest';
-    // Iterate each day of the event that falls in this month
-    var cursor=new Date(ev.start);
-    var endD=new Date(ev.end);
-    while(cursor<=endD){
-      if(cursor.getMonth()===c.month&&cursor.getFullYear()===c.year){
-        var day=cursor.getDate();
-        var isStart=dateKey(cursor)===dateKey(ev.start);
-        var isEnd=dateKey(cursor)===dateKey(ev.end);
-        var isSpan=ev.start.getTime()!==ev.end.getTime();
-        byMgrDay[mgr][day].push({ev:ev,isStart:isStart,isEnd:isEnd,isSpan:isSpan});
-      }
-      cursor.setDate(cursor.getDate()+1);
-    }
+    var mgr=byMgr[ev.manager]?ev.manager:'Other / Guest';
+    // Clamp to this month's range
+    var s=new Date(Math.max(ev.start.getTime(),monthStart.getTime()));
+    var e=new Date(Math.min(ev.end.getTime(),monthEnd.getTime()));
+    byMgr[mgr].push({ev:ev,startDay:s.getDate(),endDay:e.getDate()});
   });
 
-  // Build header row
-  var gridCols='150px repeat('+daysInMonth+',minmax(58px,1fr))';
+  // Assign lane per manager so overlapping events stack vertically
+  rows.forEach(function(mgr){
+    var items=byMgr[mgr];
+    // Sort by start day, then by length descending (longer bars get lower lanes)
+    items.sort(function(a,b){
+      if(a.startDay!==b.startDay)return a.startDay-b.startDay;
+      return (b.endDay-b.startDay)-(a.endDay-a.startDay);
+    });
+    var lanes=[];
+    items.forEach(function(it){
+      var placed=false;
+      for(var i=0;i<lanes.length;i++){
+        if(lanes[i]<it.startDay){it.lane=i;lanes[i]=it.endDay;placed=true;break;}
+      }
+      if(!placed){it.lane=lanes.length;lanes.push(it.endDay);}
+    });
+    byMgr[mgr+'_lanes']=lanes.length;
+  });
+
   var html='<div class="cal-toolbar">'+
     '<span class="cal-month-display">'+esc(monthName)+'</span>'+
     '<div class="cal-nav">'+
@@ -1689,14 +1727,23 @@ function rCal(el,act){
     var off=c.hidden.has(t)?' off':'';
     var cls=EVENT_TYPE_CLASS[t]||'ev-other';
     html+='<span class="cal-legend-item'+off+'" onclick="calToggleType(\''+t.replace(/\'/g,"\\'")+'\')">'+
-      '<span class="cal-legend-swatch '+cls+'" style="background:var(--lime-wash)"></span>'+
+      '<span class="cal-legend-swatch '+cls+'"></span>'+
       esc(t)+'</span>';
   });
   html+='</div>';
 
-  // Grid
+  // Layout constants
+  var MGR_COL=150; // px
+  var DAY_COL_MIN=58; // px
+  var LANE_H=26; // px per event lane
+  var LANE_GAP=3;
+  var ROW_PAD=6; // top+bottom padding for each row
+
+  // Overall width of the grid portion
+  var gridCols=MGR_COL+'px repeat('+daysInMonth+',minmax('+DAY_COL_MIN+'px,1fr))';
+
+  // Build header
   html+='<div class="cal-grid-wrap"><div class="cal-grid" style="grid-template-columns:'+gridCols+'">';
-  // Header row
   html+='<div class="cal-mgr-head">Manager</div>';
   for(var d=1;d<=daysInMonth;d++){
     var dt=new Date(c.year,c.month,d);
@@ -1706,39 +1753,45 @@ function rCal(el,act){
     var dowName=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][dow];
     html+='<div class="cal-head-cell'+weekend+isToday+'">'+d+'<span class="cal-dow">'+dowName+'</span></div>';
   }
-  // Manager rows
+  html+='</div>'; // close header grid
+
+  // Body — one row per manager, with absolutely positioned event bars
   rows.forEach(function(mgr){
+    var items=byMgr[mgr];
+    var laneCount=byMgr[mgr+'_lanes']||0;
+    var rowH=Math.max(54,laneCount*(LANE_H+LANE_GAP)-LANE_GAP+ROW_PAD*2);
+    // Row wrapper is a grid for cells, and we overlay events with absolute positioning
+    html+='<div class="cal-row" style="grid-template-columns:'+gridCols+';height:'+rowH+'px">';
     html+='<div class="cal-mgr-cell">'+esc(mgr)+'</div>';
     for(var dd=1;dd<=daysInMonth;dd++){
       var dt2=new Date(c.year,c.month,dd);
       var dow2=dt2.getDay();
       var weekend2=(dow2===0||dow2===6)?' weekend':'';
       var isToday2=dateKey(dt2)===todayKey?' today':'';
-      var dayEvents=byMgrDay[mgr][dd]||[];
-      html+='<div class="cal-day-cell'+weekend2+isToday2+'" data-mgr="'+esc(mgr)+'" data-day="'+dd+'" onclick="openAddEventPre(\''+esc(mgr)+'\','+c.year+','+c.month+','+dd+')">';
-      // Limit to 3 visible pills, rest becomes "+N more"
-      var visible=dayEvents.slice(0,3);
-      var extra=dayEvents.length-3;
-      visible.forEach(function(x){
-        var ev=x.ev;
-        var cls=EVENT_TYPE_CLASS[ev.type]||'ev-other';
-        var spanCls='';
-        if(x.isSpan){
-          if(x.isStart&&!x.isEnd)spanCls=' span-start';
-          else if(!x.isStart&&!x.isEnd)spanCls=' span-mid';
-          else if(x.isEnd&&!x.isStart)spanCls=' span-end';
-        }
-        var readOnlyCls=ev.source==='crm'?' readonly':'';
-        // Show title on every day of the span so it reads across
-        var label=esc(ev.title);
-        var sub='<span class="cal-event-sub">'+esc(ev.type)+'</span>';
-        html+='<span class="cal-event '+cls+spanCls+readOnlyCls+'" title="'+esc(ev.title+' · '+ev.type+(ev.notes?' · '+ev.notes:''))+'" onclick="event.stopPropagation();handleEventClick(\''+esc(ev.id)+'\',\''+esc(ev.source)+'\',\''+esc(ev.accountId||'')+'\')">'+label+sub+'</span>';
-      });
-      if(extra>0)html+='<span class="cal-more" onclick="event.stopPropagation();alert(\''+extra+' more event'+(extra===1?'':'s')+' on this day\')">+'+extra+' more</span>';
-      html+='</div>';
+      html+='<div class="cal-day-cell'+weekend2+isToday2+'" data-mgr="'+esc(mgr)+'" data-day="'+dd+'" onclick="openAddEventPre(\''+esc(mgr)+'\','+c.year+','+c.month+','+dd+')"></div>';
     }
+    // Overlay event bars
+    items.forEach(function(it){
+      var ev=it.ev;
+      var cls=EVENT_TYPE_CLASS[ev.type]||'ev-other';
+      var readOnlyCls=ev.source==='crm'?' readonly':'';
+      // Grid column: manager col = col 1, day N = col 1+N
+      var colStart=1+it.startDay; // +1 because of manager col
+      var colEnd=1+it.endDay+1;   // grid-column end is exclusive
+      var topPx=ROW_PAD+it.lane*(LANE_H+LANE_GAP);
+      var title=esc(ev.title+' · '+ev.type+(ev.notes?' · '+ev.notes:''));
+      html+='<span class="cal-event-bar '+cls+readOnlyCls+'" '+
+        'style="grid-column:'+colStart+' / '+colEnd+';top:'+topPx+'px;height:'+LANE_H+'px" '+
+        'title="'+title+'" '+
+        'onclick="event.stopPropagation();handleEventClick(\''+esc(ev.id)+'\',\''+esc(ev.source)+'\',\''+esc(ev.accountId||'')+'\')">'+
+        '<span class="cal-event-label">'+esc(ev.title)+'</span>'+
+        '<span class="cal-event-sub">'+esc(ev.type)+'</span>'+
+        '</span>';
+    });
+    html+='</div>'; // close row
   });
-  html+='</div></div>';
+
+  html+='</div>'; // close cal-grid-wrap
   // Note about CRM-auto events
   html+='<div style="margin-top:12px;font-size:11.5px;color:var(--muted);font-weight:500">'+
     '<span style="display:inline-block;width:10px;height:10px;border:1px dashed var(--muted);border-radius:2px;vertical-align:middle;margin-right:6px"></span>'+
