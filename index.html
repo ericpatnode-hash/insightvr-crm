@@ -675,7 +675,7 @@ textarea.finput{resize:vertical;min-height:64px;font-family:var(--f-ui);}
   line-height:1.2;
   cursor:pointer;
   overflow:hidden;
-  border:1px solid transparent;
+  border:2px solid red !important; /* DEBUG: make all event bars obvious */
   transition:transform .1s, box-shadow .1s;
   display:flex;flex-direction:column;justify-content:center;
   margin:2px 3px;
@@ -1760,6 +1760,10 @@ function rCal(el,act){
   html+='</div>'; // close header grid
 
   // Body — one row per manager
+  console.log('[Calendar] Rendering',c.year,c.month+1,'— events per manager:');
+  rows.forEach(function(mgr){
+    console.log('  '+mgr+': '+(byMgr[mgr]||[]).length+' event(s)',byMgr[mgr]);
+  });
   rows.forEach(function(mgr){
     var items=byMgr[mgr];
     var laneCount=Math.max(1,byMgr[mgr+'_lanes']||0);
