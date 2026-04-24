@@ -621,12 +621,12 @@ textarea.finput{resize:vertical;min-height:64px;font-family:var(--f-ui);}
   flex:1;
   display:flex;
   position:relative;
-  min-width:calc(60px * var(--days-in-month, 31));
+  min-width:calc(75px * var(--days-in-month, 31));
 }
 .cal-day-area > .cal-day-cell,
 .cal-day-area > .cal-head-cell{
   flex:1 1 0;
-  min-width:60px;
+  min-width:75px;
 }
 .cal-head-cell{
   padding:8px 6px;
@@ -677,15 +677,15 @@ textarea.finput{resize:vertical;min-height:64px;font-family:var(--f-ui);}
 /* Event bar — absolutely positioned inside the day-area */
 .cal-event-bar{
   position:absolute;
-  padding:4px 10px;
+  padding:6px 10px;
   border-radius:4px;
-  font-size:11px;font-weight:600;
-  line-height:1.2;
+  font-size:12.5px;font-weight:600;
+  line-height:1.25;
   cursor:pointer;
   overflow:hidden;
   border:1px solid transparent;
   transition:transform .1s, box-shadow .1s;
-  display:flex;flex-direction:column;justify-content:center;
+  display:flex;flex-direction:column;justify-content:center;gap:2px;
   z-index:5;
   box-sizing:border-box;
 }
@@ -698,10 +698,10 @@ textarea.finput{resize:vertical;min-height:64px;font-family:var(--f-ui);}
 .cal-event-label{
   display:block;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-  font-size:11.5px;
+  font-size:13px;font-weight:700;
 }
 .cal-event-bar .cal-event-sub{
-  display:block;font-size:9.5px;font-weight:500;opacity:.85;margin-top:2px;
+  display:block;font-size:10.5px;font-weight:500;opacity:.85;
   font-family:var(--f-mono);letter-spacing:.02em;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 }
@@ -1782,7 +1782,7 @@ function rCal(el,act){
   rows.forEach(function(mgr){
     var items=byMgr[mgr];
     var laneCount=Math.max(1,byMgr[mgr+'_lanes']||0);
-    var rowH=Math.max(54,laneCount*30+16);
+    var rowH=Math.max(64,laneCount*44+12);
     html+='<div class="cal-row-flex" style="height:'+rowH+'px">';
     html+='<div class="cal-mgr-cell">'+esc(mgr)+'</div>';
     html+='<div class="cal-day-area">';
@@ -1799,10 +1799,10 @@ function rCal(el,act){
       var readOnlyCls=ev.source==='crm'?' readonly':'';
       var leftPct=(it.startDay-1)/daysInMonth*100;
       var widthPct=(it.endDay-it.startDay+1)/daysInMonth*100;
-      var topPx=6+it.lane*30;
+      var topPx=6+it.lane*44;
       var title=esc(ev.title+' · '+ev.type+(ev.notes?' · '+ev.notes:''));
       html+='<span class="cal-event-bar '+cls+readOnlyCls+'" '+
-        'style="left:'+leftPct+'%;width:'+widthPct+'%;top:'+topPx+'px;height:26px" '+
+        'style="left:'+leftPct+'%;width:'+widthPct+'%;top:'+topPx+'px;height:40px" '+
         'title="'+title+'" '+
         'onclick="event.stopPropagation();handleEventClick(\''+esc(ev.id)+'\',\''+esc(ev.source)+'\',\''+esc(ev.accountId||'')+'\')">'+
         '<span class="cal-event-label">'+esc(ev.title)+'</span>'+
