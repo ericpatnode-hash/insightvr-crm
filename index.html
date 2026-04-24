@@ -608,34 +608,40 @@ textarea.finput{resize:vertical;min-height:64px;font-family:var(--f-ui);}
   background:var(--bg);border:1px solid var(--line);border-radius:var(--rl);
   overflow-x:auto;overflow-y:visible;
 }
-.cal-grid{
-  display:grid;
-  min-width:100%;
-  font-size:12px;
-}
-/* New: each manager row is its own grid with events overlaid via grid-row */
-.cal-row{
-  display:grid;
-  min-width:100%;
+/* A row is: manager cell (fixed) + day-area (flex with N day cells) */
+.cal-row-flex{
+  display:flex;
+  min-width:max-content;
   border-bottom:1px solid var(--line);
 }
-.cal-row:last-child{border-bottom:none;}
+.cal-row-flex:last-child{border-bottom:none;}
+.cal-header-row{background:var(--bg);position:sticky;top:0;z-index:10;}
+/* Day area: flex container holding day cells equally, with absolute event bars on top */
+.cal-day-area{
+  flex:1;
+  display:flex;
+  position:relative;
+  min-width:calc(60px * var(--days-in-month, 31));
+}
+.cal-day-area > .cal-day-cell,
+.cal-day-area > .cal-head-cell{
+  flex:1 1 0;
+  min-width:60px;
+}
 .cal-head-cell{
   padding:8px 6px;
   font-family:var(--f-mono);
   font-size:10px;font-weight:600;color:var(--muted);
   text-align:center;letter-spacing:.04em;
-  background:var(--bg);border-bottom:1px solid var(--line-2);
+  border-bottom:1px solid var(--line-2);
   border-right:1px solid var(--line);
-  position:sticky;top:0;z-index:2;
   text-transform:uppercase;
   line-height:1.3;
+  background:var(--bg);
 }
 .cal-head-cell .cal-dow{display:block;color:var(--muted-2);font-size:9px;margin-top:1px;}
 .cal-head-cell.weekend{background:var(--navy-softer);color:var(--muted-2);}
-.cal-head-cell.today{
-  background:var(--ink);color:#fff;
-}
+.cal-head-cell.today{background:var(--ink);color:#fff;}
 .cal-head-cell.today .cal-dow{color:var(--lime);}
 .cal-mgr-head{
   padding:8px 14px;text-align:left;
@@ -643,45 +649,61 @@ textarea.finput{resize:vertical;min-height:64px;font-family:var(--f-ui);}
   font-size:10px;font-weight:600;color:var(--muted);
   background:var(--bg);border-bottom:1px solid var(--line-2);
   border-right:1px solid var(--line-2);
-  position:sticky;left:0;top:0;z-index:3;
+  position:sticky;left:0;z-index:11;
   text-transform:uppercase;letter-spacing:.08em;
+  width:150px;min-width:150px;flex-shrink:0;
   box-shadow:1px 0 0 var(--line-2);
+  display:flex;align-items:center;
 }
 .cal-mgr-cell{
   padding:10px 14px;
   font-family:var(--f-ui);font-size:13px;font-weight:600;color:var(--ink);
   background:var(--bg);
   border-right:1px solid var(--line-2);
-  position:sticky;left:0;z-index:2;
+  position:sticky;left:0;z-index:3;
   display:flex;align-items:center;
-  min-width:150px;
+  width:150px;min-width:150px;flex-shrink:0;
   box-shadow:1px 0 0 var(--line-2);
 }
 .cal-day-cell{
   border-right:1px solid var(--line);
   background:var(--bg);
-  position:relative;
   cursor:pointer;
 }
 .cal-day-cell.weekend{background:var(--navy-softer);}
 .cal-day-cell:hover{background:var(--navy-soft);}
 .cal-day-cell.weekend:hover{background:oklch(94% 0.02 255);}
 
-/* Event bar — grid-placed across its date range, not absolutely positioned */
+/* Event bar — absolutely positioned inside the day-area */
 .cal-event-bar{
-  padding:5px 10px;
+  position:absolute;
+  padding:4px 10px;
   border-radius:4px;
   font-size:11px;font-weight:600;
   line-height:1.2;
   cursor:pointer;
   overflow:hidden;
-  border:2px solid red !important; /* DEBUG: make all event bars obvious */
+  border:1px solid transparent;
   transition:transform .1s, box-shadow .1s;
   display:flex;flex-direction:column;justify-content:center;
-  margin:2px 3px;
-  min-width:0; /* allow truncation inside grid */
-  z-index:1;
-  align-self:start;
+  z-index:5;
+  box-sizing:border-box;
+}
+.cal-event-bar:hover{
+  transform:translateY(-1px);
+  box-shadow:0 2px 6px oklch(50% 0.04 255 / .22);
+  z-index:6;
+}
+.cal-event-bar.readonly{border-style:dashed;}
+.cal-event-label{
+  display:block;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font-size:11.5px;
+}
+.cal-event-bar .cal-event-sub{
+  display:block;font-size:9.5px;font-weight:500;opacity:.85;margin-top:2px;
+  font-family:var(--f-mono);letter-spacing:.02em;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 }
 .cal-event-bar:hover{
   transform:translateY(-1px);
@@ -1741,14 +1763,11 @@ function rCal(el,act){
   });
   html+='</div>';
 
-  // Layout: manager col + day columns
-  var MGR_COL=150;
-  var DAY_COL_MIN=60;
-  var gridCols=MGR_COL+'px repeat('+daysInMonth+',minmax('+DAY_COL_MIN+'px,1fr))';
-
-  // Build header
-  html+='<div class="cal-grid-wrap"><div class="cal-grid" style="grid-template-columns:'+gridCols+'">';
+  // Build header (matches body structure: manager cell + day-area with N equal day cells)
+  html+='<div class="cal-grid-wrap">';
+  html+='<div class="cal-row-flex cal-header-row">';
   html+='<div class="cal-mgr-head">Manager</div>';
+  html+='<div class="cal-day-area">';
   for(var d=1;d<=daysInMonth;d++){
     var dt=new Date(c.year,c.month,d);
     var dow=dt.getDay();
@@ -1757,53 +1776,40 @@ function rCal(el,act){
     var dowName=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][dow];
     html+='<div class="cal-head-cell'+weekend+isToday+'">'+d+'<span class="cal-dow">'+dowName+'</span></div>';
   }
-  html+='</div>'; // close header grid
+  html+='</div></div>'; // close day-area, close header-row
 
-  // Body — one row per manager
-  console.log('[Calendar] Rendering',c.year,c.month+1,'— events per manager:');
-  rows.forEach(function(mgr){
-    console.log('  '+mgr+': '+(byMgr[mgr]||[]).length+' event(s)',byMgr[mgr]);
-  });
+  // Body — one row per manager. Layout: 150px manager col + flex day-area holding cells + absolute event bars.
   rows.forEach(function(mgr){
     var items=byMgr[mgr];
     var laneCount=Math.max(1,byMgr[mgr+'_lanes']||0);
-    // Row grid: first row = day-cell background (fills full height), then one row per lane
-    // We use a grid with rows: [cells (full-span)] [lane 1] [lane 2] ...
-    // Actually simpler: day cells fill the entire row via grid-row span, events occupy lane rows
     var rowH=Math.max(54,laneCount*30+16);
-    html+='<div class="cal-row" style="grid-template-columns:'+gridCols+';grid-template-rows:repeat('+laneCount+',30px);min-height:'+rowH+'px">';
-    // Manager cell spans all lanes
-    html+='<div class="cal-mgr-cell" style="grid-row:1 / span '+laneCount+'">'+esc(mgr)+'</div>';
-    // Day cells each span all lanes — these form the background grid
+    html+='<div class="cal-row-flex" style="height:'+rowH+'px">';
+    html+='<div class="cal-mgr-cell">'+esc(mgr)+'</div>';
+    html+='<div class="cal-day-area">';
     for(var dd=1;dd<=daysInMonth;dd++){
       var dt2=new Date(c.year,c.month,dd);
       var dow2=dt2.getDay();
       var weekend2=(dow2===0||dow2===6)?' weekend':'';
-      html+='<div class="cal-day-cell'+weekend2+'" style="grid-row:1 / span '+laneCount+'" data-mgr="'+esc(mgr)+'" data-day="'+dd+'" onclick="openAddEventPre(\''+esc(mgr)+'\','+c.year+','+c.month+','+dd+')"></div>';
+      html+='<div class="cal-day-cell'+weekend2+'" data-mgr="'+esc(mgr)+'" data-day="'+dd+'" onclick="openAddEventPre(\''+esc(mgr)+'\','+c.year+','+c.month+','+dd+')"></div>';
     }
-    // Event bars — placed on top via grid-column + grid-row
     items.forEach(function(it){
       var ev=it.ev;
-      // Guard: skip events with no title — these render as mystery blank bars
-      if(!ev.title||!ev.title.trim()){
-        console.warn('Calendar: skipping event with empty title',ev);
-        return;
-      }
+      if(!ev.title||!ev.title.trim())return;
       var cls=EVENT_TYPE_CLASS[ev.type]||'ev-other';
       var readOnlyCls=ev.source==='crm'?' readonly':'';
-      var colStart=2+it.startDay; // manager col = col 1, day 1 = col 2
-      var colEnd=3+it.endDay;     // end is exclusive
-      var laneRow=it.lane+1;       // grid-row is 1-indexed
+      var leftPct=(it.startDay-1)/daysInMonth*100;
+      var widthPct=(it.endDay-it.startDay+1)/daysInMonth*100;
+      var topPx=6+it.lane*30;
       var title=esc(ev.title+' · '+ev.type+(ev.notes?' · '+ev.notes:''));
       html+='<span class="cal-event-bar '+cls+readOnlyCls+'" '+
-        'style="grid-column:'+colStart+' / '+colEnd+';grid-row:'+laneRow+'" '+
+        'style="left:'+leftPct+'%;width:'+widthPct+'%;top:'+topPx+'px;height:26px" '+
         'title="'+title+'" '+
         'onclick="event.stopPropagation();handleEventClick(\''+esc(ev.id)+'\',\''+esc(ev.source)+'\',\''+esc(ev.accountId||'')+'\')">'+
         '<span class="cal-event-label">'+esc(ev.title)+'</span>'+
         '<span class="cal-event-sub">'+esc(ev.type)+'</span>'+
         '</span>';
     });
-    html+='</div>'; // close row
+    html+='</div></div>'; // close day-area, close row
   });
 
   html+='</div>'; // close cal-grid-wrap
