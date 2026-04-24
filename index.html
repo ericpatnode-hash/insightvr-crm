@@ -571,6 +571,143 @@ textarea.finput{resize:vertical;min-height:64px;font-family:var(--f-ui);}
   letter-spacing:.04em;text-transform:uppercase;font-weight:500;
 }
 
+/* ============ CALENDAR ============ */
+.cal-toolbar{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  margin-bottom:16px;
+}
+.cal-month-display{
+  font-family:var(--f-display);
+  font-size:22px;font-weight:500;color:var(--ink);letter-spacing:-.025em;
+  font-variation-settings:"opsz" 144;
+  margin-right:auto;padding-right:16px;
+}
+.cal-nav{display:flex;gap:4px;}
+.cal-nav .btn{padding:6px 10px;min-width:34px;}
+.cal-legend{
+  display:flex;flex-wrap:wrap;gap:14px 18px;align-items:center;
+  padding:12px 16px;background:var(--bg);border:1px solid var(--line);
+  border-radius:var(--r);margin-bottom:16px;
+}
+.cal-legend-item{
+  display:flex;align-items:center;gap:7px;
+  font-size:11.5px;font-weight:500;color:var(--text-2);
+  cursor:pointer;user-select:none;
+  transition:opacity .12s;
+}
+.cal-legend-item.off{opacity:.35;}
+.cal-legend-swatch{width:10px;height:10px;border-radius:2px;flex-shrink:0;}
+.cal-legend-label{
+  font-family:var(--f-mono);font-size:10.5px;font-weight:500;
+  color:var(--muted);letter-spacing:.08em;text-transform:uppercase;
+  margin-right:4px;
+}
+
+/* Grid wrapper — horizontally scrollable */
+.cal-grid-wrap{
+  background:var(--bg);border:1px solid var(--line);border-radius:var(--rl);
+  overflow-x:auto;overflow-y:visible;
+}
+.cal-grid{
+  display:grid;
+  /* Manager column + N day columns set inline */
+  min-width:100%;
+  font-size:12px;
+}
+.cal-head-cell{
+  padding:8px 6px;
+  font-family:var(--f-mono);
+  font-size:10px;font-weight:600;color:var(--muted);
+  text-align:center;letter-spacing:.04em;
+  background:var(--bg);border-bottom:1px solid var(--line-2);
+  border-right:1px solid var(--line);
+  position:sticky;top:0;z-index:2;
+  text-transform:uppercase;
+  line-height:1.3;
+}
+.cal-head-cell .cal-dow{display:block;color:var(--muted-2);font-size:9px;margin-top:1px;}
+.cal-head-cell.weekend{background:var(--navy-softer);color:var(--muted-2);}
+.cal-head-cell.today{
+  background:var(--ink);color:#fff;
+}
+.cal-head-cell.today .cal-dow{color:var(--lime);}
+.cal-mgr-head{
+  padding:8px 14px;text-align:left;
+  font-family:var(--f-mono);
+  font-size:10px;font-weight:600;color:var(--muted);
+  background:var(--bg);border-bottom:1px solid var(--line-2);
+  border-right:1px solid var(--line-2);
+  position:sticky;left:0;top:0;z-index:3;
+  text-transform:uppercase;letter-spacing:.08em;
+}
+.cal-mgr-cell{
+  padding:10px 14px;
+  font-family:var(--f-ui);font-size:13px;font-weight:600;color:var(--ink);
+  background:var(--bg);border-right:1px solid var(--line-2);border-bottom:1px solid var(--line);
+  position:sticky;left:0;z-index:1;
+  display:flex;align-items:center;
+  min-width:150px;
+}
+.cal-day-cell{
+  border-right:1px solid var(--line);border-bottom:1px solid var(--line);
+  min-height:54px;
+  position:relative;
+  padding:3px;
+  background:var(--bg);
+}
+.cal-day-cell.weekend{background:var(--navy-softer);}
+.cal-day-cell.today{background:oklch(96% 0.06 155 / .4);}
+.cal-day-cell:hover{background:var(--navy-soft);cursor:pointer;}
+.cal-day-cell.weekend:hover{background:oklch(94% 0.02 255);}
+
+/* Event pill */
+.cal-event{
+  display:block;
+  padding:3px 6px;
+  border-radius:3px;
+  font-size:10.5px;font-weight:600;
+  line-height:1.2;
+  margin-bottom:2px;
+  cursor:pointer;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  border:1px solid transparent;
+  transition:transform .1s, box-shadow .1s;
+}
+.cal-event:hover{transform:translateY(-1px);box-shadow:0 2px 4px oklch(50% 0.04 255 / .18);}
+.cal-event .cal-event-sub{
+  display:block;font-size:9.5px;font-weight:500;opacity:.85;margin-top:1px;
+  font-family:var(--f-mono);letter-spacing:.02em;
+}
+.cal-event.readonly{border-style:dashed;opacity:.9;}
+
+/* Event type colors — aligned to app palette */
+.ev-implementation{background:var(--lime-wash);color:var(--lime-ink);border-color:var(--lime);}
+.ev-golive{background:oklch(88% 0.18 155);color:var(--ink);border-color:var(--lime);}
+.ev-alcon{background:oklch(94% 0.08 50);color:oklch(38% 0.12 50);border-color:oklch(80% 0.12 50);}
+.ev-uvp{background:oklch(94% 0.06 30);color:oklch(40% 0.13 30);border-color:oklch(80% 0.10 30);}
+.ev-nocharge{background:oklch(95% 0.05 220);color:oklch(38% 0.10 220);border-color:oklch(80% 0.08 220);}
+.ev-practice{background:oklch(94% 0.06 280);color:oklch(40% 0.13 280);border-color:oklch(80% 0.10 280);}
+.ev-patient{background:oklch(94% 0.06 320);color:oklch(42% 0.13 320);border-color:oklch(80% 0.10 320);}
+.ev-checkin{background:oklch(94% 0.08 70);color:oklch(42% 0.12 65);border-color:oklch(80% 0.12 65);}
+.ev-evalend{background:oklch(94% 0.06 45);color:oklch(40% 0.13 40);border-color:oklch(80% 0.12 45);}
+.ev-pto{background:oklch(92% 0.01 255);color:var(--muted);border-color:var(--line-3);font-style:italic;}
+.ev-unavailable{background:oklch(90% 0.01 255);color:var(--muted);border-color:var(--line-3);font-style:italic;}
+.ev-other{background:var(--navy-soft);color:var(--navy);border-color:var(--line-3);}
+
+/* Multi-day span pill */
+.cal-event.span-start{border-top-right-radius:0;border-bottom-right-radius:0;margin-right:-1px;}
+.cal-event.span-mid{border-radius:0;border-left:none;border-right:none;margin-right:-1px;margin-left:-1px;}
+.cal-event.span-end{border-top-left-radius:0;border-bottom-left-radius:0;margin-left:-1px;}
+
+.cal-more{
+  display:block;font-family:var(--f-mono);font-size:9.5px;font-weight:600;
+  color:var(--muted);padding:2px 6px;cursor:pointer;
+  letter-spacing:.02em;
+}
+.cal-more:hover{color:var(--ink);}
+
+.cal-empty-cell{color:var(--muted-2);}
+
 /* Responsive */
 @media (max-width: 980px){
   .metrics-hero{grid-template-columns:1fr 1fr;}
@@ -607,6 +744,7 @@ textarea.finput{resize:vertical;min-height:64px;font-family:var(--f-ui);}
       <div class="nav-item" id="nav-pipeline" onclick="nav('pipeline')">Sales Pipeline</div>
       <div class="nav-sec">Implementation</div>
       <div class="nav-item" id="nav-impl" onclick="nav('impl')">Implementation</div>
+      <div class="nav-item" id="nav-calendar" onclick="nav('calendar')">Calendar</div>
       <div class="nav-sec">Accounts</div>
       <div class="nav-item" id="nav-active" onclick="nav('active')">Active Accounts</div>
       <div class="nav-item" id="nav-renewals" onclick="nav('renewals')">Renewals<span class="nav-badge" id="rnb" style="display:none">0</span></div>
@@ -644,8 +782,8 @@ const TYPES=['Practice','Private equity group','Industry partner','Other'];
 const SOURCES=['Website / inbound','Referral','Outbound / cold outreach','Conference / event','Industry partner','Alcon - Field','B&L - Field','J&J - Field','Other'];
 const LOST_REASONS=['Price','Timing','Competition','No decision / went silent','Returned during eval','Budget cut','Other'];
 const SBADGE={Prospect:'b-prospect','Intro meeting':'b-intro','Early diligence':'b-early','Late diligence':'b-late','Proposal sent':'b-proposal','Deal won':'b-won','Deal lost':'b-lost','Discovery & planning':'b-discovery','Go-live scheduled':'b-golive','60-day evaluation':'b-60day',Overdue:'b-overdue',Active:'b-active'};
-const TITLES={dashboard:'Dashboard',pipeline:'Sales Pipeline',impl:'Implementation',active:'Active Accounts',renewals:'Renewals',reports:'Reports',activity:'Activity',settings:'Settings',followups:'My Follow-ups',snap:''};
-let accs=[],view='dashboard',q='',fs='all',ccount=1,sortCol='',sortDir=1,implMgrs=[];
+const TITLES={dashboard:'Dashboard',pipeline:'Sales Pipeline',impl:'Implementation',calendar:'Calendar',active:'Active Accounts',renewals:'Renewals',reports:'Reports',activity:'Activity',settings:'Settings',followups:'My Follow-ups',snap:''};
+let accs=[],events=[],view='dashboard',q='',fs='all',ccount=1,sortCol='',sortDir=1,implMgrs=[];
 
 function getUser(){return localStorage.getItem('crm_user_name')||'Unknown';}
 function saveName(){
@@ -683,14 +821,22 @@ async function loadAll(){
   try{
     var res=await Promise.all([
       req('GET','accounts',null,null,'updated_at.desc'),
-      req('GET','impl_managers',null,null,'name.asc').catch(function(){return[];})
+      req('GET','impl_managers',null,null,'name.asc').catch(function(){return[];}),
+      req('GET','events',null,null,'start_date.asc').catch(function(){return[];})
     ]);
     accs=res[0];
     implMgrs=res[1].length?res[1].map(function(x){return x.name;}):['Leah Orr','Chris Morgan'];
+    events=res[2]||[];
     updRnb();updFUBadge();render();
   }catch(e){
     document.getElementById('pcontent').innerHTML='<div class="empty">Could not load data.<br><small style="color:var(--danger);display:block;margin-top:8px">'+e.message+'</small><br><button class="btn btn-navy" onclick="loadAll()" style="margin-top:12px">Retry</button></div>';
   }
+}
+async function upsertEvent(ev){await req('POST','events',Array.isArray(ev)?ev:[ev],null,null);await loadAll();}
+async function deleteEvent(id){
+  if(!confirm('Delete this event?'))return;
+  await req('DELETE','events',null,['id=eq.'+id],null);
+  closeModal();await loadAll();
 }
 async function upsertAcc(a){await req('POST','accounts',Array.isArray(a)?a:[a],null,null);await loadAll();}
 async function deleteAcc(id){
@@ -822,6 +968,7 @@ function render(){
   if(view==='dashboard')rDash(c,a);
   else if(view==='pipeline')rPipe(c,a);
   else if(view==='impl')rImpl(c,a);
+  else if(view==='calendar')rCal(c,a);
   else if(view==='active')rActive(c,a);
   else if(view==='renewals')rRenewals(c,a);
   else if(view==='reports')rReports(c,a);
@@ -1388,7 +1535,308 @@ function rSnap(el,act){
     (list.length?rows:'<tr><td colspan="4" class="empty">No accounts found.</td></tr>')+
     '</tbody></table></div></div>';
 }
-function closeModal(){document.getElementById('mc').innerHTML='';}
+// ============ CALENDAR ============
+const EVENT_TYPES=['30 Day Check-In','Alcon Evaluation','Implementation','No Charge Evaluation','Other','Patient Demos','Practice Demo','PTO','Unavailable','UVP Evaluation'];
+const EVENT_TYPE_CLASS={
+  '30 Day Check-In':'ev-checkin',
+  'Alcon Evaluation':'ev-alcon',
+  'Implementation':'ev-implementation',
+  'No Charge Evaluation':'ev-nocharge',
+  'Other':'ev-other',
+  'Patient Demos':'ev-patient',
+  'Practice Demo':'ev-practice',
+  'PTO':'ev-pto',
+  'Unavailable':'ev-unavailable',
+  'UVP Evaluation':'ev-uvp',
+  'Go-live':'ev-golive',
+  'Eval end':'ev-evalend'
+};
+function calState(){
+  if(!window._cal){
+    var now=new Date();
+    window._cal={year:now.getFullYear(),month:now.getMonth(),hidden:new Set()};
+  }
+  return window._cal;
+}
+function calNav(dir){
+  var c=calState();
+  if(dir==='today'){var n=new Date();c.year=n.getFullYear();c.month=n.getMonth();}
+  else{c.month+=dir;if(c.month<0){c.month=11;c.year--;}if(c.month>11){c.month=0;c.year++;}}
+  render();
+}
+function calToggleType(type){
+  var c=calState();
+  if(c.hidden.has(type))c.hidden.delete(type);else c.hidden.add(type);
+  render();
+}
+function dateKey(d){
+  // Returns YYYY-MM-DD string in local time
+  var y=d.getFullYear();var m=String(d.getMonth()+1).padStart(2,'0');var dd=String(d.getDate()).padStart(2,'0');
+  return y+'-'+m+'-'+dd;
+}
+function parseDateLocal(s){
+  if(!s)return null;
+  var parts=String(s).split('T')[0].split('-');
+  if(parts.length!==3)return null;
+  return new Date(parseInt(parts[0]),parseInt(parts[1])-1,parseInt(parts[2]));
+}
+// Collect events (both manual + CRM-derived) for a given month
+function collectEvents(year,month){
+  var monthStart=new Date(year,month,1);
+  var monthEnd=new Date(year,month+1,0);
+  var all=[];
+  // Manual events
+  events.forEach(function(e){
+    var s=parseDateLocal(e.start_date);
+    var en=parseDateLocal(e.end_date||e.start_date);
+    if(!s)return;
+    if(en<monthStart||s>monthEnd)return;
+    all.push({
+      id:e.id,
+      manager:e.manager||'Other / Guest',
+      type:e.event_type||'Other',
+      start:s,end:en,
+      title:e.account_name||'(no account)',
+      notes:e.notes||'',
+      accountId:e.account_id||null,
+      source:'manual'
+    });
+  });
+  // CRM auto-populated events
+  accs.forEach(function(a){
+    var mgr=a.impl_manager;
+    if(!mgr)return;
+    // Go-live
+    if(a.go_live_date){
+      var gd=parseDateLocal(a.go_live_date);
+      if(gd&&gd>=monthStart&&gd<=monthEnd){
+        all.push({id:'auto-gl-'+a.id,manager:mgr,type:'Go-live',start:gd,end:gd,title:a.name,notes:'Go-live date',accountId:a.id,source:'crm'});
+      }
+    }
+    // 30-day check-in
+    if(a.checkin_30_date){
+      var cd=parseDateLocal(a.checkin_30_date);
+      if(cd&&cd>=monthStart&&cd<=monthEnd){
+        all.push({id:'auto-ci-'+a.id,manager:mgr,type:'30 Day Check-In',start:cd,end:cd,title:a.name,notes:'30-day check-in',accountId:a.id,source:'crm'});
+      }
+    }
+    // 60-day eval end
+    if(a.eval_end_date){
+      var ed=parseDateLocal(a.eval_end_date);
+      if(ed&&ed>=monthStart&&ed<=monthEnd){
+        all.push({id:'auto-ev-'+a.id,manager:mgr,type:'Eval end',start:ed,end:ed,title:a.name,notes:'60-day evaluation end',accountId:a.id,source:'crm'});
+      }
+    }
+  });
+  return all;
+}
+function rCal(el,act){
+  var c=calState();
+  act.innerHTML='<button class="btn btn-primary" onclick="openAddEvent()">+ Add event</button>';
+  var monthName=new Date(c.year,c.month,1).toLocaleDateString('en-US',{month:'long',year:'numeric'});
+  var daysInMonth=new Date(c.year,c.month+1,0).getDate();
+  var today=new Date();today.setHours(0,0,0,0);
+  var todayKey=dateKey(today);
+  // Rows = implMgrs + "Other / Guest"
+  var rows=implMgrs.slice();
+  if(!rows.includes('Other / Guest'))rows.push('Other / Guest');
+  // Collect events
+  var monthEvents=collectEvents(c.year,c.month).filter(function(e){return !c.hidden.has(e.type);});
+  // Group events by manager + day
+  var byMgrDay={};
+  rows.forEach(function(m){byMgrDay[m]={};for(var i=1;i<=daysInMonth;i++)byMgrDay[m][i]=[];});
+  monthEvents.forEach(function(ev){
+    var mgr=byMgrDay[ev.manager]?ev.manager:'Other / Guest';
+    // Iterate each day of the event that falls in this month
+    var cursor=new Date(ev.start);
+    var endD=new Date(ev.end);
+    while(cursor<=endD){
+      if(cursor.getMonth()===c.month&&cursor.getFullYear()===c.year){
+        var day=cursor.getDate();
+        var isStart=dateKey(cursor)===dateKey(ev.start);
+        var isEnd=dateKey(cursor)===dateKey(ev.end);
+        var isSpan=ev.start.getTime()!==ev.end.getTime();
+        byMgrDay[mgr][day].push({ev:ev,isStart:isStart,isEnd:isEnd,isSpan:isSpan});
+      }
+      cursor.setDate(cursor.getDate()+1);
+    }
+  });
+
+  // Build header row
+  var gridCols='150px repeat('+daysInMonth+',minmax(58px,1fr))';
+  var html='<div class="cal-toolbar">'+
+    '<span class="cal-month-display">'+esc(monthName)+'</span>'+
+    '<div class="cal-nav">'+
+      '<button class="btn" onclick="calNav(-1)" title="Previous month">←</button>'+
+      '<button class="btn" onclick="calNav(\'today\')">Today</button>'+
+      '<button class="btn" onclick="calNav(1)" title="Next month">→</button>'+
+    '</div>'+
+  '</div>';
+
+  // Legend / filter
+  html+='<div class="cal-legend">'+
+    '<span class="cal-legend-label">Event types</span>';
+  EVENT_TYPES.concat(['Go-live','Eval end']).forEach(function(t){
+    var off=c.hidden.has(t)?' off':'';
+    var cls=EVENT_TYPE_CLASS[t]||'ev-other';
+    html+='<span class="cal-legend-item'+off+'" onclick="calToggleType(\''+t.replace(/\'/g,"\\'")+'\')">'+
+      '<span class="cal-legend-swatch '+cls+'" style="background:var(--lime-wash)"></span>'+
+      esc(t)+'</span>';
+  });
+  html+='</div>';
+
+  // Grid
+  html+='<div class="cal-grid-wrap"><div class="cal-grid" style="grid-template-columns:'+gridCols+'">';
+  // Header row
+  html+='<div class="cal-mgr-head">Manager</div>';
+  for(var d=1;d<=daysInMonth;d++){
+    var dt=new Date(c.year,c.month,d);
+    var dow=dt.getDay();
+    var weekend=(dow===0||dow===6)?' weekend':'';
+    var isToday=dateKey(dt)===todayKey?' today':'';
+    var dowName=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][dow];
+    html+='<div class="cal-head-cell'+weekend+isToday+'">'+d+'<span class="cal-dow">'+dowName+'</span></div>';
+  }
+  // Manager rows
+  rows.forEach(function(mgr){
+    html+='<div class="cal-mgr-cell">'+esc(mgr)+'</div>';
+    for(var dd=1;dd<=daysInMonth;dd++){
+      var dt2=new Date(c.year,c.month,dd);
+      var dow2=dt2.getDay();
+      var weekend2=(dow2===0||dow2===6)?' weekend':'';
+      var isToday2=dateKey(dt2)===todayKey?' today':'';
+      var dayEvents=byMgrDay[mgr][dd]||[];
+      html+='<div class="cal-day-cell'+weekend2+isToday2+'" data-mgr="'+esc(mgr)+'" data-day="'+dd+'" onclick="openAddEventPre(\''+esc(mgr)+'\','+c.year+','+c.month+','+dd+')">';
+      // Limit to 3 visible pills, rest becomes "+N more"
+      var visible=dayEvents.slice(0,3);
+      var extra=dayEvents.length-3;
+      visible.forEach(function(x){
+        var ev=x.ev;
+        var cls=EVENT_TYPE_CLASS[ev.type]||'ev-other';
+        var spanCls='';
+        if(x.isSpan){
+          if(x.isStart&&!x.isEnd)spanCls=' span-start';
+          else if(!x.isStart&&!x.isEnd)spanCls=' span-mid';
+          else if(x.isEnd&&!x.isStart)spanCls=' span-end';
+        }
+        var readOnlyCls=ev.source==='crm'?' readonly':'';
+        // Only show title on first day of span or single-day
+        var showLabel=!x.isSpan||x.isStart;
+        var label=showLabel?esc(ev.title):'';
+        var sub=showLabel?'<span class="cal-event-sub">'+esc(ev.type)+'</span>':'';
+        html+='<span class="cal-event '+cls+spanCls+readOnlyCls+'" title="'+esc(ev.title+' · '+ev.type+(ev.notes?' · '+ev.notes:''))+'" onclick="event.stopPropagation();handleEventClick(\''+esc(ev.id)+'\',\''+esc(ev.source)+'\',\''+esc(ev.accountId||'')+'\')">'+label+sub+'</span>';
+      });
+      if(extra>0)html+='<span class="cal-more" onclick="event.stopPropagation();alert(\''+extra+' more event'+(extra===1?'':'s')+' on this day\')">+'+extra+' more</span>';
+      html+='</div>';
+    }
+  });
+  html+='</div></div>';
+  // Note about CRM-auto events
+  html+='<div style="margin-top:12px;font-size:11.5px;color:var(--muted);font-weight:500">'+
+    '<span style="display:inline-block;width:10px;height:10px;border:1px dashed var(--muted);border-radius:2px;vertical-align:middle;margin-right:6px"></span>'+
+    'Dashed borders = auto-populated from CRM (go-lives, check-ins, eval ends). Click to open the account. Edit account dates to change these.</div>';
+
+  el.innerHTML=html;
+}
+function handleEventClick(id,source,accId){
+  if(source==='crm'&&accId){openDetail(accId);return;}
+  if(source==='manual'){openEditEvent(id);return;}
+}
+function openAddEventPre(mgr,year,month,day){
+  var d=new Date(year,month,day);
+  openAddEvent({manager:mgr,start:dateKey(d)});
+}
+function openAddEvent(pre){
+  pre=pre||{};
+  var mgrOpts='<option value="">— Select manager —</option>'+implMgrs.map(function(m){return '<option value="'+esc(m)+'"'+(pre.manager===m?' selected':'')+'>'+esc(m)+'</option>';}).join('')+'<option value="Other / Guest"'+(pre.manager==='Other / Guest'?' selected':'')+'>Other / Guest</option>';
+  var typeOpts='<option value="">— Select type —</option>'+EVENT_TYPES.map(function(t){return '<option value="'+esc(t)+'">'+esc(t)+'</option>';}).join('');
+  var accOpts='<option value="">— None / freeform —</option>'+accs.slice().sort(function(a,b){return (a.name||'').localeCompare(b.name||'');}).map(function(a){return '<option value="'+esc(a.id)+'" data-name="'+esc(a.name)+'">'+esc(a.name)+'</option>';}).join('');
+  document.getElementById('mc').innerHTML=
+    '<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal" style="max-width:540px">'+
+    '<div class="modal-hdr"><span class="modal-title">Add event</span><button class="xbtn" onclick="closeModal()">×</button></div>'+
+    '<div class="modal-body">'+
+    '<div class="fg">'+
+    '<div class="fgrp"><label class="flbl">Start date *</label><input class="finput" id="ev-start" type="date" value="'+(pre.start||'')+'"></div>'+
+    '<div class="fgrp"><label class="flbl">End date <span style="color:var(--muted);font-size:10px">optional · multi-day</span></label><input class="finput" id="ev-end" type="date"></div>'+
+    '<div class="fgrp full"><label class="flbl">Manager *</label><select class="finput" id="ev-mgr">'+mgrOpts+'</select></div>'+
+    '<div class="fgrp full"><label class="flbl">Event type *</label><select class="finput" id="ev-type">'+typeOpts+'</select></div>'+
+    '<div class="fgrp full"><label class="flbl">Account <span style="color:var(--muted);font-size:10px">pick from CRM or leave blank</span></label><select class="finput" id="ev-acc" onchange="fillEventName()">'+accOpts+'</select></div>'+
+    '<div class="fgrp full"><label class="flbl">Display name</label><input class="finput" id="ev-name" placeholder="e.g. Smith Practice, PTO, Conference"></div>'+
+    '<div class="fgrp full"><label class="flbl">Notes</label><textarea class="finput" id="ev-notes" rows="2"></textarea></div>'+
+    '</div>'+
+    '</div>'+
+    '<div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveEvent()">Save event</button></div>'+
+    '</div></div>';
+}
+function fillEventName(){
+  var sel=document.getElementById('ev-acc');
+  var opt=sel.options[sel.selectedIndex];
+  var name=opt?opt.getAttribute('data-name'):'';
+  var nameInput=document.getElementById('ev-name');
+  if(name&&nameInput&&!nameInput.value)nameInput.value=name;
+}
+async function saveEvent(){
+  var start=document.getElementById('ev-start').value;
+  var end=document.getElementById('ev-end').value||null;
+  var mgr=document.getElementById('ev-mgr').value;
+  var type=document.getElementById('ev-type').value;
+  var accId=document.getElementById('ev-acc').value||null;
+  var name=(document.getElementById('ev-name').value||'').trim();
+  var notes=(document.getElementById('ev-notes').value||'').trim();
+  if(!start){alert('Start date is required.');return;}
+  if(!mgr){alert('Manager is required.');return;}
+  if(!type){alert('Event type is required.');return;}
+  if(end&&end<start){alert('End date cannot be before start date.');return;}
+  if(!name&&accId){var a=accs.find(function(x){return x.id===accId;});if(a)name=a.name;}
+  var existingId=window._editEventId||null;
+  var ev={
+    id:existingId||('ev'+Date.now()+Math.random().toString(36).slice(2,7)),
+    start_date:start,
+    end_date:end,
+    account_id:accId,
+    account_name:name||null,
+    manager:mgr,
+    event_type:type,
+    notes:notes||null,
+    created_by:existingId?undefined:getUser(),
+    updated_at:new Date().toISOString()
+  };
+  // Strip undefined keys
+  Object.keys(ev).forEach(function(k){if(ev[k]===undefined)delete ev[k];});
+  try{
+    var btn=document.querySelector('.modal-foot .btn-primary');
+    if(btn){btn.textContent='Saving…';btn.disabled=true;}
+    await upsertEvent(ev);
+    window._editEventId=null;
+    closeModal();
+  }catch(e){alert('Error: '+e.message);}
+}
+function openEditEvent(id){
+  var ev=events.find(function(x){return x.id===id;});
+  if(!ev){alert('Event not found.');return;}
+  window._editEventId=id;
+  var mgrOpts='<option value="">— Select manager —</option>'+implMgrs.map(function(m){return '<option value="'+esc(m)+'"'+(ev.manager===m?' selected':'')+'>'+esc(m)+'</option>';}).join('')+'<option value="Other / Guest"'+(ev.manager==='Other / Guest'?' selected':'')+'>Other / Guest</option>';
+  var typeOpts='<option value="">— Select type —</option>'+EVENT_TYPES.map(function(t){return '<option value="'+esc(t)+'"'+(ev.event_type===t?' selected':'')+'>'+esc(t)+'</option>';}).join('');
+  var accOpts='<option value="">— None / freeform —</option>'+accs.slice().sort(function(a,b){return (a.name||'').localeCompare(b.name||'');}).map(function(a){return '<option value="'+esc(a.id)+'"'+(ev.account_id===a.id?' selected':'')+' data-name="'+esc(a.name)+'">'+esc(a.name)+'</option>';}).join('');
+  document.getElementById('mc').innerHTML=
+    '<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal" style="max-width:540px">'+
+    '<div class="modal-hdr"><span class="modal-title">Edit event</span><button class="xbtn" onclick="closeModal()">×</button></div>'+
+    '<div class="modal-body">'+
+    '<div class="fg">'+
+    '<div class="fgrp"><label class="flbl">Start date *</label><input class="finput" id="ev-start" type="date" value="'+(ev.start_date?String(ev.start_date).split('T')[0]:'')+'"></div>'+
+    '<div class="fgrp"><label class="flbl">End date</label><input class="finput" id="ev-end" type="date" value="'+(ev.end_date?String(ev.end_date).split('T')[0]:'')+'"></div>'+
+    '<div class="fgrp full"><label class="flbl">Manager *</label><select class="finput" id="ev-mgr">'+mgrOpts+'</select></div>'+
+    '<div class="fgrp full"><label class="flbl">Event type *</label><select class="finput" id="ev-type">'+typeOpts+'</select></div>'+
+    '<div class="fgrp full"><label class="flbl">Account</label><select class="finput" id="ev-acc" onchange="fillEventName()">'+accOpts+'</select></div>'+
+    '<div class="fgrp full"><label class="flbl">Display name</label><input class="finput" id="ev-name" value="'+esc(ev.account_name||'')+'"></div>'+
+    '<div class="fgrp full"><label class="flbl">Notes</label><textarea class="finput" id="ev-notes" rows="2">'+esc(ev.notes||'')+'</textarea></div>'+
+    '</div>'+
+    '</div>'+
+    '<div class="modal-foot"><button class="btn btn-danger" onclick="deleteEvent(\''+esc(id)+'\')" style="margin-right:auto">Delete</button><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveEvent()">Save event</button></div>'+
+    '</div></div>';
+}
+
+function closeModal(){document.getElementById('mc').innerHTML='';window._editEventId=null;}
 function openAdd(){showForm(null);}
 function openEdit(id){showForm(accs.find(function(a){return a.id===id;}));}
 
