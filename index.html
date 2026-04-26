@@ -1263,6 +1263,7 @@ function bulkBarHTML(){
     '<span class="bulk-count" id="bulk-count">'+window._bulkSelected.size+' selected</span>'+
     '<button class="btn" onclick="bulkSetFollowup()">Set follow-up</button>'+
     '<button class="btn" onclick="bulkAddTag()">Add tag</button>'+
+    '<button class="btn" onclick="bulkRemoveTag()">Remove tag</button>'+
     '<button class="btn" onclick="bulkChangeStage()">Change stage</button>'+
     '<button class="btn" onclick="bulkClear()">Clear</button>'+
     '</div>';
@@ -1321,6 +1322,51 @@ async function bulkAddTag(){
     window._bulkSelected.clear();
     await loadAll();
     alert('Tag "'+tag+'" added to '+updated.length+' account'+(updated.length===1?'':'s')+'.');
+  }catch(e){alert('Error: '+e.message);}
+}
+async function bulkRemoveTag(){
+  if(!window._bulkSelected.size)return;
+  // Gather tags actually present on any of the selected accounts
+  var ids=Array.from(window._bulkSelected);
+  var presentTags={};
+  ids.forEach(function(id){
+    var a=accs.find(function(x){return x.id===id;});
+    if(!a)return;
+    getTags(a).forEach(function(t){presentTags[normTag(t)]=t;});
+  });
+  var presentList=Object.values(presentTags).sort();
+  if(!presentList.length){alert('None of the selected accounts have any tags.');return;}
+  var promptText='Remove which tag from the '+ids.length+' selected account'+(ids.length===1?'':'s')+'?\n\nTags currently present:\n'+
+    presentList.map(function(t,i){return (i+1)+'. '+t;}).join('\n')+
+    '\n\nType the number or the exact tag name:';
+  var input=prompt(promptText);
+  if(!input||!input.trim())return;
+  input=input.trim();
+  var target=null;
+  var num=parseInt(input);
+  if(!isNaN(num)&&num>=1&&num<=presentList.length){target=presentList[num-1];}
+  else {
+    var matched=presentList.find(function(t){return normTag(t)===normTag(input);});
+    if(matched)target=matched;
+  }
+  if(!target){alert('Tag not recognized. Type the number from the list or the exact tag name.');return;}
+  if(!confirm('Remove tag "'+target+'" from '+ids.length+' account'+(ids.length===1?'':'s')+'?'))return;
+  var updated=[];
+  ids.forEach(function(id){
+    var a=accs.find(function(x){return x.id===id;});
+    if(!a)return;
+    var current=getTags(a);
+    var idx=current.map(normTag).indexOf(normTag(target));
+    if(idx===-1)return;
+    current.splice(idx,1);
+    updated.push(Object.assign({},a,{tags:current.length?current.join(', '):null,activity_log:logActivity(a,'Bulk: removed tag "'+target+'"'),updated_at:new Date().toISOString()}));
+  });
+  if(!updated.length){alert('No accounts had that tag.');return;}
+  try{
+    await req('POST','accounts',updated,null,null);
+    window._bulkSelected.clear();
+    await loadAll();
+    alert('Tag "'+target+'" removed from '+updated.length+' account'+(updated.length===1?'':'s')+'.');
   }catch(e){alert('Error: '+e.message);}
 }
 async function bulkChangeStage(){
@@ -2038,12 +2084,97 @@ function rSettings(el,act){
   }else{
     dupesHTML='<div style="font-size:13px;color:var(--ok);font-weight:500;padding:12px 16px">✓ No likely duplicates detected.</div>';
   }
+  // Tags admin: every unique tag with account count + rename/delete actions
+  var tagCounts={};
+  var tagDisplay={};
+  accs.forEach(function(a){
+    getTags(a).forEach(function(t){
+      var k=normTag(t);
+      tagCounts[k]=(tagCounts[k]||0)+1;
+      if(!tagDisplay[k])tagDisplay[k]=t;
+    });
+  });
+  var tagKeys=Object.keys(tagCounts).sort(function(a,b){return tagDisplay[a].localeCompare(tagDisplay[b]);});
+  var tagsHTML='';
+  if(tagKeys.length){
+    tagKeys.forEach(function(k){
+      var display=tagDisplay[k];
+      var count=tagCounts[k];
+      tagsHTML+='<div class="mgr-row">'+
+        '<div style="display:flex;align-items:center;gap:10px">'+
+          '<span class="tag-chip" style="cursor:default">'+esc(display)+'</span>'+
+          '<span style="font-family:var(--f-mono);font-size:11px;color:var(--muted);letter-spacing:.04em">'+count+' account'+(count===1?'':'s')+'</span>'+
+        '</div>'+
+        '<div style="display:flex;gap:6px">'+
+          '<button class="btn btn-sm" data-tag="'+esc(display)+'" onclick="filterByTag(this.dataset.tag)">View</button>'+
+          '<button class="btn btn-sm" data-tag="'+esc(display)+'" onclick="renameTagGlobal(this.dataset.tag)">Rename</button>'+
+          '<button class="btn btn-sm btn-danger" data-tag="'+esc(display)+'" onclick="deleteTagGlobal(this.dataset.tag)">Delete</button>'+
+        '</div>'+
+      '</div>';
+    });
+  }else{
+    tagsHTML='<div style="font-size:13px;color:var(--muted);font-weight:500;padding:12px 16px">No tags created yet. Tag accounts in the Edit form to start grouping.</div>';
+  }
   el.innerHTML='<div style="max-width:720px">'+
     '<div class="card" style="margin-bottom:24px"><div class="card-hdr"><span class="card-title">Implementation managers</span><button class="btn btn-sm btn-primary" onclick="showAddMgr()">+ Add</button></div><div id="mgr-list">'+mgrs+'</div></div>'+
-    '<div style="font-size:11.5px;color:var(--muted);margin-bottom:20px;font-weight:500">Shared across all users. Changes are visible to everyone on your team.</div>'+
+    '<div style="font-size:11.5px;color:var(--muted);margin-bottom:24px;font-weight:500">Shared across all users. Changes are visible to everyone on your team.</div>'+
+    '<div class="card" style="margin-bottom:24px"><div class="card-hdr"><span class="card-title">Tags</span><span style="font-family:var(--f-mono);font-size:10.5px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase">'+tagKeys.length+' tag'+(tagKeys.length===1?'':'s')+'</span></div><div>'+tagsHTML+'</div></div>'+
+    '<div style="font-size:11.5px;color:var(--muted);margin-bottom:24px;font-weight:500">Rename a tag to fix typos across every account at once. Delete a tag to remove it from every account it\'s on.</div>'+
     '<div class="card"><div class="card-hdr"><span class="card-title">Possible duplicate accounts</span><span style="font-family:var(--f-mono);font-size:10.5px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase">'+dupes.length+' group'+(dupes.length===1?'':'s')+'</span></div><div style="padding:16px">'+dupesHTML+'</div></div>'+
     '<div style="font-size:11.5px;color:var(--muted);margin-top:10px;font-weight:500">Detected by comparing normalized account names (ignoring punctuation and common words like "Eye Care," "LLC," etc.). Open any account to merge or delete.</div>'+
     '</div>';
+}
+async function renameTagGlobal(oldTag){
+  var newTag=prompt('Rename "'+oldTag+'" to:',oldTag);
+  if(newTag===null)return;
+  newTag=newTag.trim();
+  if(!newTag){alert('Tag name cannot be empty.');return;}
+  if(normTag(newTag)===normTag(oldTag)&&newTag!==oldTag){
+    // case-only change; allow it
+  } else if(normTag(newTag)===normTag(oldTag)){
+    return; // no change
+  }
+  // Find every account with this tag
+  var affected=accs.filter(function(a){
+    return getTags(a).map(normTag).indexOf(normTag(oldTag))!==-1;
+  });
+  if(!affected.length){alert('No accounts found with that tag.');return;}
+  if(!confirm('Rename "'+oldTag+'" to "'+newTag+'" on '+affected.length+' account'+(affected.length===1?'':'s')+'?'))return;
+  var updated=[];
+  affected.forEach(function(a){
+    var current=getTags(a);
+    var changed=current.map(function(t){return normTag(t)===normTag(oldTag)?newTag:t;});
+    // Dedupe in case the new name already exists
+    var seen={};
+    var deduped=[];
+    changed.forEach(function(t){var k=normTag(t);if(!seen[k]){seen[k]=true;deduped.push(t);}});
+    updated.push(Object.assign({},a,{tags:deduped.length?deduped.join(', '):null,activity_log:logActivity(a,'Renamed tag "'+oldTag+'" to "'+newTag+'"'),updated_at:new Date().toISOString()}));
+  });
+  try{
+    await req('POST','accounts',updated,null,null);
+    await loadAll();
+    alert('Renamed on '+updated.length+' account'+(updated.length===1?'':'s')+'.');
+  }catch(e){alert('Error: '+e.message);}
+}
+async function deleteTagGlobal(tag){
+  var affected=accs.filter(function(a){
+    return getTags(a).map(normTag).indexOf(normTag(tag))!==-1;
+  });
+  if(!affected.length){alert('No accounts found with that tag.');return;}
+  if(!confirm('Remove tag "'+tag+'" from all '+affected.length+' account'+(affected.length===1?'':'s')+'?\n\nThis cannot be undone.'))return;
+  var updated=[];
+  affected.forEach(function(a){
+    var current=getTags(a);
+    var filtered=current.filter(function(t){return normTag(t)!==normTag(tag);});
+    updated.push(Object.assign({},a,{tags:filtered.length?filtered.join(', '):null,activity_log:logActivity(a,'Deleted tag "'+tag+'" globally'),updated_at:new Date().toISOString()}));
+  });
+  try{
+    await req('POST','accounts',updated,null,null);
+    // Clear filter if we just deleted the tag we were filtering by
+    if(window._tagFilter&&normTag(window._tagFilter)===normTag(tag))window._tagFilter=null;
+    await loadAll();
+    alert('Tag "'+tag+'" removed from '+updated.length+' account'+(updated.length===1?'':'s')+'.');
+  }catch(e){alert('Error: '+e.message);}
 }
 async function showAddMgr(){
   var name=prompt('Enter implementation manager name:');
