@@ -190,12 +190,13 @@ html,body{font-family:var(--f-ui);font-size:14px;color:var(--text);background:va
   font-weight:500;text-transform:uppercase;letter-spacing:.1em;
 }
 .metric-val{
-  font-family:var(--f-display);
-  font-size:38px;font-weight:400;color:var(--ink);
-  letter-spacing:-.035em;line-height:.95;
-  font-variation-settings:"opsz" 144;
+  font-family:var(--f-ui);
+  font-size:38px;font-weight:700;color:var(--ink);
+  letter-spacing:-.025em;line-height:1;
+  font-variant-numeric:tabular-nums;
+  font-feature-settings:'tnum','cv11';
 }
-.metric-val.huge{font-size:54px;}
+.metric-val.huge{font-size:54px;letter-spacing:-.03em;}
 .metric-val.red{color:var(--danger);}
 .metric-val.lime{color:var(--lime-ink);}
 .metric-sub{font-size:12px;color:var(--muted);margin-top:10px;font-weight:500;}
@@ -443,9 +444,11 @@ textarea.finput{resize:vertical;min-height:64px;font-family:var(--f-ui);}
   font-weight:500;text-transform:uppercase;letter-spacing:.1em;
 }
 .report-val{
-  font-family:var(--f-display);
-  font-size:32px;font-weight:400;color:var(--ink);letter-spacing:-.03em;
-  font-variation-settings:"opsz" 144;line-height:1;
+  font-family:var(--f-ui);
+  font-size:32px;font-weight:700;color:var(--ink);letter-spacing:-.025em;
+  font-variant-numeric:tabular-nums;
+  font-feature-settings:'tnum';
+  line-height:1;
 }
 .report-sub{font-size:11.5px;color:var(--muted);margin-top:8px;font-weight:500;}
 
@@ -462,9 +465,11 @@ textarea.finput{resize:vertical;min-height:64px;font-family:var(--f-ui);}
   text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;
 }
 .snap-val{
-  font-family:var(--f-display);
-  font-size:26px;font-weight:400;color:var(--ink);letter-spacing:-.025em;
-  font-variation-settings:"opsz" 144;line-height:1;
+  font-family:var(--f-ui);
+  font-size:26px;font-weight:700;color:var(--ink);letter-spacing:-.02em;
+  font-variant-numeric:tabular-nums;
+  font-feature-settings:'tnum';
+  line-height:1;
 }
 
 /* ============ PIPELINE BAR — make it the star of the dashboard ============ */
@@ -491,9 +496,11 @@ textarea.finput{resize:vertical;min-height:64px;font-family:var(--f-ui);}
 .pipe-row:hover .pipe-bar{background:oklch(78% 0.22 155);}
 .pipe-count{
   width:36px;text-align:right;
-  font-family:var(--f-display);
-  font-size:18px;font-weight:500;color:var(--ink);letter-spacing:-.02em;
-  font-variation-settings:"opsz" 144;line-height:1;
+  font-family:var(--f-ui);
+  font-size:18px;font-weight:700;color:var(--ink);letter-spacing:-.015em;
+  font-variant-numeric:tabular-nums;
+  font-feature-settings:'tnum';
+  line-height:1;
 }
 
 /* ============ WELCOME SCREEN — editorial, confident ============ */
@@ -1237,9 +1244,9 @@ function rDash(el,act){
       '</div>'+
       '<div style="padding:14px 22px;display:flex;justify-content:space-between;align-items:center'+(a45EvalRows?';border-bottom:1px solid var(--line)':'')+'">'+
         '<div><div style="font-family:var(--f-mono);font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:500">Source revenue · realized + annualized</div>'+
-        '<div style="font-family:var(--f-display);font-size:24px;font-weight:500;color:var(--ink);letter-spacing:-.025em;margin-top:4px;font-variation-settings:&quot;opsz&quot; 144">'+(a45Revenue?'$'+fmtC(a45Revenue):'—')+'</div></div>'+
+        '<div style="font-family:var(--f-ui);font-size:26px;font-weight:700;color:var(--ink);letter-spacing:-.02em;margin-top:4px;font-variant-numeric:tabular-nums;line-height:1">'+(a45Revenue?'$'+fmtC(a45Revenue):'—')+'</div></div>'+
         '<div style="text-align:right"><div style="font-family:var(--f-mono);font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:500">Lost</div>'+
-        '<div style="font-family:var(--f-display);font-size:24px;font-weight:500;color:'+(a45Lost.length?'var(--danger)':'var(--ink)')+';letter-spacing:-.025em;margin-top:4px;font-variation-settings:&quot;opsz&quot; 144">'+a45Lost.length+'</div></div>'+
+        '<div style="font-family:var(--f-ui);font-size:26px;font-weight:700;color:'+(a45Lost.length?'var(--danger)':'var(--ink)')+';letter-spacing:-.02em;margin-top:4px;font-variant-numeric:tabular-nums;line-height:1">'+a45Lost.length+'</div></div>'+
       '</div>'+
       (a45EvalRows?'<div style="padding:14px 22px"><div style="font-family:var(--f-mono);font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:500;margin-bottom:8px">In 60-day evaluation</div>'+a45EvalRows+'</div>':'')+
       '</div>';
@@ -1308,9 +1315,9 @@ function rPipe(el,act){
   list.forEach(function(a){
     var pc=pcon(a);
     var emailHTML=pc.email?'<div class="as"><a href="mailto:'+esc(pc.email)+'" style="color:var(--ink)" onclick="event.stopPropagation()">'+esc(pc.email)+'</a></div>':'';
-    rows+=trO(a.id)+'<td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' · '+esc(a.state):'')+'</div></td><td>'+badge(a.stage)+'</td><td><div>'+esc(cname(a))+'</div>'+emailHTML+'</td><td style="font-family:var(--f-display);font-size:15px;color:var(--ink);letter-spacing:-.02em">'+(a.deal_value?'$'+fmtC(a.deal_value):'—')+'</td><td style="color:var(--muted)">'+fmt(a.updated_at)+'</td><td>'+eBtn(a.id)+'</td></tr>';
+    rows+=trO(a.id)+'<td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' · '+esc(a.state):'')+'</div></td><td>'+badge(a.stage)+'</td><td><div>'+esc(cname(a))+'</div>'+emailHTML+'</td><td style="font-family:var(--f-ui);font-size:14px;font-weight:700;color:var(--ink);letter-spacing:-.01em;font-variant-numeric:tabular-nums">'+(a.deal_value?'$'+fmtC(a.deal_value):'—')+'</td><td style="color:var(--muted)">'+fmt(a.updated_at)+'</td><td>'+eBtn(a.id)+'</td></tr>';
   });
-  var totalSpan=totalVal?'<span style="margin-left:auto;font-family:var(--f-display);font-size:17px;font-weight:500;color:var(--ink);letter-spacing:-.02em">Total: <span style="color:var(--lime-ink)">$'+fmtC(totalVal)+'</span></span>':'';
+  var totalSpan=totalVal?'<span style="margin-left:auto;font-family:var(--f-ui);font-size:15px;font-weight:700;color:var(--ink);letter-spacing:-.01em;font-variant-numeric:tabular-nums">Total: <span style="color:var(--lime-ink)">$'+fmtC(totalVal)+'</span></span>':'';
   var checkboxes=SALES.map(function(s){
     var checked=activeStages.has(s)?'checked':'';
     return '<label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;font-weight:500;color:var(--text);white-space:nowrap"><input type="checkbox" '+checked+' data-stage="'+s+'" onchange="togglePipeStage(this.dataset.stage,this.checked)" style="cursor:pointer;accent-color:var(--lime)"> '+s+'</label>';
@@ -1677,7 +1684,14 @@ async function markFUDone(id,i){
   var fus=[];try{fus=JSON.parse(a.followups_json||'[]');}catch(e){}
   if(fus[i])fus[i].done=true;
   var updated=Object.assign({},a,{followups_json:JSON.stringify(fus),activity_log:logActivity(a,'Marked follow-up done: '+((fus[i]&&fus[i].note)||'Follow-up')),updated_at:new Date().toISOString()});
-  await upsertAcc(updated);openDetail(id);stab('f');updFUBadge();
+  await upsertAcc(updated);
+  updFUBadge();
+  // Context-aware refresh: if we're on the Follow-ups page, just re-render. Otherwise refresh the detail modal.
+  if(view==='followups'){
+    render();
+  }else{
+    openDetail(id);stab('f');
+  }
 }
 async function removeFU(id,i){
   if(!confirm('Remove this follow-up?'))return;
@@ -1686,7 +1700,13 @@ async function removeFU(id,i){
   var fus=[];try{fus=JSON.parse(a.followups_json||'[]');}catch(e){}
   fus.splice(i,1);
   var updated=Object.assign({},a,{followups_json:JSON.stringify(fus),updated_at:new Date().toISOString()});
-  await upsertAcc(updated);openDetail(id);stab('f');updFUBadge();
+  await upsertAcc(updated);
+  updFUBadge();
+  if(view==='followups'){
+    render();
+  }else{
+    openDetail(id);stab('f');
+  }
 }
 function updFUBadge(){
   var me=getUser();
@@ -1757,9 +1777,9 @@ function rSnap(el,act){
       (a.kit_count||'—');
     var subBadge=a.sub_type?'<span class="badge '+(a.sub_type==='Monthly'?'b-monthly':a.sub_type==='No charge'?'b-nocharge':'b-yearly')+'">'+(a.sub_type)+'</span>':'';
     var rowData='<td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' · '+esc(a.state):'')+'</div></td>';
-    if(type==='hardware')rowData+='<td>'+badge(a.stage)+'</td><td style="font-family:var(--f-display);font-size:15px;color:var(--ink);letter-spacing:-.02em">'+val+'</td>';
-    else if(type==='subscription')rowData+='<td>'+subBadge+'</td><td style="font-family:var(--f-display);font-size:15px;color:var(--ink);letter-spacing:-.02em">'+val+'</td><td style="color:var(--muted)">'+fmt(a.renewal_date)+'</td>';
-    else rowData+='<td style="font-family:var(--f-display);font-size:15px;color:var(--ink);letter-spacing:-.02em">'+val+'</td><td>'+badge(a.stage)+'</td>';
+    if(type==='hardware')rowData+='<td>'+badge(a.stage)+'</td><td style="font-family:var(--f-ui);font-size:14px;font-weight:700;color:var(--ink);letter-spacing:-.01em;font-variant-numeric:tabular-nums">'+val+'</td>';
+    else if(type==='subscription')rowData+='<td>'+subBadge+'</td><td style="font-family:var(--f-ui);font-size:14px;font-weight:700;color:var(--ink);letter-spacing:-.01em;font-variant-numeric:tabular-nums">'+val+'</td><td style="color:var(--muted)">'+fmt(a.renewal_date)+'</td>';
+    else rowData+='<td style="font-family:var(--f-ui);font-size:14px;font-weight:700;color:var(--ink);letter-spacing:-.01em;font-variant-numeric:tabular-nums">'+val+'</td><td>'+badge(a.stage)+'</td>';
     rowData+='<td>'+eBtn(a.id)+'</td>';
     rows+=trO(a.id)+rowData+'</tr>';
   });
@@ -1767,7 +1787,7 @@ function rSnap(el,act){
     type==='subscription'?'<th>Sub type</th><th>Amount</th><th>Renewal</th>':
     '<th>Kits</th><th>Stage</th>';
   el.innerHTML=
-    '<div class="fbar"><input type="text" class="search" placeholder="Search account, contact, email…" value="'+esc(q)+'" oninput="searchInput(this.value)"><span style="margin-left:auto;font-family:var(--f-display);font-size:16px;font-weight:500;color:var(--ink);letter-spacing:-.02em">Total · <span style="color:var(--lime-ink)">'+totalLabel+'</span></span></div>'+
+    '<div class="fbar"><input type="text" class="search" placeholder="Search account, contact, email…" value="'+esc(q)+'" oninput="searchInput(this.value)"><span style="margin-left:auto;font-family:var(--f-ui);font-size:15px;font-weight:700;color:var(--ink);letter-spacing:-.01em;font-variant-numeric:tabular-nums">Total · <span style="color:var(--lime-ink)">'+totalLabel+'</span></span></div>'+
     '<div class="card"><div style="overflow-x:auto"><table><thead><tr><th style="width:30%">Account</th>'+cols+'<th></th></tr></thead><tbody>'+
     (list.length?rows:'<tr><td colspan="4" class="empty">No accounts found.</td></tr>')+
     '</tbody></table></div></div>';
