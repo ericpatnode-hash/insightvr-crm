@@ -1603,6 +1603,7 @@ function rDash(el,act){
   var subForecast=accs.filter(function(a){return IMPL.includes(a.stage)&&a.sub_type&&a.sub_type!=='No charge';}).reduce(function(s,a){var amt=parseC(a.sub_amount)||0;return s+(a.sub_type==='Monthly'?amt*12:amt);},0);
   var subForecastCount=accs.filter(function(a){return IMPL.includes(a.stage)&&a.sub_type&&a.sub_type!=='No charge'&&parseC(a.sub_amount)>0;}).length;
   var implMissingSub=accs.filter(function(a){return IMPL.includes(a.stage)&&(!a.sub_type||a.sub_type==='No charge'||!parseC(a.sub_amount));}).length;
+  var implTotal=accs.filter(function(a){return IMPL.includes(a.stage);}).length;
   var totalKits=active.reduce(function(s,a){return s+(a.kit_count||0);},0);
 
   // Alerts
