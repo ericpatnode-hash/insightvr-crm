@@ -470,6 +470,12 @@ textarea.finput{resize:vertical;min-height:64px;font-family:var(--f-ui);}
   font-feature-settings:'tnum';
   line-height:1;
 }
+.snap-forecast{
+  background:var(--lime-wash) !important;
+  border-color:var(--lime) !important;
+}
+.snap-forecast .snap-val{color:var(--lime-ink);}
+.snap-forecast:hover{background:oklch(94% 0.10 155) !important;}
 
 /* ============ PIPELINE BAR — make it the star of the dashboard ============ */
 .pipe-row{
@@ -1516,7 +1522,7 @@ function navDrill(drillId){
 function navSnap(type){
   view='snap';window._snapType=type;q='';sortCol='';sortDir=1;
   document.querySelectorAll('.nav-item').forEach(function(e){e.classList.remove('active');});
-  var titles={hardware:'Hardware Revenue',subscription:'Subscription Revenue',kits:'Kits Deployed'};
+  var titles={hardware:'Hardware Revenue',subscription:'Subscription Revenue',kits:'Kits Deployed',forecast:'Subscription Forecast'};
   document.getElementById('ptitle').textContent=titles[type]||'';
   render();
 }
@@ -1593,6 +1599,10 @@ function rDash(el,act){
   var subRev=active.reduce(function(s,a){var amt=parseC(a.sub_amount)||0;return s+(a.sub_type==='Monthly'?amt*12:amt);},0);
   var pipeVal=pipe.reduce(function(s,a){return s+(parseC(a.deal_value)||0);},0);
   var pipeWithValue=pipe.filter(function(a){return parseC(a.deal_value)>0;}).length;
+  // Subscription forecast: annualized subs from accounts in implementation (signed but not yet active)
+  var subForecast=accs.filter(function(a){return IMPL.includes(a.stage)&&a.sub_type&&a.sub_type!=='No charge';}).reduce(function(s,a){var amt=parseC(a.sub_amount)||0;return s+(a.sub_type==='Monthly'?amt*12:amt);},0);
+  var subForecastCount=accs.filter(function(a){return IMPL.includes(a.stage)&&a.sub_type&&a.sub_type!=='No charge'&&parseC(a.sub_amount)>0;}).length;
+  var implMissingSub=accs.filter(function(a){return IMPL.includes(a.stage)&&(!a.sub_type||a.sub_type==='No charge'||!parseC(a.sub_amount));}).length;
   var totalKits=active.reduce(function(s,a){return s+(a.kit_count||0);},0);
 
   // Alerts
@@ -1705,12 +1715,26 @@ function rDash(el,act){
     '<div style="display:grid;grid-template-columns:1.2fr 1fr;gap:20px">'+
       '<div class="card" style="margin-bottom:0"><div class="card-hdr"><span class="card-title">Pipeline Breakdown</span><button class="btn btn-sm btn-navy" onclick="nav(\'pipeline\')">View all</button></div><div style="padding:10px 22px 14px">'+pipeHTML+'</div></div>'+
       '<div class="card" style="margin-bottom:0"><div class="card-hdr"><span class="card-title">Revenue Snapshot</span><button class="btn btn-sm btn-navy" onclick="nav(\'reports\')">Reports</button></div>'+
-      '<div style="padding:16px 18px"><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">'+
-        '<div class="snap-box" onclick="navSnap(\'hardware\')"><div class="snap-lbl">Hardware</div><div class="snap-val">'+(hwRev?'$'+fmtC(hwRev):'—')+'</div></div>'+
-        '<div class="snap-box" onclick="navSnap(\'subscription\')"><div class="snap-lbl">Subscription / yr</div><div class="snap-val">'+(subRev?'$'+fmtC(subRev):'—')+'</div></div>'+
-        '<div class="snap-box" onclick="navPipeVal()"><div class="snap-lbl">Pipeline</div><div class="snap-val">'+(pipeVal?'$'+fmtC(pipeVal):'—')+'</div></div>'+
-        '<div class="snap-box" onclick="navSnap(\'kits\')"><div class="snap-lbl">Kits deployed</div><div class="snap-val">'+totalKits+'</div></div>'+
-      '</div></div></div>'+
+      '<div style="padding:16px 18px">'+
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">'+
+          '<div class="snap-box" onclick="navSnap(\'hardware\')"><div class="snap-lbl">Hardware</div><div class="snap-val">'+(hwRev?'$'+fmtC(hwRev):'—')+'</div></div>'+
+          '<div class="snap-box" onclick="navSnap(\'subscription\')"><div class="snap-lbl">Subscription / yr</div><div class="snap-val">'+(subRev?'$'+fmtC(subRev):'—')+'</div></div>'+
+          '<div class="snap-box" onclick="navPipeVal()"><div class="snap-lbl">Pipeline</div><div class="snap-val">'+(pipeVal?'$'+fmtC(pipeVal):'—')+'</div></div>'+
+          '<div class="snap-box" onclick="navSnap(\'kits\')"><div class="snap-lbl">Kits deployed</div><div class="snap-val">'+totalKits+'</div></div>'+
+        '</div>'+
+        '<div class="snap-box snap-forecast" onclick="navSnap(\'forecast\')" style="margin-top:12px">'+
+          '<div style="display:flex;justify-content:space-between;align-items:flex-start">'+
+            '<div>'+
+              '<div class="snap-lbl">Subscription forecast <span style="color:var(--lime-ink);font-weight:700;letter-spacing:.06em">· FROM IMPLEMENTATIONS</span></div>'+
+              '<div class="snap-val" style="margin-top:6px">'+(subForecast?'+$'+fmtC(subForecast)+'/yr':'—')+'</div>'+
+            '</div>'+
+            '<div style="text-align:right;font-family:var(--f-mono);font-size:10.5px;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;font-weight:500;line-height:1.5">'+
+              subForecastCount+' of '+implTotal+'<br>account'+(implTotal===1?'':'s')+
+              (implMissingSub?'<br><span style="color:var(--warn-ink);font-weight:600">'+implMissingSub+' missing data</span>':'')+
+            '</div>'+
+          '</div>'+
+        '</div>'+
+      '</div></div>'+
     '</div>'+
     alcon45HTML+
     '<div class="card" style="margin-top:20px"><div class="card-hdr"><span class="card-title">Alerts</span><span style="font-family:var(--f-mono);font-size:10.5px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase">Needs attention</span></div>'+(alerts?alerts:'<div style="padding:16px 22px;font-size:13.5px;font-weight:500;color:var(--ok)"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--ok);margin-right:10px"></span>All clear — nothing needs your attention right now.</div>')+'</div>';
@@ -1800,15 +1824,23 @@ function rImpl(el,act){
   if(q)list=list.filter(function(a){return matchAccount(a,q);});
   list=applyTagFilter(list);
   if(fs!=='all')list=list.filter(function(a){return a.stage===fs;});
-  list=srt(list,{name:function(a){return a.name;},stage:function(a){return a.stage;},go_live:function(a){return a.go_live_date||'';},checkin:function(a){return a.checkin_30_date||'';},eval_end:function(a){return a.eval_end_date||'';},impl_manager:function(a){return a.impl_manager||'';},kit_count:function(a){return a.kit_count||0;}});
+  list=srt(list,{name:function(a){return a.name;},stage:function(a){return a.stage;},go_live:function(a){return a.go_live_date||'';},checkin:function(a){return a.checkin_30_date||'';},eval_end:function(a){return a.eval_end_date||'';},impl_manager:function(a){return a.impl_manager||'';},kit_count:function(a){return a.kit_count||0;},sub:function(a){var amt=parseC(a.sub_amount)||0;return a.sub_type==='Monthly'?amt*12:amt;}});
   var rows='';
   list.forEach(function(a){
     var ed=daysFrom(a.eval_end_date);
     var ciBtn=a.stage==='60-day evaluation'?'<button class="btn btn-sm" style="margin-left:8px;'+(a.checkin_30_done?'background:var(--lime-wash);color:var(--lime-ink);border-color:var(--lime)':'')+'" data-id="'+a.id+'" onclick="event.stopPropagation();toggleCI(this.dataset.id)">'+(a.checkin_30_done?'Undo check-in':'Check-in done')+'</button>':'';
-    rows+=trO(a.id)+'<td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' · '+esc(a.state):'')+'</div></td><td>'+badge(a.stage)+'</td><td>'+(a.go_live_end_date&&a.go_live_end_date!==a.go_live_date?fmt(a.go_live_date)+' → '+fmt(a.go_live_end_date):fmt(a.go_live_date))+'</td><td>'+ciStatus(a)+ciBtn+'</td><td>'+(a.eval_end_date?'<span class="'+(ed!==null&&ed<=10?'warn':'')+'">'+fmt(a.eval_end_date)+' '+dl(ed)+'</span>':'—')+'</td><td>'+esc(a.impl_manager||'—')+'</td><td>'+(a.kit_count||'—')+'</td><td>'+eBtn(a.id)+'</td></tr>';
+    var subCell;
+    if(a.sub_type==='No charge')subCell='<span class="badge b-nocharge">No charge</span>';
+    else if(a.sub_amount&&a.sub_type){
+      var suffix=a.sub_type==='Monthly'?'/mo':'/yr';
+      subCell='<span style="font-family:var(--f-ui);font-size:13px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums">$'+fmtC(a.sub_amount)+suffix+'</span>';
+    } else {
+      subCell='<span style="color:var(--warn-ink);font-size:11px;font-weight:600">missing</span>';
+    }
+    rows+=trO(a.id)+'<td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' · '+esc(a.state):'')+'</div></td><td>'+badge(a.stage)+'</td><td>'+(a.go_live_end_date&&a.go_live_end_date!==a.go_live_date?fmt(a.go_live_date)+' → '+fmt(a.go_live_end_date):fmt(a.go_live_date))+'</td><td>'+ciStatus(a)+ciBtn+'</td><td>'+(a.eval_end_date?'<span class="'+(ed!==null&&ed<=10?'warn':'')+'">'+fmt(a.eval_end_date)+' '+dl(ed)+'</span>':'—')+'</td><td>'+esc(a.impl_manager||'—')+'</td><td>'+(a.kit_count||'—')+'</td><td>'+subCell+'</td><td>'+eBtn(a.id)+'</td></tr>';
   });
   var stageOpts=IMPL.map(function(s){return '<option value="'+s+'"'+(fs===s?' selected':'')+'>'+s+'</option>';}).join('');
-  el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search account, contact, email…" value="'+esc(q)+'" oninput="searchInput(this.value)"><select class="finput" style="width:200px" onchange="fs=this.value;render()"><option value="all">All stages</option>'+stageOpts+'</select></div><div class="card"><div style="overflow-x:auto"><table><thead><tr>'+th('name','Account','20%')+th('stage','Stage','13%')+th('go_live','Go-live','10%')+th('checkin','30-day check-in','18%')+th('eval_end','60-day end','13%')+th('impl_manager','Impl. mgr','11%')+th('kit_count','Kits','6%')+'<th style="width:9%"></th></tr></thead><tbody>'+(list.length?rows:'<tr><td colspan="8" class="empty">No accounts in implementation.</td></tr>')+'</tbody></table></div></div>';
+  el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search account, contact, email…" value="'+esc(q)+'" oninput="searchInput(this.value)"><select class="finput" style="width:200px" onchange="fs=this.value;render()"><option value="all">All stages</option>'+stageOpts+'</select></div><div class="card"><div style="overflow-x:auto"><table><thead><tr>'+th('name','Account','18%')+th('stage','Stage','12%')+th('go_live','Go-live','9%')+th('checkin','30-day check-in','16%')+th('eval_end','60-day end','12%')+th('impl_manager','Impl. mgr','10%')+th('kit_count','Kits','5%')+th('sub','Sub forecast','10%')+'<th style="width:8%"></th></tr></thead><tbody>'+(list.length?rows:'<tr><td colspan="9" class="empty">No accounts in implementation.</td></tr>')+'</tbody></table></div></div>';
 }
 
 function rActive(el,act){
@@ -2437,7 +2469,8 @@ function rSnap(el,act){
   var hwAccs=accs.filter(function(a){return (a.stage==='Active'||IMPL.includes(a.stage))&&parseC(a.hardware_cost)>0;});
   var subAccs=accs.filter(function(a){return a.stage==='Active'&&parseC(a.sub_amount)>0;});
   var kitsAccs=accs.filter(function(a){return a.stage==='Active'&&a.kit_count>0;});
-  var list=type==='hardware'?hwAccs:type==='subscription'?subAccs:kitsAccs;
+  var forecastAccs=accs.filter(function(a){return IMPL.includes(a.stage);});
+  var list=type==='hardware'?hwAccs:type==='subscription'?subAccs:type==='forecast'?forecastAccs:kitsAccs;
   if(q)list=list.filter(function(a){return matchAccount(a,q);});
   list=applyTagFilter(list);
   list=list.slice().sort(function(a,b){return (a.name||'').localeCompare(b.name||'');});
@@ -2445,28 +2478,43 @@ function rSnap(el,act){
     list.reduce(function(s,a){return s+(parseC(a.hardware_cost)||0);},0):
     type==='subscription'?
     list.reduce(function(s,a){var amt=parseC(a.sub_amount)||0;return s+(a.sub_type==='Monthly'?amt*12:amt);},0):
+    type==='forecast'?
+    list.filter(function(a){return a.sub_type&&a.sub_type!=='No charge';}).reduce(function(s,a){var amt=parseC(a.sub_amount)||0;return s+(a.sub_type==='Monthly'?amt*12:amt);},0):
     list.reduce(function(s,a){return s+(a.kit_count||0);},0);
-  var totalLabel=type==='kits'?total+' kits':'$'+fmtC(total)+(type==='subscription'?' annualized':'');
+  var totalLabel=type==='kits'?total+' kits':'$'+fmtC(total)+(type==='subscription'||type==='forecast'?' annualized':'');
   var rows='';
   list.forEach(function(a){
     var val=type==='hardware'?(a.hardware_cost?'$'+fmtC(a.hardware_cost):'—'):
       type==='subscription'?(a.sub_amount?'$'+fmtC(a.sub_amount)+(a.sub_type==='Monthly'?'/mo':a.sub_type==='Yearly'?'/yr':''):'—'):
+      type==='forecast'?(a.sub_amount&&a.sub_type!=='No charge'?'$'+fmtC(a.sub_amount)+(a.sub_type==='Monthly'?'/mo':a.sub_type==='Yearly'?'/yr':''):'<span style="color:var(--warn-ink);font-weight:600">— missing</span>'):
       (a.kit_count||'—');
-    var subBadge=a.sub_type?'<span class="badge '+(a.sub_type==='Monthly'?'b-monthly':a.sub_type==='No charge'?'b-nocharge':'b-yearly')+'">'+(a.sub_type)+'</span>':'';
+    var subBadge=a.sub_type?'<span class="badge '+(a.sub_type==='Monthly'?'b-monthly':a.sub_type==='No charge'?'b-nocharge':'b-yearly')+'">'+(a.sub_type)+'</span>':'<span style="color:var(--muted-2);font-size:11px">—</span>';
     var rowData='<td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' · '+esc(a.state):'')+'</div></td>';
     if(type==='hardware')rowData+='<td>'+badge(a.stage)+'</td><td style="font-family:var(--f-ui);font-size:14px;font-weight:700;color:var(--ink);letter-spacing:-.01em;font-variant-numeric:tabular-nums">'+val+'</td>';
     else if(type==='subscription')rowData+='<td>'+subBadge+'</td><td style="font-family:var(--f-ui);font-size:14px;font-weight:700;color:var(--ink);letter-spacing:-.01em;font-variant-numeric:tabular-nums">'+val+'</td><td style="color:var(--muted)">'+fmt(a.renewal_date)+'</td>';
+    else if(type==='forecast'){
+      var goLive=a.go_live_date?fmt(a.go_live_date):(a.eval_end_date?'after eval ('+fmt(a.eval_end_date)+')':'TBD');
+      rowData+='<td>'+badge(a.stage)+'</td><td>'+subBadge+'</td><td style="font-family:var(--f-ui);font-size:14px;font-weight:700;color:var(--ink);letter-spacing:-.01em;font-variant-numeric:tabular-nums">'+val+'</td><td style="color:var(--muted)">'+goLive+'</td>';
+    }
     else rowData+='<td style="font-family:var(--f-ui);font-size:14px;font-weight:700;color:var(--ink);letter-spacing:-.01em;font-variant-numeric:tabular-nums">'+val+'</td><td>'+badge(a.stage)+'</td>';
     rowData+='<td>'+eBtn(a.id)+'</td>';
     rows+=trO(a.id)+rowData+'</tr>';
   });
   var cols=type==='hardware'?'<th>Stage</th><th>Hardware cost</th>':
     type==='subscription'?'<th>Sub type</th><th>Amount</th><th>Renewal</th>':
+    type==='forecast'?'<th>Stage</th><th>Sub type</th><th>Amount</th><th>Expected go-live</th>':
     '<th>Kits</th><th>Stage</th>';
+  var introHTML=type==='forecast'?
+    '<div style="font-size:13px;color:var(--text-2);margin-bottom:14px;font-weight:500;line-height:1.5">'+
+    '<strong style="color:var(--ink)">Forecast = signed but not yet active.</strong> These accounts have committed to a subscription via contract but haven\'t started paying yet (still in implementation or 60-day eval). '+
+    'When they flip to <span class="badge b-active">Active</span>, their subscription rolls into your <strong>Subscription / yr</strong> total automatically. '+
+    'Accounts marked <span style="color:var(--warn-ink);font-weight:600">missing</span> need their subscription terms entered (open the account → edit → Subscription section).'+
+    '</div>':'';
   el.innerHTML=
+    introHTML+
     '<div class="fbar"><input type="text" class="search" placeholder="Search account, contact, email…" value="'+esc(q)+'" oninput="searchInput(this.value)"><span style="margin-left:auto;font-family:var(--f-ui);font-size:15px;font-weight:700;color:var(--ink);letter-spacing:-.01em;font-variant-numeric:tabular-nums">Total · <span style="color:var(--lime-ink)">'+totalLabel+'</span></span></div>'+
-    '<div class="card"><div style="overflow-x:auto"><table><thead><tr><th style="width:30%">Account</th>'+cols+'<th></th></tr></thead><tbody>'+
-    (list.length?rows:'<tr><td colspan="4" class="empty">No accounts found.</td></tr>')+
+    '<div class="card"><div style="overflow-x:auto"><table><thead><tr><th style="width:'+(type==='forecast'?'24%':'30%')+'">Account</th>'+cols+'<th></th></tr></thead><tbody>'+
+    (list.length?rows:'<tr><td colspan="6" class="empty">No accounts found.</td></tr>')+
     '</tbody></table></div></div>';
 }
 // ============ CALENDAR ============
