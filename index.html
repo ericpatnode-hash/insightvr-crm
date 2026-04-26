@@ -770,6 +770,7 @@ textarea.finput{resize:vertical;min-height:64px;font-family:var(--f-ui);}
 .cal-event-bar.ev-implementation{background:oklch(92% 0.12 155);color:var(--lime-ink);border-color:var(--lime);}
 .cal-event-bar.ev-golive{background:oklch(85% 0.20 155);color:var(--ink);border-color:oklch(70% 0.22 155);}
 .cal-event-bar.ev-alcon{background:oklch(91% 0.10 50);color:oklch(38% 0.12 50);border-color:oklch(78% 0.14 50);}
+.cal-event-bar.ev-alcon45{background:oklch(89% 0.12 35);color:oklch(40% 0.15 30);border-color:oklch(76% 0.16 35);}
 .cal-event-bar.ev-uvp{background:oklch(92% 0.08 30);color:oklch(40% 0.13 30);border-color:oklch(78% 0.12 30);}
 .cal-event-bar.ev-nocharge{background:oklch(92% 0.07 220);color:oklch(38% 0.10 220);border-color:oklch(78% 0.10 220);}
 .cal-event-bar.ev-practice{background:oklch(92% 0.08 280);color:oklch(40% 0.13 280);border-color:oklch(78% 0.12 280);}
@@ -786,6 +787,7 @@ textarea.finput{resize:vertical;min-height:64px;font-family:var(--f-ui);}
 .cal-legend-swatch.ev-implementation{background:oklch(92% 0.12 155);}
 .cal-legend-swatch.ev-golive{background:oklch(85% 0.20 155);}
 .cal-legend-swatch.ev-alcon{background:oklch(91% 0.10 50);}
+.cal-legend-swatch.ev-alcon45{background:oklch(89% 0.12 35);}
 .cal-legend-swatch.ev-uvp{background:oklch(92% 0.08 30);}
 .cal-legend-swatch.ev-nocharge{background:oklch(92% 0.07 220);}
 .cal-legend-swatch.ev-practice{background:oklch(92% 0.08 280);}
@@ -987,6 +989,58 @@ function dl(d){if(d===null)return'';return d<0?'('+Math.abs(d)+'d overdue)':'('+
 function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function fmtC(v){if(!v&&v!==0)return'';return Number(v).toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:2});}
 function parseC(s){if(!s)return null;var n=parseFloat(String(s).replace(/,/g,''));return isNaN(n)?null:n;}
+function matchAccount(a,query){
+  if(!query)return true;
+  var q=query.toLowerCase();
+  if((a.name||'').toLowerCase().includes(q))return true;
+  if((a.city||'').toLowerCase().includes(q))return true;
+  if((a.state||'').toLowerCase().includes(q))return true;
+  // Search contacts: first name, last name, full name, email
+  var contacts=[];try{contacts=JSON.parse(a.contacts_json||'[]');}catch(e){}
+  for(var i=0;i<contacts.length;i++){
+    var c=contacts[i];
+    if((c.first||'').toLowerCase().includes(q))return true;
+    if((c.last||'').toLowerCase().includes(q))return true;
+    var full=((c.first||'')+' '+(c.last||'')).toLowerCase();
+    if(full.includes(q))return true;
+    if((c.email||'').toLowerCase().includes(q))return true;
+  }
+  return false;
+}
+function normName(name){
+  if(!name)return '';
+  return String(name).toLowerCase()
+    .replace(/[.,'\u2019&]/g,'')
+    .replace(/\b(inc|llc|llp|pllc|pc|pa|corp|co|ltd|the)\b/g,'')
+    .replace(/\b(eye care|eye center|eyecare|vision|optical|laser|cataract|surgery|surgical|associates|associate|practice|institute|clinic|center|group|family)\b/g,'')
+    .replace(/\s+/g,' ')
+    .trim();
+}
+function findDuplicates(){
+  // Returns array of duplicate groups: each group is an array of accounts that match
+  var groups={};
+  accs.forEach(function(a){
+    var n=normName(a.name);
+    if(!n||n.length<3)return;
+    if(!groups[n])groups[n]=[];
+    groups[n].push(a);
+  });
+  var dupes=[];
+  Object.keys(groups).forEach(function(k){
+    if(groups[k].length>1)dupes.push(groups[k]);
+  });
+  return dupes;
+}
+function findPossibleDuplicate(name,excludeId){
+  // Used at save-time. Returns first matching account or null.
+  var n=normName(name);
+  if(!n||n.length<3)return null;
+  for(var i=0;i<accs.length;i++){
+    if(excludeId&&accs[i].id===excludeId)continue;
+    if(normName(accs[i].name)===n)return accs[i];
+  }
+  return null;
+}
 function pcon(a){try{var c=JSON.parse(a.contacts_json||'[]');return c.length?c[0]:{}}catch(e){return{};}}
 function cname(a){var c=pcon(a);return((c.first||'')+' '+(c.last||'')).trim()||c.name||'—';}
 function updRnb(){
@@ -1178,7 +1232,7 @@ function rPipe(el,act){
   if(!window._pipeStages){window._pipeStages=new Set(['Prospect','Intro meeting','Early diligence','Late diligence','Proposal sent']);}
   var activeStages=window._pipeStages;
   var list=accs.filter(function(a){return SALES.includes(a.stage);});
-  if(q)list=list.filter(function(a){return a.name.toLowerCase().includes(q.toLowerCase())||(a.city||'').toLowerCase().includes(q.toLowerCase());});
+  if(q)list=list.filter(function(a){return matchAccount(a,q);});
   list=list.filter(function(a){return activeStages.has(a.stage);});
   if(fs==='hasvalue')list=list.filter(function(a){return parseC(a.deal_value)>0;});
   var STAGE_ORDER={'Proposal sent':0,'Late diligence':1,'Early diligence':2,'Intro meeting':3,'Prospect':4,'Deal won':5,'Deal lost':6};
@@ -1207,7 +1261,7 @@ function rPipe(el,act){
     return '<label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;font-weight:500;color:var(--text);white-space:nowrap"><input type="checkbox" '+checked+' data-stage="'+s+'" onchange="togglePipeStage(this.dataset.stage,this.checked)" style="cursor:pointer;accent-color:var(--lime)"> '+s+'</label>';
   }).join('');
   el.innerHTML=
-    '<div class="fbar"><input type="text" class="search" placeholder="Search accounts, cities…" value="'+esc(q)+'" oninput="searchInput(this.value)"></div>'+
+    '<div class="fbar"><input type="text" class="search" placeholder="Search account, contact name, email…" value="'+esc(q)+'" oninput="searchInput(this.value)"></div>'+
     '<div style="background:var(--bg);border:1px solid var(--line);border-radius:var(--r);padding:12px 16px;margin-bottom:16px;display:flex;flex-wrap:wrap;gap:14px;align-items:center">'+
     '<span style="font-family:var(--f-mono);font-size:10.5px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-right:4px">Stages</span>'+
     checkboxes+
@@ -1232,7 +1286,7 @@ function exportPipeline(){
 
 function rImpl(el,act){
   var list=accs.filter(function(a){return IMPL.includes(a.stage);});
-  if(q)list=list.filter(function(a){return a.name.toLowerCase().includes(q.toLowerCase());});
+  if(q)list=list.filter(function(a){return matchAccount(a,q);});
   if(fs!=='all')list=list.filter(function(a){return a.stage===fs;});
   list=srt(list,{name:function(a){return a.name;},stage:function(a){return a.stage;},go_live:function(a){return a.go_live_date||'';},checkin:function(a){return a.checkin_30_date||'';},eval_end:function(a){return a.eval_end_date||'';},impl_manager:function(a){return a.impl_manager||'';},kit_count:function(a){return a.kit_count||0;}});
   var rows='';
@@ -1242,13 +1296,13 @@ function rImpl(el,act){
     rows+=trO(a.id)+'<td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' · '+esc(a.state):'')+'</div></td><td>'+badge(a.stage)+'</td><td>'+(a.go_live_end_date&&a.go_live_end_date!==a.go_live_date?fmt(a.go_live_date)+' → '+fmt(a.go_live_end_date):fmt(a.go_live_date))+'</td><td>'+ciStatus(a)+ciBtn+'</td><td>'+(a.eval_end_date?'<span class="'+(ed!==null&&ed<=10?'warn':'')+'">'+fmt(a.eval_end_date)+' '+dl(ed)+'</span>':'—')+'</td><td>'+esc(a.impl_manager||'—')+'</td><td>'+(a.kit_count||'—')+'</td><td>'+eBtn(a.id)+'</td></tr>';
   });
   var stageOpts=IMPL.map(function(s){return '<option value="'+s+'"'+(fs===s?' selected':'')+'>'+s+'</option>';}).join('');
-  el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search…" value="'+esc(q)+'" oninput="searchInput(this.value)"><select class="finput" style="width:200px" onchange="fs=this.value;render()"><option value="all">All stages</option>'+stageOpts+'</select></div><div class="card"><div style="overflow-x:auto"><table><thead><tr>'+th('name','Account','20%')+th('stage','Stage','13%')+th('go_live','Go-live','10%')+th('checkin','30-day check-in','18%')+th('eval_end','60-day end','13%')+th('impl_manager','Impl. mgr','11%')+th('kit_count','Kits','6%')+'<th style="width:9%"></th></tr></thead><tbody>'+(list.length?rows:'<tr><td colspan="8" class="empty">No accounts in implementation.</td></tr>')+'</tbody></table></div></div>';
+  el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search account, contact, email…" value="'+esc(q)+'" oninput="searchInput(this.value)"><select class="finput" style="width:200px" onchange="fs=this.value;render()"><option value="all">All stages</option>'+stageOpts+'</select></div><div class="card"><div style="overflow-x:auto"><table><thead><tr>'+th('name','Account','20%')+th('stage','Stage','13%')+th('go_live','Go-live','10%')+th('checkin','30-day check-in','18%')+th('eval_end','60-day end','13%')+th('impl_manager','Impl. mgr','11%')+th('kit_count','Kits','6%')+'<th style="width:9%"></th></tr></thead><tbody>'+(list.length?rows:'<tr><td colspan="8" class="empty">No accounts in implementation.</td></tr>')+'</tbody></table></div></div>';
 }
 
 function rActive(el,act){
   act.innerHTML='<button class="btn btn-navy" onclick="exportActive()">Export CSV</button>';
   var list=accs.filter(function(a){return a.stage==='Active';});
-  if(q)list=list.filter(function(a){return a.name.toLowerCase().includes(q.toLowerCase());});
+  if(q)list=list.filter(function(a){return matchAccount(a,q);});
   if(!sortCol)sortCol='name';
   list=srt(list,{name:function(a){return a.name;},city:function(a){return a.city||'';},state:function(a){return a.state||'';},sub_type:function(a){return a.sub_type||'';},renewal_date:function(a){return a.renewal_date||'';},kit_count:function(a){return a.kit_count||0;},hardware_cost:function(a){return parseC(a.hardware_cost)||0;},sub_amount:function(a){return parseC(a.sub_amount)||0;},contact:function(a){return cname(a);}});
   var rows='';
@@ -1258,7 +1312,7 @@ function rActive(el,act){
     var renewCell=a.renewal_date?'<span class="'+(d!==null&&d<=30?d<=7?'danger':'warn':'')+'">'+fmt(a.renewal_date)+' '+dl(d)+'</span>':'—';
     rows+=trO(a.id)+'<td><div class="an">'+esc(a.name)+'</div></td><td style="color:var(--muted)">'+esc(a.city||'—')+'</td><td style="color:var(--muted)">'+esc(a.state||'—')+'</td><td>'+subBadge+'</td><td>'+renewCell+'</td><td>'+(a.kit_count||'—')+'</td><td>'+(a.hardware_cost?'$'+fmtC(a.hardware_cost):'—')+'</td><td>'+(a.sub_amount?'$'+fmtC(a.sub_amount)+(a.sub_type==='Monthly'?'/mo':'/yr'):'—')+'</td><td>'+esc(cname(a))+'</td><td>'+eBtn(a.id)+'</td></tr>';
   });
-  el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search…" value="'+esc(q)+'" oninput="searchInput(this.value)"></div><div class="card"><div style="overflow-x:auto"><table><thead><tr>'+th('name','Account','18%')+th('city','City','9%')+th('state','State','7%')+th('sub_type','Sub type','9%')+th('renewal_date','Renewal','12%')+th('kit_count','Kits','6%')+th('hardware_cost','HW cost','9%')+th('sub_amount','Sub amt','9%')+th('contact','Contact','12%')+'<th style="width:9%"></th></tr></thead><tbody>'+(list.length?rows:'<tr><td colspan="10" class="empty">No active accounts.</td></tr>')+'</tbody></table></div></div>';
+  el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search account, contact, email…" value="'+esc(q)+'" oninput="searchInput(this.value)"></div><div class="card"><div style="overflow-x:auto"><table><thead><tr>'+th('name','Account','18%')+th('city','City','9%')+th('state','State','7%')+th('sub_type','Sub type','9%')+th('renewal_date','Renewal','12%')+th('kit_count','Kits','6%')+th('hardware_cost','HW cost','9%')+th('sub_amount','Sub amt','9%')+th('contact','Contact','12%')+'<th style="width:9%"></th></tr></thead><tbody>'+(list.length?rows:'<tr><td colspan="10" class="empty">No active accounts.</td></tr>')+'</tbody></table></div></div>';
 }
 function exportActive(){
   exportCSV(accs.filter(function(a){return a.stage==='Active';}),
@@ -1415,7 +1469,32 @@ function rSettings(el,act){
   implMgrs.forEach(function(m){
     mgrs+='<div class="mgr-row"><span>'+esc(m)+'</span><button class="btn btn-sm btn-danger" data-name="'+esc(m)+'" onclick="removeMgr(this.dataset.name)">Remove</button></div>';
   });
-  el.innerHTML='<div style="max-width:560px"><div class="card"><div class="card-hdr"><span class="card-title">Implementation managers</span><button class="btn btn-sm btn-primary" onclick="showAddMgr()">+ Add</button></div><div id="mgr-list">'+mgrs+'</div></div><div style="font-size:11.5px;color:var(--muted);margin-top:10px;font-weight:500">Shared across all users. Changes are visible to everyone on your team.</div></div>';
+  // Duplicate detection
+  var dupes=findDuplicates();
+  var dupesHTML='';
+  if(dupes.length){
+    dupes.forEach(function(grp){
+      dupesHTML+='<div style="background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;margin-bottom:10px">';
+      dupesHTML+='<div style="font-family:var(--f-mono);font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;font-weight:500">Possible match · '+grp.length+' accounts</div>';
+      grp.forEach(function(a){
+        var sub=esc(a.acct_type||'')+(a.city?' · '+esc(a.city):'')+(a.state?' '+esc(a.state):'');
+        dupesHTML+='<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line)">'+
+          '<div><div style="font-weight:600;color:var(--ink)">'+esc(a.name)+'</div>'+
+          '<div style="font-size:11.5px;color:var(--muted);margin-top:2px">'+sub+' · '+badge(a.stage)+' · updated '+fmt(a.updated_at)+'</div></div>'+
+          '<div style="display:flex;gap:6px">'+vBtn(a.id)+eBtn(a.id)+'</div>'+
+        '</div>';
+      });
+      dupesHTML+='</div>';
+    });
+  }else{
+    dupesHTML='<div style="font-size:13px;color:var(--ok);font-weight:500;padding:12px 16px">✓ No likely duplicates detected.</div>';
+  }
+  el.innerHTML='<div style="max-width:720px">'+
+    '<div class="card" style="margin-bottom:24px"><div class="card-hdr"><span class="card-title">Implementation managers</span><button class="btn btn-sm btn-primary" onclick="showAddMgr()">+ Add</button></div><div id="mgr-list">'+mgrs+'</div></div>'+
+    '<div style="font-size:11.5px;color:var(--muted);margin-bottom:20px;font-weight:500">Shared across all users. Changes are visible to everyone on your team.</div>'+
+    '<div class="card"><div class="card-hdr"><span class="card-title">Possible duplicate accounts</span><span style="font-family:var(--f-mono);font-size:10.5px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase">'+dupes.length+' group'+(dupes.length===1?'':'s')+'</span></div><div style="padding:16px">'+dupesHTML+'</div></div>'+
+    '<div style="font-size:11.5px;color:var(--muted);margin-top:10px;font-weight:500">Detected by comparing normalized account names (ignoring punctuation and common words like "Eye Care," "LLC," etc.). Open any account to merge or delete.</div>'+
+    '</div>';
 }
 async function showAddMgr(){
   var name=prompt('Enter implementation manager name:');
@@ -1608,7 +1687,7 @@ function rSnap(el,act){
   var subAccs=accs.filter(function(a){return a.stage==='Active'&&parseC(a.sub_amount)>0;});
   var kitsAccs=accs.filter(function(a){return a.stage==='Active'&&a.kit_count>0;});
   var list=type==='hardware'?hwAccs:type==='subscription'?subAccs:kitsAccs;
-  if(q)list=list.filter(function(a){return a.name.toLowerCase().includes(q.toLowerCase());});
+  if(q)list=list.filter(function(a){return matchAccount(a,q);});
   list=list.slice().sort(function(a,b){return (a.name||'').localeCompare(b.name||'');});
   var total=type==='hardware'?
     list.reduce(function(s,a){return s+(parseC(a.hardware_cost)||0);},0):
@@ -1633,15 +1712,16 @@ function rSnap(el,act){
     type==='subscription'?'<th>Sub type</th><th>Amount</th><th>Renewal</th>':
     '<th>Kits</th><th>Stage</th>';
   el.innerHTML=
-    '<div class="fbar"><input type="text" class="search" placeholder="Search…" value="'+esc(q)+'" oninput="searchInput(this.value)"><span style="margin-left:auto;font-family:var(--f-display);font-size:16px;font-weight:500;color:var(--ink);letter-spacing:-.02em">Total · <span style="color:var(--lime-ink)">'+totalLabel+'</span></span></div>'+
+    '<div class="fbar"><input type="text" class="search" placeholder="Search account, contact, email…" value="'+esc(q)+'" oninput="searchInput(this.value)"><span style="margin-left:auto;font-family:var(--f-display);font-size:16px;font-weight:500;color:var(--ink);letter-spacing:-.02em">Total · <span style="color:var(--lime-ink)">'+totalLabel+'</span></span></div>'+
     '<div class="card"><div style="overflow-x:auto"><table><thead><tr><th style="width:30%">Account</th>'+cols+'<th></th></tr></thead><tbody>'+
     (list.length?rows:'<tr><td colspan="4" class="empty">No accounts found.</td></tr>')+
     '</tbody></table></div></div>';
 }
 // ============ CALENDAR ============
-const EVENT_TYPES=['30 Day Check-In','Alcon Evaluation','Implementation','No Charge Evaluation','Other','Patient Demos','Practice Demo','PTO','Retrain','Travel','Unavailable','UVP Evaluation'];
+const EVENT_TYPES=['30 Day Check-In','Alcon 45 Day','Alcon Evaluation','Implementation','No Charge Evaluation','Other','Patient Demos','Practice Demo','PTO','Retrain','Travel','Unavailable','UVP Evaluation'];
 const EVENT_TYPE_CLASS={
   '30 Day Check-In':'ev-checkin',
+  'Alcon 45 Day':'ev-alcon45',
   'Alcon Evaluation':'ev-alcon',
   'Implementation':'ev-implementation',
   'No Charge Evaluation':'ev-nocharge',
@@ -2074,7 +2154,9 @@ function openAdd(){showForm(null);}
 function openEdit(id){showForm(accs.find(function(a){return a.id===id;}));}
 
 function cbHTML(c,i){
-  return '<div class="cblock" id="cb-'+i+'"><div class="cblock-title">'+(i===0?'Primary contact':'Additional contact')+'</div>'+(i>0?'<button class="cbtn-remove" data-i="'+i+'" onclick="rmC(parseInt(this.dataset.i))">×</button>':'')+'<div class="fg"><div class="fgrp"><label class="flbl">First name</label><input class="finput" id="cfn-'+i+'" value="'+esc(c.first||c.name||'')+'"></div><div class="fgrp"><label class="flbl">Last name</label><input class="finput" id="cln-'+i+'" value="'+esc(c.last||'')+'"></div><div class="fgrp"><label class="flbl">Title</label><input class="finput" id="ct-'+i+'" value="'+esc(c.title||'')+'"></div><div class="fgrp"><label class="flbl">Email</label><input class="finput" id="ce-'+i+'" value="'+esc(c.email||'')+'"></div><div class="fgrp full"><label class="flbl">Phone</label><input class="finput" id="cp-'+i+'" value="'+esc(c.phone||'')+'"></div></div></div>';
+  var phType=c.phone_type||'';
+  var ptOpts=['Cell','Office','Other'].map(function(t){return '<option value="'+t+'"'+(phType===t?' selected':'')+'>'+t+'</option>';}).join('');
+  return '<div class="cblock" id="cb-'+i+'"><div class="cblock-title">'+(i===0?'Primary contact':'Additional contact')+'</div>'+(i>0?'<button class="cbtn-remove" data-i="'+i+'" onclick="rmC(parseInt(this.dataset.i))">×</button>':'')+'<div class="fg"><div class="fgrp"><label class="flbl">First name</label><input class="finput" id="cfn-'+i+'" value="'+esc(c.first||c.name||'')+'"></div><div class="fgrp"><label class="flbl">Last name</label><input class="finput" id="cln-'+i+'" value="'+esc(c.last||'')+'"></div><div class="fgrp"><label class="flbl">Title</label><input class="finput" id="ct-'+i+'" value="'+esc(c.title||'')+'"></div><div class="fgrp"><label class="flbl">Email</label><input class="finput" id="ce-'+i+'" value="'+esc(c.email||'')+'"></div><div class="fgrp"><label class="flbl">Phone</label><input class="finput" id="cp-'+i+'" value="'+esc(c.phone||'')+'"></div><div class="fgrp"><label class="flbl">Phone type</label><select class="finput" id="cpt-'+i+'"><option value="">— Select —</option>'+ptOpts+'</select></div></div></div>';
 }
 function addC(){var i=ccount++;var d=document.createElement('div');d.innerHTML=cbHTML({},i);document.getElementById('cc').appendChild(d.firstElementChild);}
 function rmC(i){var e=document.getElementById('cb-'+i);if(e)e.remove();}
@@ -2087,7 +2169,8 @@ function gatherC(){
     var t=(document.getElementById('ct-'+i)||{}).value||'';
     var e=(document.getElementById('ce-'+i)||{}).value||'';
     var p=(document.getElementById('cp-'+i)||{}).value||'';
-    if(f||l||e||p)r.push({first:f,last:l,title:t,email:e,phone:p});
+    var pt=(document.getElementById('cpt-'+i)||{}).value||'';
+    if(f||l||e||p)r.push({first:f,last:l,title:t,email:e,phone:p,phone_type:pt});
   });
   return r;
 }
@@ -2172,6 +2255,12 @@ function updPEField(){var v=document.getElementById('ft').value;var f=document.g
 async function saveAcc(eid){
   var name=(document.getElementById('fn').value||'').trim();
   if(!name){alert('Account name is required.');return;}
+  // Check for duplicates (skip when editing the same record)
+  var dup=findPossibleDuplicate(name,eid);
+  if(dup){
+    var msg='Possible duplicate account found:\n\n  "'+dup.name+'"  ('+(dup.stage||'no stage')+')\n\nDo you want to save this as a separate account anyway?';
+    if(!confirm(msg))return;
+  }
   var now=new Date().toISOString();
   var prev=accs.find(function(a){return a.id===eid;})||{};
   var newStage=document.getElementById('fsg').value;
@@ -2243,7 +2332,8 @@ function openDetail(id){
     contacts.forEach(function(c,i){
       var cn=((c.first||'')+' '+(c.last||'')).trim()||c.name||'—';
       var emailLink=c.email?'<a href="mailto:'+esc(c.email)+'" style="color:var(--ink);font-weight:500;border-bottom:1px solid var(--line-2)">'+esc(c.email)+'</a>':'—';
-      ch+='<div style="'+(i>0?'padding-top:18px;border-top:1px solid var(--line);margin-top:18px':'')+'"><div style="font-family:var(--f-mono);font-size:10.5px;font-weight:600;color:var(--ink);margin-bottom:12px;text-transform:uppercase;letter-spacing:.1em">'+(i===0?'Primary contact':'Contact '+(i+1))+'</div><div class="dgrid"><div class="dlbl">Name</div><div class="dval">'+esc(cn)+'</div><div class="dlbl">Title</div><div class="dval">'+esc(c.title||'—')+'</div><div class="dlbl">Email</div><div class="dval">'+emailLink+'</div><div class="dlbl">Phone</div><div class="dval">'+esc(c.phone||'—')+'</div></div></div>';
+      var phoneDisplay=c.phone?(esc(c.phone)+(c.phone_type?' <span style="color:var(--muted);font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:.05em;margin-left:4px">'+esc(c.phone_type)+'</span>':'')):'—';
+      ch+='<div style="'+(i>0?'padding-top:18px;border-top:1px solid var(--line);margin-top:18px':'')+'"><div style="font-family:var(--f-mono);font-size:10.5px;font-weight:600;color:var(--ink);margin-bottom:12px;text-transform:uppercase;letter-spacing:.1em">'+(i===0?'Primary contact':'Contact '+(i+1))+'</div><div class="dgrid"><div class="dlbl">Name</div><div class="dval">'+esc(cn)+'</div><div class="dlbl">Title</div><div class="dval">'+esc(c.title||'—')+'</div><div class="dlbl">Email</div><div class="dval">'+emailLink+'</div><div class="dlbl">Phone</div><div class="dval">'+phoneDisplay+'</div></div></div>';
     });
   }else{ch='<div style="color:var(--muted);font-size:13.5px">No contacts added.</div>';}
   var notes=getNotes(a);var activity=getActivity(a);
