@@ -816,6 +816,78 @@ textarea.finput{resize:vertical;min-height:64px;font-family:var(--f-ui);}
 
 .cal-empty-cell{color:var(--muted-2);}
 
+/* Tag chips */
+.tag-chips{display:inline-flex;flex-wrap:wrap;gap:4px;}
+.tag-chips.inline{margin-left:6px;vertical-align:middle;}
+.tag-chip{
+  display:inline-block;
+  font-size:10.5px;font-weight:600;
+  padding:2px 8px;border-radius:3px;
+  background:var(--navy-soft);color:var(--navy);
+  border:1px solid var(--line-2);
+  cursor:pointer;
+  font-family:var(--f-ui);letter-spacing:.005em;
+  transition:background .12s, color .12s;
+  white-space:nowrap;
+}
+.tag-chip:hover{background:var(--ink);color:#fff;border-color:var(--ink);}
+
+/* Tag filter pill (when active) */
+.tag-filter-active{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--lime-wash);color:var(--lime-ink);
+  padding:6px 10px 6px 12px;border-radius:6px;
+  font-size:12px;font-weight:600;
+  border:1px solid var(--lime);
+}
+.tag-filter-active button{
+  background:none;border:none;color:var(--lime-ink);
+  cursor:pointer;font-size:14px;line-height:1;padding:0;font-weight:700;
+}
+.tag-filter-active button:hover{color:var(--ink);}
+
+/* Tag input with autocomplete suggestions */
+.tag-input-wrap{position:relative;}
+.tag-suggest{
+  position:absolute;top:100%;left:0;right:0;
+  background:var(--bg);border:1px solid var(--line-2);
+  border-radius:var(--r);box-shadow:var(--shadow-md);
+  margin-top:4px;max-height:180px;overflow-y:auto;
+  z-index:50;display:none;
+}
+.tag-suggest.show{display:block;}
+.tag-suggest-item{
+  padding:8px 12px;cursor:pointer;font-size:13px;font-weight:500;
+}
+.tag-suggest-item:hover,.tag-suggest-item.active{background:var(--navy-soft);}
+
+/* Bulk select & action bar */
+.bulk-bar{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+  background:var(--ink);color:#fff;
+  border-radius:var(--rl);
+  padding:10px 12px;
+  box-shadow:0 12px 32px oklch(20% 0.04 255 / .35);
+  display:flex;align-items:center;gap:10px;
+  z-index:150;
+  border:1px solid oklch(35% 0.05 255);
+}
+.bulk-count{
+  font-family:var(--f-mono);font-size:11px;color:var(--lime);
+  font-weight:600;letter-spacing:.05em;text-transform:uppercase;
+  padding:0 8px 0 4px;
+}
+.bulk-bar .btn{background:oklch(30% 0.05 255);color:#fff;border-color:oklch(35% 0.05 255);font-size:12.5px;}
+.bulk-bar .btn:hover{background:oklch(34% 0.06 255);}
+.bulk-bar .btn-primary{background:var(--lime);color:var(--ink);border-color:var(--lime);}
+.bulk-bar .btn-primary:hover{background:oklch(80% 0.22 155);}
+
+th.bulk-col,td.bulk-col{width:34px;padding-left:14px;padding-right:0;}
+.bulk-cb{
+  width:15px;height:15px;cursor:pointer;
+  accent-color:var(--lime);
+}
+
 /* Stage guide popover — info button next to stage dropdown */
 .flbl-with-info{display:flex;align-items:center;gap:6px;}
 .info-btn{
@@ -912,6 +984,7 @@ textarea.finput{resize:vertical;min-height:64px;font-family:var(--f-ui);}
       <div class="nav-item" id="nav-calendar" onclick="nav('calendar')">Calendar</div>
       <div class="nav-sec">Accounts</div>
       <div class="nav-item" id="nav-active" onclick="nav('active')">Active Accounts</div>
+      <div class="nav-item" id="nav-lost" onclick="nav('lost')">Lost / Re-engage</div>
       <div class="nav-item" id="nav-renewals" onclick="nav('renewals')">Renewals<span class="nav-badge" id="rnb" style="display:none">0</span></div>
       <div class="nav-sec">Insights</div>
       <div class="nav-item" id="nav-reports" onclick="nav('reports')">Reports</div>
@@ -947,7 +1020,7 @@ const TYPES=['Practice','Private equity group','Industry partner','Other'];
 const SOURCES=['Website / inbound','Referral','Outbound / cold outreach','Conference / event','Industry partner','Alcon - Field','Alcon 45 Day','B&L - Field','J&J - Field','Other'];
 const LOST_REASONS=['Price','Timing','Competition','No decision / went silent','Returned during eval','Budget cut','Other'];
 const SBADGE={Prospect:'b-prospect','Intro meeting':'b-intro','Early diligence':'b-early','Late diligence':'b-late','Proposal sent':'b-proposal','Deal won':'b-won','Deal lost':'b-lost','Discovery & planning':'b-discovery','Go-live scheduled':'b-golive','60-day evaluation':'b-60day',Overdue:'b-overdue',Active:'b-active'};
-const TITLES={dashboard:'Dashboard',pipeline:'Sales Pipeline',impl:'Implementation',calendar:'Calendar',active:'Active Accounts',renewals:'Renewals',reports:'Reports',activity:'Activity',settings:'Settings',followups:'My Follow-ups',snap:''};
+const TITLES={dashboard:'Dashboard',pipeline:'Sales Pipeline',impl:'Implementation',calendar:'Calendar',active:'Active Accounts',lost:'Lost / Re-engage',renewals:'Renewals',reports:'Reports',activity:'Activity',settings:'Settings',followups:'My Follow-ups',snap:''};
 let accs=[],events=[],view='dashboard',q='',fs='all',ccount=1,sortCol='',sortDir=1,implMgrs=[];
 
 function getUser(){return localStorage.getItem('crm_user_name')||'Unknown';}
@@ -1059,6 +1132,7 @@ function matchAccount(a,query){
   if((a.name||'').toLowerCase().includes(q))return true;
   if((a.city||'').toLowerCase().includes(q))return true;
   if((a.state||'').toLowerCase().includes(q))return true;
+  if((a.tags||'').toLowerCase().includes(q))return true;
   // Search contacts: first name, last name, full name, email
   var contacts=[];try{contacts=JSON.parse(a.contacts_json||'[]');}catch(e){}
   for(var i=0;i<contacts.length;i++){
@@ -1105,7 +1179,224 @@ function findPossibleDuplicate(name,excludeId){
   }
   return null;
 }
+function updateTagSuggest(inp){
+  var box=document.getElementById('tag-suggest');
+  if(!box)return;
+  var val=inp.value;
+  // Find the last partial tag (after the last comma)
+  var lastComma=val.lastIndexOf(',');
+  var partial=(lastComma===-1?val:val.slice(lastComma+1)).trim().toLowerCase();
+  if(!partial){hideTagSuggest();return;}
+  var existing=getCurrentTagsFromInput(val);
+  var matches=allTags().filter(function(t){
+    return t.toLowerCase().indexOf(partial)===0&&existing.map(normTag).indexOf(normTag(t))===-1;
+  }).slice(0,8);
+  if(!matches.length){hideTagSuggest();return;}
+  box.innerHTML=matches.map(function(t){return '<div class="tag-suggest-item" onmousedown="pickTagSuggest(\''+esc(t).replace(/'/g,"\\'")+'\')">'+esc(t)+'</div>';}).join('');
+  box.classList.add('show');
+}
+function hideTagSuggest(){
+  var box=document.getElementById('tag-suggest');
+  if(box)box.classList.remove('show');
+}
+function getCurrentTagsFromInput(val){
+  return val.split(',').map(function(s){return s.trim();}).filter(function(s){return s;});
+}
+function pickTagSuggest(tag){
+  var inp=document.getElementById('ftags');
+  if(!inp)return;
+  var val=inp.value;
+  var lastComma=val.lastIndexOf(',');
+  var prefix=lastComma===-1?'':val.slice(0,lastComma+1);
+  inp.value=(prefix?prefix+' ':'')+tag+', ';
+  hideTagSuggest();
+  inp.focus();
+}
+function tagFilterBar(){
+  if(!window._tagFilter)return '';
+  return '<span class="tag-filter-active" style="margin-left:8px">Tag: <strong>'+esc(window._tagFilter)+'</strong><button onclick="clearTagFilter()" title="Clear filter">×</button></span>';
+}
+function applyTagFilter(list){
+  if(!window._tagFilter)return list;
+  var t=normTag(window._tagFilter);
+  return list.filter(function(a){
+    return getTags(a).map(normTag).indexOf(t)!==-1;
+  });
+}
 function pcon(a){try{var c=JSON.parse(a.contacts_json||'[]');return c.length?c[0]:{}}catch(e){return{};}}
+// ============ BULK ACTIONS ============
+window._bulkEnabled=false;
+window._bulkSelected=new Set();
+function toggleBulkMode(){
+  window._bulkEnabled=!window._bulkEnabled;
+  if(!window._bulkEnabled)window._bulkSelected.clear();
+  render();
+}
+function toggleBulk(id,checked){
+  if(checked)window._bulkSelected.add(id);
+  else window._bulkSelected.delete(id);
+  // Just refresh the bulk bar count without full re-render
+  var bar=document.getElementById('bulk-bar');
+  if(bar){
+    if(window._bulkSelected.size>0){
+      bar.style.display='flex';
+      var ct=document.getElementById('bulk-count');
+      if(ct)ct.textContent=window._bulkSelected.size+' selected';
+    } else {
+      bar.style.display='none';
+    }
+  }
+}
+function toggleBulkAll(checked){
+  // Select/deselect all visible rows
+  document.querySelectorAll('tbody .bulk-cb').forEach(function(cb){
+    cb.checked=checked;
+    var id=cb.getAttribute('data-id');
+    if(id){if(checked)window._bulkSelected.add(id);else window._bulkSelected.delete(id);}
+  });
+  toggleBulk(); // refresh bar
+}
+function bulkBarHTML(){
+  if(!window._bulkEnabled)return '';
+  var visible=window._bulkSelected.size>0?'flex':'none';
+  return '<div id="bulk-bar" class="bulk-bar" style="display:'+visible+'">'+
+    '<span class="bulk-count" id="bulk-count">'+window._bulkSelected.size+' selected</span>'+
+    '<button class="btn" onclick="bulkSetFollowup()">Set follow-up</button>'+
+    '<button class="btn" onclick="bulkAddTag()">Add tag</button>'+
+    '<button class="btn" onclick="bulkChangeStage()">Change stage</button>'+
+    '<button class="btn" onclick="bulkClear()">Clear</button>'+
+    '</div>';
+}
+function bulkClear(){
+  window._bulkSelected.clear();
+  // Uncheck all visible boxes
+  document.querySelectorAll('tbody .bulk-cb').forEach(function(cb){cb.checked=false;});
+  document.querySelectorAll('thead .bulk-cb').forEach(function(cb){cb.checked=false;});
+  toggleBulk();
+}
+async function bulkSetFollowup(){
+  if(!window._bulkSelected.size)return;
+  var note=prompt('Follow-up note for '+window._bulkSelected.size+' account'+(window._bulkSelected.size===1?'':'s')+':','6-month re-engagement check');
+  if(note===null)return;
+  var dateStr=prompt('Due date (YYYY-MM-DD):',(function(){var d=new Date();d.setMonth(d.getMonth()+6);return d.toISOString().split('T')[0];})());
+  if(!dateStr)return;
+  var ids=Array.from(window._bulkSelected);
+  var owner=getUser();
+  var updated=[];
+  ids.forEach(function(id){
+    var a=accs.find(function(x){return x.id===id;});
+    if(!a)return;
+    var fus=[];try{fus=JSON.parse(a.followups_json||'[]');}catch(e){}
+    fus.push({note:note||'Follow-up',date:dateStr,owner:owner,done:false,created:new Date().toISOString()});
+    updated.push(Object.assign({},a,{followups_json:JSON.stringify(fus),activity_log:logActivity(a,'Bulk: set follow-up "'+(note||'Follow-up')+'" for '+fmt(dateStr)),updated_at:new Date().toISOString()}));
+  });
+  try{
+    await req('POST','accounts',updated,null,null);
+    window._bulkSelected.clear();
+    await loadAll();
+    alert('Follow-up set on '+ids.length+' account'+(ids.length===1?'':'s')+'.');
+  }catch(e){alert('Error: '+e.message);}
+}
+async function bulkAddTag(){
+  if(!window._bulkSelected.size)return;
+  var existing=allTags();
+  var hint=existing.length?'\n\nExisting tags: '+existing.slice(0,8).join(', ')+(existing.length>8?'…':''):'';
+  var tag=prompt('Tag to add to '+window._bulkSelected.size+' account'+(window._bulkSelected.size===1?'':'s')+':'+hint);
+  if(!tag||!tag.trim())return;
+  tag=tag.trim();
+  var ids=Array.from(window._bulkSelected);
+  var updated=[];
+  ids.forEach(function(id){
+    var a=accs.find(function(x){return x.id===id;});
+    if(!a)return;
+    var current=getTags(a);
+    var existsAlready=current.map(normTag).indexOf(normTag(tag))!==-1;
+    if(existsAlready)return;
+    current.push(tag);
+    updated.push(Object.assign({},a,{tags:current.join(', '),activity_log:logActivity(a,'Bulk: tagged "'+tag+'"'),updated_at:new Date().toISOString()}));
+  });
+  if(!updated.length){alert('All selected accounts already have that tag.');return;}
+  try{
+    await req('POST','accounts',updated,null,null);
+    window._bulkSelected.clear();
+    await loadAll();
+    alert('Tag "'+tag+'" added to '+updated.length+' account'+(updated.length===1?'':'s')+'.');
+  }catch(e){alert('Error: '+e.message);}
+}
+async function bulkChangeStage(){
+  if(!window._bulkSelected.size)return;
+  var allStages=SALES.concat(IMPL).concat(['Active']);
+  var prompt_text='Change stage for '+window._bulkSelected.size+' account'+(window._bulkSelected.size===1?'':'s')+' to one of:\n\n'+allStages.map(function(s,i){return (i+1)+'. '+s;}).join('\n')+'\n\nType the number or the exact stage name:';
+  var input=prompt(prompt_text);
+  if(!input||!input.trim())return;
+  input=input.trim();
+  var newStage=null;
+  // Number?
+  var num=parseInt(input);
+  if(!isNaN(num)&&num>=1&&num<=allStages.length){newStage=allStages[num-1];}
+  else {
+    // Match name
+    var matched=allStages.find(function(s){return s.toLowerCase()===input.toLowerCase();});
+    if(matched)newStage=matched;
+  }
+  if(!newStage){alert('Stage not recognized.');return;}
+  if(!confirm('Change stage to "'+newStage+'" for '+window._bulkSelected.size+' account'+(window._bulkSelected.size===1?'':'s')+'?'))return;
+  var ids=Array.from(window._bulkSelected);
+  var updated=[];
+  ids.forEach(function(id){
+    var a=accs.find(function(x){return x.id===id;});
+    if(!a||a.stage===newStage)return;
+    updated.push(Object.assign({},a,{stage:newStage,activity_log:logActivity(a,'Bulk: stage changed from '+a.stage+' to '+newStage),updated_at:new Date().toISOString()}));
+  });
+  if(!updated.length){alert('No changes (all selected already at that stage).');return;}
+  try{
+    await req('POST','accounts',updated,null,null);
+    window._bulkSelected.clear();
+    await loadAll();
+    alert('Stage changed for '+updated.length+' account'+(updated.length===1?'':'s')+'.');
+  }catch(e){alert('Error: '+e.message);}
+}
+// ============ TAGS ============
+function getTags(a){
+  if(!a||!a.tags)return [];
+  return String(a.tags).split(',').map(function(t){return t.trim();}).filter(function(t){return t;});
+}
+function normTag(t){return String(t||'').trim().toLowerCase();}
+function allTags(){
+  var seen={};
+  var out=[];
+  accs.forEach(function(a){
+    getTags(a).forEach(function(t){
+      var k=normTag(t);
+      if(!seen[k]){seen[k]=true;out.push(t);}
+    });
+  });
+  return out.sort();
+}
+function renderTagChips(a,opts){
+  opts=opts||{};
+  var tags=getTags(a);
+  if(!tags.length)return '';
+  var chips=tags.map(function(t){
+    return '<span class="tag-chip" data-tag="'+esc(t)+'" onclick="event.stopPropagation();filterByTag(this.dataset.tag)">'+esc(t)+'</span>';
+  }).join('');
+  return '<span class="tag-chips '+(opts.inline?'inline':'')+'">'+chips+'</span>';
+}
+function filterByTag(tag){
+  // Jump to a view that filters by this tag. Default: pipeline view filtered.
+  window._tagFilter=tag;
+  // Stay in current view if it supports filtering, else go to pipeline
+  var supportedViews=['pipeline','active','lost','impl'];
+  if(supportedViews.indexOf(view)===-1){
+    nav('pipeline');
+  } else {
+    render();
+  }
+}
+function clearTagFilter(){
+  window._tagFilter=null;
+  render();
+}
 function cname(a){var c=pcon(a);return((c.first||'')+' '+(c.last||'')).trim()||c.name||'—';}
 function updRnb(){
   var n=accs.filter(function(a){return a.stage==='Active'&&daysFrom(a.renewal_date)!==null&&daysFrom(a.renewal_date)<=30&&daysFrom(a.renewal_date)>=0;}).length;
@@ -1195,6 +1486,7 @@ function render(){
   else if(view==='impl')rImpl(c,a);
   else if(view==='calendar')rCal(c,a);
   else if(view==='active')rActive(c,a);
+  else if(view==='lost')rLost(c,a);
   else if(view==='renewals')rRenewals(c,a);
   else if(view==='reports')rReports(c,a);
   else if(view==='activity')rActivity(c,a);
@@ -1352,6 +1644,7 @@ function rPipe(el,act){
   var activeStages=window._pipeStages;
   var list=accs.filter(function(a){return SALES.includes(a.stage);});
   if(q)list=list.filter(function(a){return matchAccount(a,q);});
+  list=applyTagFilter(list);
   list=list.filter(function(a){return activeStages.has(a.stage);});
   if(fs==='hasvalue')list=list.filter(function(a){return parseC(a.deal_value)>0;});
   var STAGE_ORDER={'Proposal sent':0,'Late diligence':1,'Early diligence':2,'Intro meeting':3,'Prospect':4,'Deal won':5,'Deal lost':6};
@@ -1372,15 +1665,31 @@ function rPipe(el,act){
   list.forEach(function(a){
     var pc=pcon(a);
     var emailHTML=pc.email?'<div class="as"><a href="mailto:'+esc(pc.email)+'" style="color:var(--ink)" onclick="event.stopPropagation()">'+esc(pc.email)+'</a></div>':'';
-    rows+=trO(a.id)+'<td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' · '+esc(a.state):'')+'</div></td><td>'+badge(a.stage)+'</td><td><div>'+esc(cname(a))+'</div>'+emailHTML+'</td><td style="font-family:var(--f-ui);font-size:14px;font-weight:700;color:var(--ink);letter-spacing:-.01em;font-variant-numeric:tabular-nums">'+(a.deal_value?'$'+fmtC(a.deal_value):'—')+'</td><td style="color:var(--muted)">'+fmt(a.updated_at)+'</td><td>'+eBtn(a.id)+'</td></tr>';
+    var tagsRender=getTags(a).length?'<div style="margin-top:4px">'+renderTagChips(a)+'</div>':'';
+    rows+='<tr data-id="'+a.id+'" onclick="openDetail(this.dataset.id)">'+
+      (window._bulkEnabled?'<td class="bulk-col" onclick="event.stopPropagation()"><input type="checkbox" class="bulk-cb" data-id="'+a.id+'" onchange="toggleBulk(this.dataset.id,this.checked)" '+(window._bulkSelected.has(a.id)?'checked':'')+'></td>':'')+
+      '<td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' · '+esc(a.state):'')+'</div>'+tagsRender+'</td>'+
+      '<td>'+badge(a.stage)+'</td>'+
+      '<td><div>'+esc(cname(a))+'</div>'+emailHTML+'</td>'+
+      '<td style="font-family:var(--f-ui);font-size:14px;font-weight:700;color:var(--ink);letter-spacing:-.01em;font-variant-numeric:tabular-nums">'+(a.deal_value?'$'+fmtC(a.deal_value):'—')+'</td>'+
+      '<td style="color:var(--muted)">'+fmt(a.updated_at)+'</td>'+
+      '<td>'+eBtn(a.id)+'</td></tr>';
   });
   var totalSpan=totalVal?'<span style="margin-left:auto;font-family:var(--f-ui);font-size:15px;font-weight:700;color:var(--ink);letter-spacing:-.01em;font-variant-numeric:tabular-nums">Total: <span style="color:var(--lime-ink)">$'+fmtC(totalVal)+'</span></span>':'';
   var checkboxes=SALES.map(function(s){
     var checked=activeStages.has(s)?'checked':'';
     return '<label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;font-weight:500;color:var(--text);white-space:nowrap"><input type="checkbox" '+checked+' data-stage="'+s+'" onchange="togglePipeStage(this.dataset.stage,this.checked)" style="cursor:pointer;accent-color:var(--lime)"> '+s+'</label>';
   }).join('');
+  var tagOpts=allTags().map(function(t){return '<option value="'+esc(t)+'"'+(window._tagFilter===t?' selected':'')+'>'+esc(t)+'</option>';}).join('');
   el.innerHTML=
-    '<div class="fbar"><input type="text" class="search" placeholder="Search account, contact name, email…" value="'+esc(q)+'" oninput="searchInput(this.value)"></div>'+
+    '<div class="fbar">'+
+    '<input type="text" class="search" placeholder="Search account, contact, email, tag…" value="'+esc(q)+'" oninput="searchInput(this.value)">'+
+    (allTags().length?'<select class="finput" style="width:200px" onchange="window._tagFilter=this.value||null;render()">'+
+      '<option value=""'+(!window._tagFilter?' selected':'')+'>All tags</option>'+tagOpts+
+    '</select>':'')+
+    '<button class="btn '+(window._bulkEnabled?'btn-navy':'')+'" onclick="toggleBulkMode()">'+(window._bulkEnabled?'✓ Bulk select on':'Bulk select')+'</button>'+
+    tagFilterBar()+
+    '</div>'+
     '<div style="background:var(--bg);border:1px solid var(--line);border-radius:var(--r);padding:12px 16px;margin-bottom:16px;display:flex;flex-wrap:wrap;gap:14px;align-items:center">'+
     '<span style="font-family:var(--f-mono);font-size:10.5px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-right:4px">Stages</span>'+
     checkboxes+
@@ -1390,7 +1699,12 @@ function rPipe(el,act){
     '<span style="font-size:12.5px;color:var(--muted);font-weight:500">'+list.length+' account'+(list.length===1?'':'s')+'</span>'+
     totalSpan+
     '</div>'+
-    '<div class="card"><div style="overflow-x:auto"><table><thead><tr>'+th('name','Account','28%')+th('stage','Stage','16%')+th('contact','Contact','22%')+th('deal_value','Deal value','14%')+th('updated','Updated','12%')+'<th style="width:8%"></th></tr></thead><tbody>'+(list.length?rows:'<tr><td colspan="6" class="empty">No accounts found.</td></tr>')+'</tbody></table></div></div>';
+    '<div class="card"><div style="overflow-x:auto"><table><thead><tr>'+
+    (window._bulkEnabled?'<th class="bulk-col"><input type="checkbox" class="bulk-cb" onchange="toggleBulkAll(this.checked)"></th>':'')+
+    th('name','Account','28%')+th('stage','Stage','16%')+th('contact','Contact','22%')+th('deal_value','Deal value','14%')+th('updated','Updated','12%')+'<th style="width:8%"></th></tr></thead><tbody>'+
+    (list.length?rows:'<tr><td colspan="7" class="empty">No accounts found.</td></tr>')+
+    '</tbody></table></div></div>'+
+    bulkBarHTML();
 }
 function resetPipeStages(){window._pipeStages=new Set(['Prospect','Intro meeting','Early diligence','Late diligence','Proposal sent']);render();}
 function togglePipeStage(stage,checked){if(!window._pipeStages)window._pipeStages=new Set();if(checked)window._pipeStages.add(stage);else window._pipeStages.delete(stage);render();}
@@ -1406,6 +1720,7 @@ function exportPipeline(){
 function rImpl(el,act){
   var list=accs.filter(function(a){return IMPL.includes(a.stage);});
   if(q)list=list.filter(function(a){return matchAccount(a,q);});
+  list=applyTagFilter(list);
   if(fs!=='all')list=list.filter(function(a){return a.stage===fs;});
   list=srt(list,{name:function(a){return a.name;},stage:function(a){return a.stage;},go_live:function(a){return a.go_live_date||'';},checkin:function(a){return a.checkin_30_date||'';},eval_end:function(a){return a.eval_end_date||'';},impl_manager:function(a){return a.impl_manager||'';},kit_count:function(a){return a.kit_count||0;}});
   var rows='';
@@ -1422,6 +1737,7 @@ function rActive(el,act){
   act.innerHTML='<button class="btn btn-navy" onclick="exportActive()">Export CSV</button>';
   var list=accs.filter(function(a){return a.stage==='Active';});
   if(q)list=list.filter(function(a){return matchAccount(a,q);});
+  list=applyTagFilter(list);
   if(!sortCol)sortCol='name';
   list=srt(list,{name:function(a){return a.name;},city:function(a){return a.city||'';},state:function(a){return a.state||'';},sub_type:function(a){return a.sub_type||'';},renewal_date:function(a){return a.renewal_date||'';},kit_count:function(a){return a.kit_count||0;},hardware_cost:function(a){return parseC(a.hardware_cost)||0;},sub_amount:function(a){return parseC(a.sub_amount)||0;},contact:function(a){return cname(a);}});
   var rows='';
@@ -1429,9 +1745,36 @@ function rActive(el,act){
     var d=daysFrom(a.renewal_date);
     var subBadge=a.sub_type?'<span class="badge '+(a.sub_type==='Monthly'?'b-monthly':a.sub_type==='No charge'?'b-nocharge':'b-yearly')+'">'+a.sub_type+'</span>':'—';
     var renewCell=a.renewal_date?'<span class="'+(d!==null&&d<=30?d<=7?'danger':'warn':'')+'">'+fmt(a.renewal_date)+' '+dl(d)+'</span>':'—';
-    rows+=trO(a.id)+'<td><div class="an">'+esc(a.name)+'</div></td><td style="color:var(--muted)">'+esc(a.city||'—')+'</td><td style="color:var(--muted)">'+esc(a.state||'—')+'</td><td>'+subBadge+'</td><td>'+renewCell+'</td><td>'+(a.kit_count||'—')+'</td><td>'+(a.hardware_cost?'$'+fmtC(a.hardware_cost):'—')+'</td><td>'+(a.sub_amount?'$'+fmtC(a.sub_amount)+(a.sub_type==='Monthly'?'/mo':'/yr'):'—')+'</td><td>'+esc(cname(a))+'</td><td>'+eBtn(a.id)+'</td></tr>';
+    var tagsRender=getTags(a).length?'<div style="margin-top:4px">'+renderTagChips(a)+'</div>':'';
+    rows+='<tr data-id="'+a.id+'" onclick="openDetail(this.dataset.id)">'+
+      (window._bulkEnabled?'<td class="bulk-col" onclick="event.stopPropagation()"><input type="checkbox" class="bulk-cb" data-id="'+a.id+'" onchange="toggleBulk(this.dataset.id,this.checked)" '+(window._bulkSelected.has(a.id)?'checked':'')+'></td>':'')+
+      '<td><div class="an">'+esc(a.name)+'</div>'+tagsRender+'</td>'+
+      '<td style="color:var(--muted)">'+esc(a.city||'—')+'</td>'+
+      '<td style="color:var(--muted)">'+esc(a.state||'—')+'</td>'+
+      '<td>'+subBadge+'</td>'+
+      '<td>'+renewCell+'</td>'+
+      '<td>'+(a.kit_count||'—')+'</td>'+
+      '<td>'+(a.hardware_cost?'$'+fmtC(a.hardware_cost):'—')+'</td>'+
+      '<td>'+(a.sub_amount?'$'+fmtC(a.sub_amount)+(a.sub_type==='Monthly'?'/mo':'/yr'):'—')+'</td>'+
+      '<td>'+esc(cname(a))+'</td>'+
+      '<td>'+eBtn(a.id)+'</td></tr>';
   });
-  el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search account, contact, email…" value="'+esc(q)+'" oninput="searchInput(this.value)"></div><div class="card"><div style="overflow-x:auto"><table><thead><tr>'+th('name','Account','18%')+th('city','City','9%')+th('state','State','7%')+th('sub_type','Sub type','9%')+th('renewal_date','Renewal','12%')+th('kit_count','Kits','6%')+th('hardware_cost','HW cost','9%')+th('sub_amount','Sub amt','9%')+th('contact','Contact','12%')+'<th style="width:9%"></th></tr></thead><tbody>'+(list.length?rows:'<tr><td colspan="10" class="empty">No active accounts.</td></tr>')+'</tbody></table></div></div>';
+  var tagOpts=allTags().map(function(t){return '<option value="'+esc(t)+'"'+(window._tagFilter===t?' selected':'')+'>'+esc(t)+'</option>';}).join('');
+  el.innerHTML=
+    '<div class="fbar">'+
+    '<input type="text" class="search" placeholder="Search account, contact, email, tag…" value="'+esc(q)+'" oninput="searchInput(this.value)">'+
+    (allTags().length?'<select class="finput" style="width:200px" onchange="window._tagFilter=this.value||null;render()">'+
+      '<option value=""'+(!window._tagFilter?' selected':'')+'>All tags</option>'+tagOpts+
+    '</select>':'')+
+    '<button class="btn '+(window._bulkEnabled?'btn-navy':'')+'" onclick="toggleBulkMode()">'+(window._bulkEnabled?'✓ Bulk select on':'Bulk select')+'</button>'+
+    tagFilterBar()+
+    '</div>'+
+    '<div class="card"><div style="overflow-x:auto"><table><thead><tr>'+
+    (window._bulkEnabled?'<th class="bulk-col"><input type="checkbox" class="bulk-cb" onchange="toggleBulkAll(this.checked)"></th>':'')+
+    th('name','Account','18%')+th('city','City','9%')+th('state','State','7%')+th('sub_type','Sub type','9%')+th('renewal_date','Renewal','12%')+th('kit_count','Kits','6%')+th('hardware_cost','HW cost','9%')+th('sub_amount','Sub amt','9%')+th('contact','Contact','12%')+'<th style="width:9%"></th></tr></thead><tbody>'+
+    (list.length?rows:'<tr><td colspan="11" class="empty">No active accounts.</td></tr>')+
+    '</tbody></table></div></div>'+
+    bulkBarHTML();
 }
 function exportActive(){
   exportCSV(accs.filter(function(a){return a.stage==='Active';}),
@@ -1441,6 +1784,93 @@ function exportActive(){
      {label:'Hardware Cost',fn:function(a){return a.hardware_cost;}},{label:'Sub Amount',fn:function(a){return a.sub_amount;}},
      {label:'Contact',fn:function(a){return cname(a);}}],
     'active-accounts.csv');
+}
+
+function rLost(el,act){
+  act.innerHTML='<button class="btn btn-navy" onclick="exportLost()">Export CSV</button>';
+  var list=accs.filter(function(a){return a.stage==='Deal lost';});
+  if(q)list=list.filter(function(a){return matchAccount(a,q);});
+  list=applyTagFilter(list);
+  // Reason filter
+  var lrFilter=window._lostReasonFilter||'all';
+  if(lrFilter!=='all')list=list.filter(function(a){return (a.lost_reason||'(none)')===lrFilter;});
+  // Default sort: by updated_at desc (oldest = most stale, most worth re-engaging)
+  if(!sortCol){sortCol='updated_at';sortDir=1;}
+  list=srt(list,{
+    name:function(a){return a.name;},
+    city:function(a){return a.city||'';},
+    lost_reason:function(a){return a.lost_reason||'';},
+    updated_at:function(a){return a.updated_at||'';},
+    source:function(a){return a.source||'';}
+  });
+  // Reason options derived from data
+  var allReasons={};
+  accs.filter(function(a){return a.stage==='Deal lost';}).forEach(function(a){allReasons[a.lost_reason||'(none)']=true;});
+  var reasonOpts=Object.keys(allReasons).sort().map(function(r){return '<option value="'+esc(r)+'"'+(lrFilter===r?' selected':'')+'>'+esc(r)+'</option>';}).join('');
+  // Tag options
+  var tagOpts=allTags().map(function(t){return '<option value="'+esc(t)+'"'+(window._tagFilter===t?' selected':'')+'>'+esc(t)+'</option>';}).join('');
+  // Build rows
+  var rows='';
+  list.forEach(function(a){
+    var fus=[];try{fus=JSON.parse(a.followups_json||'[]');}catch(e){}
+    var openFU=null;
+    for(var i=0;i<fus.length;i++){if(!fus[i].done){openFU=fus[i];break;}}
+    var fuCell=openFU?
+      '<span class="warn" style="font-size:11.5px">⏰ '+esc(openFU.note||'Follow-up')+' · '+fmt(openFU.date)+'</span>':
+      '<button class="btn btn-sm" data-id="'+a.id+'" onclick="event.stopPropagation();openSetFollowup(this.dataset.id)">+ Reminder</button>';
+    var staleCell=a.updated_at?(function(){
+      var d=daysFrom(a.updated_at);
+      if(d===null)return fmt(a.updated_at);
+      var days=Math.abs(d);
+      var months=Math.floor(days/30);
+      if(months>=12)return Math.floor(months/12)+'y ago';
+      if(months>=1)return months+'mo ago';
+      return days+'d ago';
+    })():'—';
+    var tagCell=getTags(a).length?renderTagChips(a):'<span style="color:var(--muted-2);font-size:11px">—</span>';
+    rows+='<tr data-id="'+a.id+'" onclick="openDetail(this.dataset.id)">'+
+      (window._bulkEnabled?'<td class="bulk-col" onclick="event.stopPropagation()"><input type="checkbox" class="bulk-cb" data-id="'+a.id+'" onchange="toggleBulk(this.dataset.id,this.checked)" '+(window._bulkSelected&&window._bulkSelected.has(a.id)?'checked':'')+'></td>':'')+
+      '<td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' · '+esc(a.state):'')+'</div></td>'+
+      '<td><span class="badge b-lost">'+esc(a.lost_reason||'(no reason)')+'</span></td>'+
+      '<td style="color:var(--muted)">'+staleCell+'</td>'+
+      '<td style="color:var(--muted);font-size:12px">'+esc(a.source||'—')+'</td>'+
+      '<td>'+esc(cname(a))+'</td>'+
+      '<td>'+tagCell+'</td>'+
+      '<td>'+fuCell+'</td>'+
+      '<td>'+eBtn(a.id)+'</td></tr>';
+  });
+  el.innerHTML=
+    '<div style="font-size:13px;color:var(--text-2);margin-bottom:14px;font-weight:500;line-height:1.5">'+
+    '<strong style="color:var(--ink)">Lost ≠ dead forever.</strong> Use this view to revive promising accounts. '+
+    'Set follow-up reminders for "6-month re-engagement" or "Conference invite" — they\'ll appear on your dashboard when the date hits. '+
+    'Tag accounts (e.g. <code style="background:var(--surface);padding:1px 6px;border-radius:3px;font-family:var(--f-mono);font-size:11px">conference-invite</code>) to pull lists later.'+
+    '</div>'+
+    '<div class="fbar">'+
+    '<input type="text" class="search" placeholder="Search account, contact, email…" value="'+esc(q)+'" oninput="searchInput(this.value)">'+
+    '<select class="finput" style="width:200px" onchange="window._lostReasonFilter=this.value;render()">'+
+      '<option value="all"'+(lrFilter==='all'?' selected':'')+'>All lost reasons</option>'+reasonOpts+
+    '</select>'+
+    (allTags().length?'<select class="finput" style="width:200px" onchange="window._tagFilter=this.value||null;render()">'+
+      '<option value=""'+(!window._tagFilter?' selected':'')+'>All tags</option>'+tagOpts+
+    '</select>':'')+
+    '<button class="btn '+(window._bulkEnabled?'btn-navy':'')+'" onclick="toggleBulkMode()">'+(window._bulkEnabled?'✓ Bulk select on':'Bulk select')+'</button>'+
+    tagFilterBar()+
+    '</div>'+
+    '<div style="font-size:12.5px;color:var(--muted);font-weight:500;margin-bottom:12px">'+list.length+' account'+(list.length===1?'':'s')+'</div>'+
+    '<div class="card"><div style="overflow-x:auto"><table><thead><tr>'+
+    (window._bulkEnabled?'<th class="bulk-col"><input type="checkbox" class="bulk-cb" onchange="toggleBulkAll(this.checked)"></th>':'')+
+    th('name','Account','22%')+th('lost_reason','Lost reason','13%')+th('updated_at','Last touch','10%')+th('source','Source','11%')+'<th style="width:13%">Contact</th><th style="width:14%">Tags</th><th style="width:12%">Follow-up</th><th style="width:5%"></th></tr></thead><tbody>'+
+    (list.length?rows:'<tr><td colspan="9" class="empty">No lost accounts'+(lrFilter!=='all'||window._tagFilter?' match these filters':' yet — they\'ll appear here when you mark deals as Deal lost')+'.</td></tr>')+
+    '</tbody></table></div></div>'+
+    bulkBarHTML();
+}
+function exportLost(){
+  exportCSV(accs.filter(function(a){return a.stage==='Deal lost';}),
+    [{label:'Account',fn:function(a){return a.name;}},{label:'City',fn:function(a){return a.city;}},{label:'State',fn:function(a){return a.state;}},
+     {label:'Lost Reason',fn:function(a){return a.lost_reason;}},{label:'Source',fn:function(a){return a.source;}},
+     {label:'Contact',fn:function(a){return cname(a);}},{label:'Tags',fn:function(a){return a.tags||'';}},
+     {label:'Last Updated',fn:function(a){return fmt(a.updated_at);}}],
+    'lost-accounts.csv');
 }
 
 function rRenewals(el,act){
@@ -1820,6 +2250,7 @@ function rSnap(el,act){
   var kitsAccs=accs.filter(function(a){return a.stage==='Active'&&a.kit_count>0;});
   var list=type==='hardware'?hwAccs:type==='subscription'?subAccs:kitsAccs;
   if(q)list=list.filter(function(a){return matchAccount(a,q);});
+  list=applyTagFilter(list);
   list=list.slice().sort(function(a,b){return (a.name||'').localeCompare(b.name||'');});
   var total=type==='hardware'?
     list.reduce(function(s,a){return s+(parseC(a.hardware_cost)||0);},0):
@@ -2426,6 +2857,7 @@ function showForm(acc){
     '<div class="fgrp full" style="margin-top:14px"><label class="flbl">Street address</label><input class="finput" id="faddr" value="'+esc(a.address||'')+'"></div>'+
     '<div class="fg3" style="margin-top:14px"><div class="fgrp"><label class="flbl">City</label><input class="finput" id="fci" value="'+esc(a.city||'')+'"></div><div class="fgrp"><label class="flbl">State</label><input class="finput" id="fst" value="'+esc(a.state||'')+'"></div><div class="fgrp"><label class="flbl">Zip</label><input class="finput" id="fzp" value="'+esc(a.zip||'')+'"></div></div>'+
     '<div class="fg" style="margin-top:14px"><div class="fgrp"><label class="flbl">Phone</label><input class="finput" id="fph" value="'+esc(a.phone||'')+'"></div><div class="fgrp"><label class="flbl">Website</label><input class="finput" id="fwb" value="'+esc(a.website||'')+'"></div></div>'+
+    '<div class="fgrp full" style="margin-top:14px"><label class="flbl">Tags <span style="color:var(--muted);font-size:10px">comma-separated · for grouping & re-engagement campaigns</span></label><div class="tag-input-wrap"><input class="finput" id="ftags" autocomplete="off" placeholder="e.g. conference-invite, q1-2027, fl-region" value="'+esc(a.tags||'')+'" oninput="updateTagSuggest(this)" onfocus="updateTagSuggest(this)" onblur="setTimeout(hideTagSuggest,200)"><div id="tag-suggest" class="tag-suggest"></div></div></div>'+
     '<div class="fsec">Pipeline stage</div>'+
     '<div class="fg"><div class="fgrp"><label class="flbl">Pipeline type</label><select class="finput" id="fpt" onchange="updStage()"><option value="sales"'+(pt==='sales'?' selected':'')+'>Sales Pipeline</option><option value="impl"'+(pt==='impl'?' selected':'')+'>Implementation</option><option value="active"'+(pt==='active'?' selected':'')+'>Active account</option></select></div>'+
     '<div class="fgrp"><label class="flbl flbl-with-info">Stage <button type="button" class="info-btn" onclick="openStageGuide()" title="Stage definitions">i</button></label><select class="finput" id="fsg">'+stageOpts+'</select></div>'+
@@ -2507,6 +2939,7 @@ async function saveAcc(eid){
     deal_value:parseC(document.getElementById('fdv').value),
     lost_reason:document.getElementById('flr').value||null,
     contacts_json:JSON.stringify(gatherC()),
+    tags:(function(){var v=(document.getElementById('ftags')||{}).value||'';var clean=getCurrentTagsFromInput(v).join(', ');return clean||null;})(),
     impl_manager:document.getElementById('fim').value||null,
     signed_date:document.getElementById('fsd').value||null,
     go_live_date:document.getElementById('fgl').value||null,
@@ -2600,7 +3033,7 @@ function openDetail(id){
 
   document.getElementById('mc').innerHTML=
     '<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal">'+
-    '<div class="modal-hdr"><div><div class="modal-title">'+esc(a.name)+'</div><div class="detail-sub">'+esc(a.acct_type||'')+(a.source?' · '+esc(a.source):'')+(a.city?' · '+esc(a.city):'')+(a.state?' '+esc(a.state):'')+'</div></div><div style="display:flex;align-items:center;gap:12px">'+badge(a.stage)+'<button class="xbtn" onclick="closeModal()">×</button></div></div>'+
+    '<div class="modal-hdr"><div><div class="modal-title">'+esc(a.name)+'</div><div class="detail-sub">'+esc(a.acct_type||'')+(a.source?' · '+esc(a.source):'')+(a.city?' · '+esc(a.city):'')+(a.state?' '+esc(a.state):'')+'</div>'+(getTags(a).length?'<div style="margin-top:8px">'+renderTagChips(a)+'</div>':'')+'</div><div style="display:flex;align-items:center;gap:12px">'+badge(a.stage)+'<button class="xbtn" onclick="closeModal()">×</button></div></div>'+
     '<div class="modal-body"><div class="tabs"><div class="tab active" id="dt-c" onclick="stab(\'c\')">Contacts</div><div class="tab" id="dt-i" onclick="stab(\'i\')">Implementation</div><div class="tab" id="dt-s" onclick="stab(\'s\')">Subscription</div><div class="tab" id="dt-n" onclick="stab(\'n\')">Notes</div><div class="tab" id="dt-a" onclick="stab(\'a\')">Activity</div><div class="tab" id="dt-d" onclick="stab(\'d\')">Docs</div><div class="tab" id="dt-f" onclick="stab(\'f\')">Follow-ups</div></div>'+
     '<div id="dc-c">'+ch+'</div>'+
     '<div id="dc-i" style="display:none"><div class="dgrid">'+
