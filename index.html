@@ -226,9 +226,8 @@ html,body{font-family:var(--f-ui);font-size:14px;color:var(--text);background:va
   display:flex;align-items:center;justify-content:space-between;
 }
 .card-title{
-  font-family:var(--f-display);
-  font-size:16px;font-weight:500;color:var(--ink);letter-spacing:-.015em;
-  font-variation-settings:"opsz" 144;
+  font-family:var(--f-ui);
+  font-size:14px;font-weight:700;color:var(--ink);letter-spacing:-.005em;
 }
 
 /* ============ TABLES ============ */
@@ -984,8 +983,8 @@ th.bulk-col,td.bulk-col{width:34px;padding-left:14px;padding-right:0;}
       <div class="nav-item" id="nav-calendar" onclick="nav('calendar')">Calendar</div>
       <div class="nav-sec">Accounts</div>
       <div class="nav-item" id="nav-active" onclick="nav('active')">Active Accounts</div>
-      <div class="nav-item" id="nav-lost" onclick="nav('lost')">Lost / Re-engage</div>
       <div class="nav-item" id="nav-renewals" onclick="nav('renewals')">Renewals<span class="nav-badge" id="rnb" style="display:none">0</span></div>
+      <div class="nav-item" id="nav-lost" onclick="nav('lost')">Lost / Re-engage</div>
       <div class="nav-sec">Insights</div>
       <div class="nav-item" id="nav-reports" onclick="nav('reports')">Reports</div>
       <div class="nav-item" id="nav-activity" onclick="nav('activity')">Activity</div>
@@ -1154,7 +1153,7 @@ function normName(name){
     .replace(/\s+/g,' ')
     .trim();
 }
-function findDuplicates(){
+function findDuplicates(includeIgnored){
   // Returns array of duplicate groups: each group is an array of accounts that match
   var groups={};
   accs.forEach(function(a){
@@ -1163,11 +1162,43 @@ function findDuplicates(){
     if(!groups[n])groups[n]=[];
     groups[n].push(a);
   });
+  var ignored=getIgnoredDupes();
   var dupes=[];
   Object.keys(groups).forEach(function(k){
-    if(groups[k].length>1)dupes.push(groups[k]);
+    if(groups[k].length>1){
+      var grp=groups[k];
+      var key=dupeKey(grp);
+      if(includeIgnored||!ignored[key]){
+        dupes.push(grp);
+      }
+    }
   });
   return dupes;
+}
+function dupeKey(grp){
+  // Stable key: sorted account IDs joined
+  return grp.map(function(a){return a.id;}).sort().join('|');
+}
+function getIgnoredDupes(){
+  try{return JSON.parse(localStorage.getItem('crm_ignored_dupes')||'{}');}catch(e){return{};}
+}
+function ignoreDupeByKey(key){
+  var ignored=getIgnoredDupes();
+  ignored[key]=new Date().toISOString();
+  localStorage.setItem('crm_ignored_dupes',JSON.stringify(ignored));
+  render();
+}
+function ignoreDupe(grp){
+  var ignored=getIgnoredDupes();
+  ignored[dupeKey(grp)]=new Date().toISOString();
+  localStorage.setItem('crm_ignored_dupes',JSON.stringify(ignored));
+  render();
+}
+function unignoreDupe(key){
+  var ignored=getIgnoredDupes();
+  delete ignored[key];
+  localStorage.setItem('crm_ignored_dupes',JSON.stringify(ignored));
+  render();
 }
 function findPossibleDuplicate(name,excludeId){
   // Used at save-time. Returns first matching account or null.
@@ -1561,6 +1592,7 @@ function rDash(el,act){
   var hwRev=accs.filter(function(a){return a.stage==='Active'||IMPL.includes(a.stage);}).reduce(function(s,a){return s+(parseC(a.hardware_cost)||0);},0);
   var subRev=active.reduce(function(s,a){var amt=parseC(a.sub_amount)||0;return s+(a.sub_type==='Monthly'?amt*12:amt);},0);
   var pipeVal=pipe.reduce(function(s,a){return s+(parseC(a.deal_value)||0);},0);
+  var pipeWithValue=pipe.filter(function(a){return parseC(a.deal_value)>0;}).length;
   var totalKits=active.reduce(function(s,a){return s+(a.kit_count||0);},0);
 
   // Alerts
@@ -1630,7 +1662,7 @@ function rDash(el,act){
   if(a45InEval.length>5)a45EvalRows+='<div style="padding:8px 0;font-size:11.5px;color:var(--muted);text-align:center;font-weight:500">+'+(a45InEval.length-5)+' more in eval</div>';
   var alcon45HTML='';
   if(a45Total>0){
-    alcon45HTML='<div class="card" style="margin-top:20px"><div class="card-hdr"><span class="card-title">Alcon 45 Day · source overview</span><span style="font-family:var(--f-mono);font-size:10.5px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase">'+a45Total+' total account'+(a45Total===1?'':'s')+'</span></div>'+
+    alcon45HTML='<div class="card" style="margin-top:20px"><div class="card-hdr"><span class="card-title">Alcon 45 Day · Source Overview</span><span style="font-family:var(--f-mono);font-size:10.5px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase">'+a45Total+' total account'+(a45Total===1?'':'s')+'</span></div>'+
       '<div style="padding:18px 22px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px;border-bottom:1px solid var(--line)">'+
         '<div class="snap-box" onclick="navAlcon45()"><div class="snap-lbl">In pipeline</div><div class="snap-val">'+a45Pipe.length+'</div></div>'+
         '<div class="snap-box" onclick="navAlcon45()"><div class="snap-lbl">In implementation</div><div class="snap-val">'+a45Impl.length+'</div></div>'+
@@ -1652,7 +1684,7 @@ function rDash(el,act){
       '<div class="metric hero" onclick="navPipeVal()">'+
         '<div class="metric-lbl">Pipeline value</div>'+
         '<div class="metric-val huge">'+(pipeVal?'$'+fmtC(pipeVal):'—')+'</div>'+
-        '<div class="metric-sub"><strong>'+pipe.length+'</strong> open deal'+(pipe.length===1?'':'s')+' across the pipeline</div>'+
+        '<div class="metric-sub">From <strong>'+pipeWithValue+'</strong> deal'+(pipeWithValue===1?'':'s')+' with values logged · <strong>'+pipe.length+'</strong> open total</div>'+
       '</div>'+
       '<div class="metric" onclick="nav(\'active\')">'+
         '<div class="metric-lbl">Active accounts</div>'+
@@ -1671,8 +1703,8 @@ function rDash(el,act){
       '</div>'+
     '</div>'+
     '<div style="display:grid;grid-template-columns:1.2fr 1fr;gap:20px">'+
-      '<div class="card" style="margin-bottom:0"><div class="card-hdr"><span class="card-title">Pipeline breakdown</span><button class="btn btn-sm btn-navy" onclick="nav(\'pipeline\')">View all</button></div><div style="padding:10px 22px 14px">'+pipeHTML+'</div></div>'+
-      '<div class="card" style="margin-bottom:0"><div class="card-hdr"><span class="card-title">Revenue snapshot</span><button class="btn btn-sm btn-navy" onclick="nav(\'reports\')">Reports</button></div>'+
+      '<div class="card" style="margin-bottom:0"><div class="card-hdr"><span class="card-title">Pipeline Breakdown</span><button class="btn btn-sm btn-navy" onclick="nav(\'pipeline\')">View all</button></div><div style="padding:10px 22px 14px">'+pipeHTML+'</div></div>'+
+      '<div class="card" style="margin-bottom:0"><div class="card-hdr"><span class="card-title">Revenue Snapshot</span><button class="btn btn-sm btn-navy" onclick="nav(\'reports\')">Reports</button></div>'+
       '<div style="padding:16px 18px"><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">'+
         '<div class="snap-box" onclick="navSnap(\'hardware\')"><div class="snap-lbl">Hardware</div><div class="snap-val">'+(hwRev?'$'+fmtC(hwRev):'—')+'</div></div>'+
         '<div class="snap-box" onclick="navSnap(\'subscription\')"><div class="snap-lbl">Subscription / yr</div><div class="snap-val">'+(subRev?'$'+fmtC(subRev):'—')+'</div></div>'+
@@ -2066,11 +2098,17 @@ function rSettings(el,act){
   });
   // Duplicate detection
   var dupes=findDuplicates();
+  var ignoredMap=getIgnoredDupes();
+  var ignoredCount=Object.keys(ignoredMap).length;
   var dupesHTML='';
   if(dupes.length){
     dupes.forEach(function(grp){
+      var key=dupeKey(grp);
       dupesHTML+='<div style="background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;margin-bottom:10px">';
-      dupesHTML+='<div style="font-family:var(--f-mono);font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;font-weight:500">Possible match · '+grp.length+' accounts</div>';
+      dupesHTML+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">'+
+        '<div style="font-family:var(--f-mono);font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:500">Possible match · '+grp.length+' accounts</div>'+
+        '<button class="btn btn-sm" data-key="'+esc(key)+'" onclick="ignoreDupeByKey(this.dataset.key)" title="Hide this match — not actually a duplicate">Ignore</button>'+
+      '</div>';
       grp.forEach(function(a){
         var sub=esc(a.acct_type||'')+(a.city?' · '+esc(a.city):'')+(a.state?' '+esc(a.state):'');
         dupesHTML+='<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line)">'+
@@ -2082,7 +2120,27 @@ function rSettings(el,act){
       dupesHTML+='</div>';
     });
   }else{
-    dupesHTML='<div style="font-size:13px;color:var(--ok);font-weight:500;padding:12px 16px">✓ No likely duplicates detected.</div>';
+    dupesHTML='<div style="font-size:13px;color:var(--ok);font-weight:500;padding:12px 16px">✓ No likely duplicates'+(ignoredCount?' (besides '+ignoredCount+' ignored)':'')+'.</div>';
+  }
+  // Ignored duplicates collapsed section
+  var ignoredHTML='';
+  if(ignoredCount){
+    var allDupesIncluding=findDuplicates(true);
+    var ignoredGroups=allDupesIncluding.filter(function(g){return ignoredMap[dupeKey(g)];});
+    if(ignoredGroups.length){
+      ignoredHTML='<details style="margin-top:14px"><summary style="cursor:pointer;font-size:12px;color:var(--muted);font-weight:600;padding:6px 0">Show '+ignoredGroups.length+' ignored match'+(ignoredGroups.length===1?'':'es')+'</summary><div style="padding-top:10px">';
+      ignoredGroups.forEach(function(grp){
+        var key=dupeKey(grp);
+        ignoredHTML+='<div style="background:var(--bg);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;margin-bottom:8px;opacity:.7">'+
+          '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">'+
+            '<div style="font-family:var(--f-mono);font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:500">Ignored · '+grp.length+' accounts</div>'+
+            '<button class="btn btn-sm" data-key="'+esc(key)+'" onclick="unignoreDupe(this.dataset.key)">Restore</button>'+
+          '</div>'+
+          grp.map(function(a){return '<div style="font-size:12px;color:var(--text-2);padding:3px 0">'+esc(a.name)+'</div>';}).join('')+
+        '</div>';
+      });
+      ignoredHTML+='</div></details>';
+    }
   }
   // Tags admin: every unique tag with account count + rename/delete actions
   var tagCounts={};
@@ -2120,7 +2178,7 @@ function rSettings(el,act){
     '<div style="font-size:11.5px;color:var(--muted);margin-bottom:24px;font-weight:500">Shared across all users. Changes are visible to everyone on your team.</div>'+
     '<div class="card" style="margin-bottom:24px"><div class="card-hdr"><span class="card-title">Tags</span><span style="font-family:var(--f-mono);font-size:10.5px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase">'+tagKeys.length+' tag'+(tagKeys.length===1?'':'s')+'</span></div><div>'+tagsHTML+'</div></div>'+
     '<div style="font-size:11.5px;color:var(--muted);margin-bottom:24px;font-weight:500">Rename a tag to fix typos across every account at once. Delete a tag to remove it from every account it\'s on.</div>'+
-    '<div class="card"><div class="card-hdr"><span class="card-title">Possible duplicate accounts</span><span style="font-family:var(--f-mono);font-size:10.5px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase">'+dupes.length+' group'+(dupes.length===1?'':'s')+'</span></div><div style="padding:16px">'+dupesHTML+'</div></div>'+
+    '<div class="card"><div class="card-hdr"><span class="card-title">Possible duplicate accounts</span><span style="font-family:var(--f-mono);font-size:10.5px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase">'+dupes.length+' group'+(dupes.length===1?'':'s')+'</span></div><div style="padding:16px">'+dupesHTML+ignoredHTML+'</div></div>'+
     '<div style="font-size:11.5px;color:var(--muted);margin-top:10px;font-weight:500">Detected by comparing normalized account names (ignoring punctuation and common words like "Eye Care," "LLC," etc.). Open any account to merge or delete.</div>'+
     '</div>';
 }
