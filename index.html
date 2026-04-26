@@ -816,6 +816,63 @@ textarea.finput{resize:vertical;min-height:64px;font-family:var(--f-ui);}
 
 .cal-empty-cell{color:var(--muted-2);}
 
+/* Stage guide popover — info button next to stage dropdown */
+.flbl-with-info{display:flex;align-items:center;gap:6px;}
+.info-btn{
+  background:none;border:1px solid var(--line-3);
+  width:16px;height:16px;border-radius:50%;
+  font-family:var(--f-ui);font-size:10px;font-weight:700;
+  color:var(--muted);cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;
+  padding:0;line-height:1;transition:all .12s;
+}
+.info-btn:hover{background:var(--ink);color:#fff;border-color:var(--ink);}
+
+/* Stage guide modal */
+.guide-modal{max-width:780px;}
+.guide-section{margin-bottom:20px;}
+.guide-h{
+  font-family:var(--f-display);
+  font-size:18px;font-weight:600;color:var(--ink);
+  letter-spacing:-.015em;margin-bottom:14px;
+  font-variation-settings:"opsz" 144;
+  display:flex;align-items:center;gap:10px;
+}
+.guide-h::before{
+  content:'';display:inline-block;width:4px;height:20px;
+  background:var(--lime);border-radius:2px;
+}
+.guide-stage{
+  background:var(--bg);border:1px solid var(--line);border-radius:var(--r);
+  padding:14px 18px;margin-bottom:10px;
+}
+.guide-stage-name{
+  font-family:var(--f-ui);font-size:13.5px;font-weight:700;color:var(--ink);
+  margin-bottom:6px;display:flex;align-items:center;gap:8px;
+}
+.guide-row{
+  display:grid;grid-template-columns:140px 1fr;gap:10px 14px;
+  font-size:12.5px;line-height:1.55;margin-top:8px;
+}
+.guide-lbl{
+  font-family:var(--f-mono);font-size:10.5px;font-weight:600;
+  color:var(--muted);text-transform:uppercase;letter-spacing:.06em;
+  padding-top:1px;
+}
+.guide-val{color:var(--text);font-weight:500;}
+.guide-principle{
+  background:var(--lime-wash);border-left:3px solid var(--lime);
+  padding:14px 18px;border-radius:var(--r);margin-bottom:20px;
+  font-size:13px;line-height:1.6;color:var(--lime-ink);font-weight:500;
+}
+.guide-principle strong{color:var(--ink);}
+.guide-rule{
+  background:var(--surface);border:1px solid var(--line);
+  padding:14px 18px;border-radius:var(--r);
+  font-size:13px;line-height:1.6;color:var(--text-2);font-weight:500;
+}
+.guide-rule strong{color:var(--ink);}
+
 /* Responsive */
 @media (max-width: 980px){
   .metrics-hero{grid-template-columns:1fr 1fr;}
@@ -2225,6 +2282,98 @@ function openEditEvent(id){
 }
 
 function closeModal(){document.getElementById('mc').innerHTML='';window._editEventId=null;}
+
+function openStageGuide(){
+  // Stage definitions structured as data so we can render cleanly
+  var sales=[
+    {name:'Prospect',badge:'b-prospect',rows:[
+      ['Definition','Identified as a potential customer but they haven\'t agreed to anything yet.'],
+      ['Enter when','Account exists with name, location, and lead source. Outreach attempted, no commitment yet.'],
+      ['Move forward when','They agree to a real conversation with a calendar invite, OR a field rep confirms warm interest with a meeting scheduled.'],
+      ['Time in stage','Days to weeks. Don\'t let prospects rot here for months — after 3-4 attempts with no response, move to Deal lost (No decision / went silent).']
+    ]},
+    {name:'Intro meeting',badge:'b-intro',rows:[
+      ['Definition','You\'ve had (or have scheduled) the first real conversation. They know what InsightVR is. You know their practice.'],
+      ['Enter when','Meeting on the calendar OR has happened. Both sides have invested real time.'],
+      ['Move forward when','They\'ve expressed clear interest and asked specific questions about pricing, capabilities, integration, or timeline. Critically: they\'ve agreed to a follow-up step.'],
+      ['Time in stage','1–3 weeks typically. If 3 weeks pass without a follow-up scheduled, they\'re either Prospect again or Lost.']
+    ]},
+    {name:'Early diligence',badge:'b-early',rows:[
+      ['Definition','They\'ve moved past curiosity. Actively evaluating whether your product solves their problem.'],
+      ['Enter when','They\'ve requested information beyond surface-level — ROI numbers, references, demos, technical specs. They\'re doing homework. OR they\'ve expressed interest in an evaluation period.'],
+      ['Move forward when','They\'ve involved someone besides the original contact (partner, office manager, IT), OR started discussing logistics like installation timing, kit count, or training. Conversation has shifted from "is this right" to "how would we do this."'],
+      ['Time in stage','2–6 weeks. This is where most deals stall. Set follow-up reminders.']
+    ]},
+    {name:'Late diligence',badge:'b-late',rows:[
+      ['Definition','Seriously considering you and working through final concerns. Deal is real.'],
+      ['Enter when','Multiple stakeholders involved. They\'re asking decision-grade questions: contract terms, payment, evaluation specifics, who delivers, training, support.'],
+      ['Move forward when','They\'ve explicitly asked for a quote, or you\'ve offered one and they\'ve agreed to receive it. Number of kits and rough go-live timing are known.'],
+      ['Time in stage','1–3 weeks.']
+    ]},
+    {name:'Proposal sent',badge:'b-proposal',rows:[
+      ['Definition','You\'ve sent a formal quote with specific pricing for a specific configuration. The ball is in their court.'],
+      ['Enter when','Quote sent. Price is in writing.'],
+      ['Move to Won when','They\'ve signed the contract or verbally committed with paperwork in motion.'],
+      ['Move to Lost when','They\'ve explicitly declined, gone with a competitor, or gone silent for 30+ days.'],
+      ['Time in stage','1–4 weeks. After 30 days of silence, follow up directly. After 60 days, mark Lost — you can always re-open later.']
+    ]},
+    {name:'Deal won',badge:'b-won',rows:[
+      ['Definition','Contract signed. Hardware order placed.'],
+      ['Note','This stage should be transient. Once signed, immediately move to Implementation › Discovery & planning.']
+    ]},
+    {name:'Deal lost',badge:'b-lost',rows:[
+      ['Definition','Not happening, at least not now. Always tag a reason.'],
+      ['Common reasons','Price · Timing · Competition · No decision/went silent · Returned during eval · Budget cut · Other'],
+      ['Note','Lost ≠ dead forever. Set a 6-month follow-up reminder for accounts tagged "Timing" or "Budget cut." Those revive often.']
+    ]}
+  ];
+  var impl=[
+    {name:'Discovery & planning',badge:'b-discovery',rows:[
+      ['Definition','Contract signed, hardware on order, kickoff call scheduled.'],
+      ['Stays here until','Kit ships.']
+    ]},
+    {name:'Go-live scheduled',badge:'b-golive',rows:[
+      ['Definition','Hardware shipped or being shipped. Install dates on the calendar.'],
+      ['Notes','The 2–3 day install window lives in this period. Set go-live start and end dates so the calendar shows the full block.']
+    ]},
+    {name:'60-day evaluation',badge:'b-60day',rows:[
+      ['Definition','They\'re using it. Clock is ticking on their decision to keep or return.'],
+      ['Notes','The 30-day check-in lives here — you\'ll see a reminder on the dashboard.']
+    ]},
+    {name:'Overdue',badge:'b-overdue',rows:[
+      ['Definition','Past 60 days but no decision/transition recorded.'],
+      ['Notes','This is a flag stage, not a normal one. Accounts shouldn\'t sit here. Either convert to Active or get returned.']
+    ]},
+    {name:'Active',badge:'b-active',rows:[
+      ['Definition','Subscription started. Fully a customer.']
+    ]}
+  ];
+
+  function buildStage(s){
+    var rowsHTML='';
+    s.rows.forEach(function(r){
+      rowsHTML+='<div class="guide-lbl">'+esc(r[0])+'</div><div class="guide-val">'+esc(r[1])+'</div>';
+    });
+    return '<div class="guide-stage"><div class="guide-stage-name">'+
+      '<span class="badge '+s.badge+'">'+esc(s.name)+'</span>'+
+      '</div><div class="guide-row">'+rowsHTML+'</div></div>';
+  }
+
+  var salesHTML=sales.map(buildStage).join('');
+  var implHTML=impl.map(buildStage).join('');
+
+  document.getElementById('mc').innerHTML=
+    '<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal guide-modal">'+
+    '<div class="modal-hdr"><span class="modal-title">Stage definitions & qualifiers</span><button class="xbtn" onclick="closeModal()">×</button></div>'+
+    '<div class="modal-body">'+
+    '<div class="guide-principle"><strong>Core principle:</strong> Every stage advance requires a commitment from the prospect — not just activity from you. If you can\'t articulate what they\'re supposed to do next and by when, the deal is in the wrong stage.</div>'+
+    '<div class="guide-section"><div class="guide-h">Sales pipeline</div>'+salesHTML+'</div>'+
+    '<div class="guide-section"><div class="guide-h">Implementation flow</div>'+implHTML+'</div>'+
+    '<div class="guide-rule"><strong>Quick test:</strong> For every account in your pipeline, you should be able to answer "What\'s the next concrete step, and by what date?" If you can\'t, the deal needs a follow-up reminder or a stage change.</div>'+
+    '</div>'+
+    '<div class="modal-foot"><button class="btn btn-navy" onclick="closeModal()">Close</button></div>'+
+    '</div></div>';
+}
 function openAdd(){showForm(null);}
 function openEdit(id){showForm(accs.find(function(a){return a.id===id;}));}
 
@@ -2279,7 +2428,7 @@ function showForm(acc){
     '<div class="fg" style="margin-top:14px"><div class="fgrp"><label class="flbl">Phone</label><input class="finput" id="fph" value="'+esc(a.phone||'')+'"></div><div class="fgrp"><label class="flbl">Website</label><input class="finput" id="fwb" value="'+esc(a.website||'')+'"></div></div>'+
     '<div class="fsec">Pipeline stage</div>'+
     '<div class="fg"><div class="fgrp"><label class="flbl">Pipeline type</label><select class="finput" id="fpt" onchange="updStage()"><option value="sales"'+(pt==='sales'?' selected':'')+'>Sales Pipeline</option><option value="impl"'+(pt==='impl'?' selected':'')+'>Implementation</option><option value="active"'+(pt==='active'?' selected':'')+'>Active account</option></select></div>'+
-    '<div class="fgrp"><label class="flbl">Stage</label><select class="finput" id="fsg">'+stageOpts+'</select></div>'+
+    '<div class="fgrp"><label class="flbl flbl-with-info">Stage <button type="button" class="info-btn" onclick="openStageGuide()" title="Stage definitions">i</button></label><select class="finput" id="fsg">'+stageOpts+'</select></div>'+
     '<div class="fgrp"><label class="flbl">Deal value ($)</label><input class="finput" id="fdv" type="text" placeholder="e.g. 25,000" value="'+(a.deal_value?fmtC(a.deal_value):'')+'"><div style="font-size:11px;color:var(--muted);margin-top:4px;font-weight:500">Hardware cost + first year subscription</div></div>'+
     '<div class="fgrp"><label class="flbl">Lost reason</label><select class="finput" id="flr" onchange="autoLostStage()"><option value="">—</option>'+lostOpts+'</select></div></div>'+
     '<div class="fsec">Contacts</div><div id="cc">'+contactsHTML+'</div><button class="add-c-btn" onclick="addC()">+ Add another contact</button>'+
