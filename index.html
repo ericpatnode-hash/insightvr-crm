@@ -1260,6 +1260,55 @@ function applyTagFilter(list){
     return getTags(a).map(normTag).indexOf(t)!==-1;
   });
 }
+function togglePaidDate(){
+  var cb=document.getElementById('fhp');
+  var dt=document.getElementById('fhpd');
+  if(!cb||!dt)return;
+  if(cb.checked){
+    dt.disabled=false;
+    dt.style.opacity='1';
+    if(!dt.value)dt.value=new Date().toISOString().split('T')[0];
+  } else {
+    dt.disabled=true;
+    dt.style.opacity='.5';
+  }
+}
+function hwPayStatus(a){
+  // Returns styled HTML showing payment state with appropriate visual treatment
+  if(!a.hardware_cost||parseC(a.hardware_cost)<=0){return '<span style="color:var(--muted)">—</span>';}
+  if(a.hardware_paid){
+    var dateStr=a.hardware_paid_date?' · '+fmt(a.hardware_paid_date):'';
+    return '<span style="color:var(--lime-ink);font-weight:600">✓ Paid'+dateStr+'</span>';
+  }
+  // Unpaid — check if past go-live = overdue
+  var goLive=a.go_live_date;
+  if(goLive){
+    var d=daysFrom(goLive);
+    if(d!==null&&d<=0){
+      // Go-live has happened (today or past) and still not paid
+      var daysOverdue=Math.abs(d);
+      return '<span style="color:var(--danger);font-weight:700">⚠ Unpaid · '+daysOverdue+'d past go-live</span>';
+    } else if(d!==null&&d>0){
+      return '<span style="color:var(--warn-ink);font-weight:600">Pending · go-live in '+d+'d</span>';
+    }
+  }
+  return '<span style="color:var(--warn-ink);font-weight:600">Pending payment</span>';
+}
+function hwPayStatusShort(a){
+  // Compact version for table cells
+  if(!a.hardware_cost||parseC(a.hardware_cost)<=0){return '<span style="color:var(--muted-2);font-size:11px">—</span>';}
+  if(a.hardware_paid){
+    return '<span style="color:var(--lime-ink);font-weight:600;font-size:12px">✓ '+(a.hardware_paid_date?fmt(a.hardware_paid_date):'Paid')+'</span>';
+  }
+  var goLive=a.go_live_date;
+  if(goLive){
+    var d=daysFrom(goLive);
+    if(d!==null&&d<=0){
+      return '<span style="color:var(--danger);font-weight:700;font-size:12px">⚠ '+Math.abs(d)+'d overdue</span>';
+    }
+  }
+  return '<span style="color:var(--warn-ink);font-weight:600;font-size:12px">Pending</span>';
+}
 function pcon(a){try{var c=JSON.parse(a.contacts_json||'[]');return c.length?c[0]:{}}catch(e){return{};}}
 // ============ BULK ACTIONS ============
 window._bulkEnabled=false;
@@ -1635,6 +1684,13 @@ function rDash(el,act){
     var d=daysFrom(a.eval_end_date);
     alerts+='<div class="alert-row warn"><span class="a-text"><span class="a-dot"></span><strong>'+esc(a.name)+'</strong> — 60-day evaluation ends in '+d+'d</span>'+vBtn(a.id)+'</div>';
   });
+  // Hardware payment overdue (past go-live, still unpaid)
+  accs.filter(function(a){
+    return IMPL.includes(a.stage)&&parseC(a.hardware_cost)>0&&!a.hardware_paid&&a.go_live_date&&daysFrom(a.go_live_date)<=0;
+  }).forEach(function(a){
+    var d=Math.abs(daysFrom(a.go_live_date));
+    alerts+='<div class="alert-row danger"><span class="a-text"><span class="a-dot"></span><strong>'+esc(a.name)+'</strong> — Hardware payment unpaid · $'+fmtC(a.hardware_cost)+' · '+(d===0?'go-live today':d+'d past go-live')+'</span>'+vBtn(a.id)+'</div>';
+  });
 
   // Pipeline breakdown
   var bd=SALES.filter(function(s){return s!=='Deal won'&&s!=='Deal lost';}).map(function(s){return{s:s,n:pipe.filter(function(a){return a.stage===s;}).length};}).filter(function(x){return x.n>0;});
@@ -1825,7 +1881,7 @@ function rImpl(el,act){
   if(q)list=list.filter(function(a){return matchAccount(a,q);});
   list=applyTagFilter(list);
   if(fs!=='all')list=list.filter(function(a){return a.stage===fs;});
-  list=srt(list,{name:function(a){return a.name;},stage:function(a){return a.stage;},go_live:function(a){return a.go_live_date||'';},checkin:function(a){return a.checkin_30_date||'';},eval_end:function(a){return a.eval_end_date||'';},impl_manager:function(a){return a.impl_manager||'';},kit_count:function(a){return a.kit_count||0;},sub:function(a){var amt=parseC(a.sub_amount)||0;return a.sub_type==='Monthly'?amt*12:amt;}});
+  list=srt(list,{name:function(a){return a.name;},stage:function(a){return a.stage;},go_live:function(a){return a.go_live_date||'';},checkin:function(a){return a.checkin_30_date||'';},eval_end:function(a){return a.eval_end_date||'';},impl_manager:function(a){return a.impl_manager||'';},kit_count:function(a){return a.kit_count||0;},sub:function(a){var amt=parseC(a.sub_amount)||0;return a.sub_type==='Monthly'?amt*12:amt;},paid:function(a){return a.hardware_paid?2:(a.go_live_date&&daysFrom(a.go_live_date)<=0?0:1);}});
   var rows='';
   list.forEach(function(a){
     var ed=daysFrom(a.eval_end_date);
@@ -1838,10 +1894,10 @@ function rImpl(el,act){
     } else {
       subCell='<span style="color:var(--warn-ink);font-size:11px;font-weight:600">missing</span>';
     }
-    rows+=trO(a.id)+'<td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' · '+esc(a.state):'')+'</div></td><td>'+badge(a.stage)+'</td><td>'+(a.go_live_end_date&&a.go_live_end_date!==a.go_live_date?fmt(a.go_live_date)+' → '+fmt(a.go_live_end_date):fmt(a.go_live_date))+'</td><td>'+ciStatus(a)+ciBtn+'</td><td>'+(a.eval_end_date?'<span class="'+(ed!==null&&ed<=10?'warn':'')+'">'+fmt(a.eval_end_date)+' '+dl(ed)+'</span>':'—')+'</td><td>'+esc(a.impl_manager||'—')+'</td><td>'+(a.kit_count||'—')+'</td><td>'+subCell+'</td><td>'+eBtn(a.id)+'</td></tr>';
+    rows+=trO(a.id)+'<td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' · '+esc(a.state):'')+'</div></td><td>'+badge(a.stage)+'</td><td>'+(a.go_live_end_date&&a.go_live_end_date!==a.go_live_date?fmt(a.go_live_date)+' → '+fmt(a.go_live_end_date):fmt(a.go_live_date))+'</td><td>'+ciStatus(a)+ciBtn+'</td><td>'+(a.eval_end_date?'<span class="'+(ed!==null&&ed<=10?'warn':'')+'">'+fmt(a.eval_end_date)+' '+dl(ed)+'</span>':'—')+'</td><td>'+esc(a.impl_manager||'—')+'</td><td>'+(a.kit_count||'—')+'</td><td>'+hwPayStatusShort(a)+'</td><td>'+subCell+'</td><td>'+eBtn(a.id)+'</td></tr>';
   });
   var stageOpts=IMPL.map(function(s){return '<option value="'+s+'"'+(fs===s?' selected':'')+'>'+s+'</option>';}).join('');
-  el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search account, contact, email…" value="'+esc(q)+'" oninput="searchInput(this.value)"><select class="finput" style="width:200px" onchange="fs=this.value;render()"><option value="all">All stages</option>'+stageOpts+'</select></div><div class="card"><div style="overflow-x:auto"><table><thead><tr>'+th('name','Account','18%')+th('stage','Stage','12%')+th('go_live','Go-live','9%')+th('checkin','30-day check-in','16%')+th('eval_end','60-day end','12%')+th('impl_manager','Impl. mgr','10%')+th('kit_count','Kits','5%')+th('sub','Sub forecast','10%')+'<th style="width:8%"></th></tr></thead><tbody>'+(list.length?rows:'<tr><td colspan="9" class="empty">No accounts in implementation.</td></tr>')+'</tbody></table></div></div>';
+  el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search account, contact, email…" value="'+esc(q)+'" oninput="searchInput(this.value)"><select class="finput" style="width:200px" onchange="fs=this.value;render()"><option value="all">All stages</option>'+stageOpts+'</select></div><div class="card"><div style="overflow-x:auto"><table><thead><tr>'+th('name','Account','17%')+th('stage','Stage','11%')+th('go_live','Go-live','9%')+th('checkin','30-day check-in','14%')+th('eval_end','60-day end','11%')+th('impl_manager','Impl. mgr','9%')+th('kit_count','Kits','5%')+th('paid','HW paid','10%')+th('sub','Sub forecast','9%')+'<th style="width:5%"></th></tr></thead><tbody>'+(list.length?rows:'<tr><td colspan="10" class="empty">No accounts in implementation.</td></tr>')+'</tbody></table></div></div>';
 }
 
 function rActive(el,act){
@@ -3111,7 +3167,9 @@ function showForm(acc){
     '<div class="fgrp"><label class="flbl">60-day eval end <span style="color:var(--lime-ink);font-size:10px">auto</span></label><input class="finput" id="fe6" type="date" value="'+(a.eval_end_date||'')+'"></div>'+
     '<div class="fgrp"></div>'+
     '<div class="fgrp"><label class="flbl">Number of kits</label><input class="finput" id="fkc" type="text" value="'+(a.kit_count||'')+'"></div>'+
-    '<div class="fgrp"><label class="flbl">Hardware cost ($)</label><input class="finput" id="fhc" type="text" placeholder="e.g. 5,000" value="'+(a.hardware_cost?fmtC(a.hardware_cost):'')+'"></div></div>'+
+    '<div class="fgrp"><label class="flbl">Hardware cost ($)</label><input class="finput" id="fhc" type="text" placeholder="e.g. 5,000" value="'+(a.hardware_cost?fmtC(a.hardware_cost):'')+'"></div>'+
+    '<div class="fgrp"><label class="flbl">Hardware payment</label><div style="display:flex;align-items:center;gap:10px;height:38px"><label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12.5px;font-weight:500;color:var(--text);white-space:nowrap"><input type="checkbox" id="fhp" '+(a.hardware_paid?'checked':'')+' onchange="togglePaidDate()" style="cursor:pointer;accent-color:var(--lime);width:15px;height:15px"> Payment received</label></div></div>'+
+    '<div class="fgrp"><label class="flbl">Date received</label><input class="finput" id="fhpd" type="date" value="'+(a.hardware_paid_date||'')+'" '+(a.hardware_paid?'':'disabled style="opacity:.5"')+'></div></div>'+
     '<div class="fsec">Subscription</div>'+
     '<div class="fg"><div class="fgrp"><label class="flbl">Subscription type</label><select class="finput" id="fst2"><option value=""'+((!a.sub_type)?' selected':'')+'>—</option><option value="Monthly"'+(a.sub_type==='Monthly'?' selected':'')+'>Monthly</option><option value="Yearly"'+(a.sub_type==='Yearly'?' selected':'')+'>Yearly</option><option value="No charge"'+(a.sub_type==='No charge'?' selected':'')+'>No charge</option></select></div>'+
     '<div class="fgrp"><label class="flbl">Subscription amount ($)</label><input class="finput" id="fsa" type="text" placeholder="e.g. 1,200" value="'+(a.sub_amount?fmtC(a.sub_amount):'')+'"></div>'+
@@ -3186,6 +3244,8 @@ async function saveAcc(eid){
     eval_end_date:document.getElementById('fe6').value||null,
     kit_count:document.getElementById('fkc').value?parseInt(document.getElementById('fkc').value):null,
     hardware_cost:parseC(document.getElementById('fhc').value),
+    hardware_paid:document.getElementById('fhp')?document.getElementById('fhp').checked:false,
+    hardware_paid_date:(function(){var cb=document.getElementById('fhp');var dt=document.getElementById('fhpd');return (cb&&cb.checked&&dt&&dt.value)?dt.value:null;})(),
     sub_type:document.getElementById('fst2').value||null,
     sub_amount:parseC(document.getElementById('fsa').value),
     sub_start_date:document.getElementById('fssd').value||null,
@@ -3282,6 +3342,7 @@ function openDetail(id){
     '<div class="dlbl">60-day eval end</div><div class="dval">'+(a.eval_end_date?'<span class="'+(ed!==null&&ed<=10?'warn':'')+'">'+fmt(a.eval_end_date)+' '+dl(ed)+'</span>':'—')+'</div>'+
     '<div class="dlbl">Kits</div><div class="dval">'+(a.kit_count||'—')+'</div>'+
     '<div class="dlbl">Hardware cost</div><div class="dval">'+(a.hardware_cost?'$'+fmtC(a.hardware_cost):'—')+'</div>'+
+    (a.hardware_cost?'<div class="dlbl">HW payment</div><div class="dval">'+hwPayStatus(a)+'</div>':'')+
     '<div class="dlbl">Phone</div><div class="dval">'+esc(a.phone||'—')+'</div>'+
     '<div class="dlbl">Website</div><div class="dval">'+esc(a.website||'—')+'</div>'+
     (a.deal_value?'<div class="dlbl">Deal value</div><div class="dval">$'+fmtC(a.deal_value)+'</div>':'')+
