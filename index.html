@@ -1808,7 +1808,7 @@ function rPipe(el,act){
   if(fs==='hasvalue')list=list.filter(function(a){return parseC(a.deal_value)>0;});
   var STAGE_ORDER={'Proposal sent':0,'Late diligence':1,'Early diligence':2,'Intro meeting':3,'Prospect':4,'Deal won':5,'Deal lost':6};
   if(sortCol){
-    list=srt(list,{name:function(a){return a.name;},stage:function(a){return a.stage;},contact:function(a){return cname(a);},deal_value:function(a){return parseC(a.deal_value)||0;},updated:function(a){return a.updated_at;}});
+    list=srt(list,{name:function(a){return a.name;},stage:function(a){return a.stage;},lost_reason:function(a){return a.lost_reason||'';},contact:function(a){return cname(a);},deal_value:function(a){return parseC(a.deal_value)||0;},updated:function(a){return a.updated_at;}});
   }else{
     list=list.slice().sort(function(a,b){
       var sa=STAGE_ORDER.hasOwnProperty(a.stage)?STAGE_ORDER[a.stage]:99;
@@ -1820,15 +1820,19 @@ function rPipe(el,act){
     });
   }
   var totalVal=list.reduce(function(s,a){return s+(parseC(a.deal_value)||0);},0);
+  // Show Reason column only when filter is Deal lost ONLY (cleaner than empty cells everywhere)
+  var showReasonCol=activeStages.size===1&&activeStages.has('Deal lost');
   var rows='';
   list.forEach(function(a){
     var pc=pcon(a);
     var emailHTML=pc.email?'<div class="as"><a href="mailto:'+esc(pc.email)+'" style="color:var(--ink)" onclick="event.stopPropagation()">'+esc(pc.email)+'</a></div>':'';
     var tagsRender=getTags(a).length?'<div style="margin-top:4px">'+renderTagChips(a)+'</div>':'';
+    var reasonCell=showReasonCol?'<td style="font-size:12.5px;color:var(--text-2)">'+esc(a.lost_reason||'—')+'</td>':'';
     rows+='<tr data-id="'+a.id+'" onclick="openDetail(this.dataset.id)">'+
       (window._bulkEnabled?'<td class="bulk-col" onclick="event.stopPropagation()"><input type="checkbox" class="bulk-cb" data-id="'+a.id+'" onchange="toggleBulk(this.dataset.id,this.checked)" '+(window._bulkSelected.has(a.id)?'checked':'')+'></td>':'')+
       '<td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' · '+esc(a.state):'')+'</div>'+tagsRender+'</td>'+
       '<td>'+badge(a.stage)+'</td>'+
+      reasonCell+
       '<td><div>'+esc(cname(a))+'</div>'+emailHTML+'</td>'+
       '<td style="font-family:var(--f-ui);font-size:14px;font-weight:700;color:var(--ink);letter-spacing:-.01em;font-variant-numeric:tabular-nums">'+(a.deal_value?'$'+fmtC(a.deal_value):'—')+'</td>'+
       '<td style="color:var(--muted)">'+fmt(a.updated_at)+'</td>'+
@@ -1860,8 +1864,12 @@ function rPipe(el,act){
     '</div>'+
     '<div class="card"><div style="overflow-x:auto"><table><thead><tr>'+
     (window._bulkEnabled?'<th class="bulk-col"><input type="checkbox" class="bulk-cb" onchange="toggleBulkAll(this.checked)"></th>':'')+
-    th('name','Account','28%')+th('stage','Stage','16%')+th('contact','Contact','22%')+th('deal_value','Deal value','14%')+th('updated','Updated','12%')+'<th style="width:8%"></th></tr></thead><tbody>'+
-    (list.length?rows:'<tr><td colspan="7" class="empty">No accounts found.</td></tr>')+
+    (showReasonCol?
+      th('name','Account','22%')+th('stage','Stage','12%')+th('lost_reason','Reason','13%')+th('contact','Contact','19%')+th('deal_value','Deal value','11%')+th('updated','Updated','11%')+'<th style="width:8%"></th>'
+      :
+      th('name','Account','28%')+th('stage','Stage','16%')+th('contact','Contact','22%')+th('deal_value','Deal value','14%')+th('updated','Updated','12%')+'<th style="width:8%"></th>'
+    )+'</tr></thead><tbody>'+
+    (list.length?rows:'<tr><td colspan="'+(showReasonCol?8:7)+'" class="empty">No accounts found.</td></tr>')+
     '</tbody></table></div></div>'+
     bulkBarHTML();
 }
