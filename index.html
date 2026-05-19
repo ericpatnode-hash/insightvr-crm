@@ -1024,6 +1024,7 @@ const IMPL=['Discovery & planning','Go-live scheduled','60-day evaluation','Over
 const TYPES=['Practice','Private equity group','Industry partner','Other'];
 const SOURCES=['Website / inbound','Referral','Outbound / cold outreach','Conference / event','Industry partner','Alcon - Field','Alcon 45 Day','B&L - Field','J&J - Field','Other'];
 const LOST_REASONS=['Price','Timing','Competition','Did not see fit / value','No decision / went silent','Returned during eval','Budget cut','Other'];
+const HW_ARRANGEMENTS=['Practice pays','Alcon-supplied','No-charge eval'];
 const SBADGE={Prospect:'b-prospect','Intro meeting':'b-intro','Early diligence':'b-early','Late diligence':'b-late','Proposal sent':'b-proposal','Deal won':'b-won','Deal lost':'b-lost','Discovery & planning':'b-discovery','Go-live scheduled':'b-golive','60-day evaluation':'b-60day',Overdue:'b-overdue',Active:'b-active'};
 const TITLES={dashboard:'Dashboard',pipeline:'Sales Pipeline',impl:'Implementation',calendar:'Calendar',active:'Active Accounts',lost:'Lost / Re-engage',renewals:'Renewals',reports:'Reports',activity:'Activity',settings:'Settings',followups:'My Follow-ups',snap:''};
 let accs=[],events=[],view='dashboard',q='',fs='all',ccount=1,sortCol='',sortDir=1,implMgrs=[];
@@ -1273,9 +1274,32 @@ function togglePaidDate(){
     dt.style.opacity='.5';
   }
 }
+function updateArrangement(){
+  var sel=document.getElementById('fhwa');
+  var payRow=document.getElementById('hw-payment-row');
+  var dateRow=document.getElementById('hw-paiddate-row');
+  var cb=document.getElementById('fhp');
+  var dt=document.getElementById('fhpd');
+  if(!sel)return;
+  var isPracticePays=sel.value==='Practice pays';
+  // Dim the payment fields when arrangement isn't Practice pays
+  if(payRow)payRow.style.opacity=isPracticePays?'1':'.4';
+  if(dateRow)dateRow.style.opacity=isPracticePays?'1':'.4';
+  if(cb)cb.disabled=!isPracticePays;
+  if(dt&&!isPracticePays){
+    dt.disabled=true;
+  } else if(dt&&cb){
+    // Re-apply normal paid-date toggle logic
+    togglePaidDate();
+  }
+}
 function hwPayStatus(a){
   // Returns styled HTML showing payment state with appropriate visual treatment
   if(!a.hardware_cost||parseC(a.hardware_cost)<=0){return '<span style="color:var(--muted)">—</span>';}
+  // Non-direct arrangements skip payment tracking
+  var arr=a.hw_arrangement||'Practice pays';
+  if(arr==='Alcon-supplied'){return '<span style="color:var(--text-2);font-weight:600">Alcon-supplied · n/a</span>';}
+  if(arr==='No-charge eval'){return '<span style="color:var(--text-2);font-weight:600">Loaner · n/a</span>';}
   if(a.hardware_paid){
     var dateStr=a.hardware_paid_date?' · '+fmt(a.hardware_paid_date):'';
     return '<span style="color:var(--lime-ink);font-weight:600">✓ Paid'+dateStr+'</span>';
@@ -1297,6 +1321,9 @@ function hwPayStatus(a){
 function hwPayStatusShort(a){
   // Compact version for table cells
   if(!a.hardware_cost||parseC(a.hardware_cost)<=0){return '<span style="color:var(--muted-2);font-size:11px">—</span>';}
+  var arr=a.hw_arrangement||'Practice pays';
+  if(arr==='Alcon-supplied'){return '<span class="badge" style="background:oklch(91% 0.10 50);color:oklch(38% 0.12 50);border-color:oklch(78% 0.14 50)"><span style="background:oklch(38% 0.12 50)"></span>Alcon</span>';}
+  if(arr==='No-charge eval'){return '<span class="badge" style="background:var(--navy-soft);color:var(--navy);border-color:var(--line-2)"><span style="background:var(--navy)"></span>Loaner</span>';}
   if(a.hardware_paid){
     return '<span style="color:var(--lime-ink);font-weight:600;font-size:12px">✓ '+(a.hardware_paid_date?fmt(a.hardware_paid_date):'Paid')+'</span>';
   }
@@ -1684,9 +1711,10 @@ function rDash(el,act){
     var d=daysFrom(a.eval_end_date);
     alerts+='<div class="alert-row warn"><span class="a-text"><span class="a-dot"></span><strong>'+esc(a.name)+'</strong> — 60-day evaluation ends in '+d+'d</span>'+vBtn(a.id)+'</div>';
   });
-  // Hardware payment overdue (past go-live, still unpaid)
+  // Hardware payment overdue (past go-live, still unpaid) — Practice-pays arrangements only
   accs.filter(function(a){
-    return IMPL.includes(a.stage)&&parseC(a.hardware_cost)>0&&!a.hardware_paid&&a.go_live_date&&daysFrom(a.go_live_date)<=0;
+    var arr=a.hw_arrangement||'Practice pays';
+    return IMPL.includes(a.stage)&&parseC(a.hardware_cost)>0&&!a.hardware_paid&&a.go_live_date&&daysFrom(a.go_live_date)<=0&&arr==='Practice pays';
   }).forEach(function(a){
     var d=Math.abs(daysFrom(a.go_live_date));
     alerts+='<div class="alert-row danger"><span class="a-text"><span class="a-dot"></span><strong>'+esc(a.name)+'</strong> — Hardware payment unpaid · $'+fmtC(a.hardware_cost)+' · '+(d===0?'go-live today':d+'d past go-live')+'</span>'+vBtn(a.id)+'</div>';
@@ -3175,8 +3203,11 @@ function showForm(acc){
     '<div class="fgrp"><label class="flbl">60-day eval end <span style="color:var(--lime-ink);font-size:10px">auto</span></label><input class="finput" id="fe6" type="date" value="'+(a.eval_end_date||'')+'"></div>'+
     '<div class="fgrp"><label class="flbl">Number of kits</label><input class="finput" id="fkc" type="text" value="'+(a.kit_count||'')+'"></div>'+
     '<div class="fgrp"><label class="flbl">Hardware cost ($)</label><input class="finput" id="fhc" type="text" placeholder="e.g. 5,000" value="'+(a.hardware_cost?fmtC(a.hardware_cost):'')+'"></div>'+
-    '<div class="fgrp"><label class="flbl">Hardware payment</label><div style="display:flex;align-items:center;gap:10px;height:38px"><label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12.5px;font-weight:500;color:var(--text);white-space:nowrap"><input type="checkbox" id="fhp" '+(a.hardware_paid?'checked':'')+' onchange="togglePaidDate()" style="cursor:pointer;accent-color:var(--lime);width:15px;height:15px"> Payment received</label></div></div>'+
-    '<div class="fgrp"><label class="flbl">Date received</label><input class="finput" id="fhpd" type="date" value="'+(a.hardware_paid_date||'')+'" '+(a.hardware_paid?'':'disabled style="opacity:.5"')+'></div></div>'+
+    '<div class="fgrp"><label class="flbl">Hardware arrangement <span style="color:var(--muted);font-size:10px">who pays?</span></label><select class="finput" id="fhwa" onchange="updateArrangement()">'+
+      HW_ARRANGEMENTS.map(function(x){return '<option value="'+esc(x)+'"'+((a.hw_arrangement||'Practice pays')===x?' selected':'')+'>'+esc(x)+'</option>';}).join('')+
+    '</select></div>'+
+    '<div class="fgrp" id="hw-payment-row"><label class="flbl">Hardware payment</label><div style="display:flex;align-items:center;gap:10px;height:38px"><label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12.5px;font-weight:500;color:var(--text);white-space:nowrap"><input type="checkbox" id="fhp" '+(a.hardware_paid?'checked':'')+' onchange="togglePaidDate()" style="cursor:pointer;accent-color:var(--lime);width:15px;height:15px"> Payment received</label></div></div>'+
+    '<div class="fgrp" id="hw-paiddate-row"><label class="flbl">Date received</label><input class="finput" id="fhpd" type="date" value="'+(a.hardware_paid_date||'')+'" '+(a.hardware_paid?'':'disabled style="opacity:.5"')+'></div></div>'+
     '<div class="fsec">Subscription</div>'+
     '<div class="fg"><div class="fgrp"><label class="flbl">Subscription type</label><select class="finput" id="fst2"><option value=""'+((!a.sub_type)?' selected':'')+'>—</option><option value="Monthly"'+(a.sub_type==='Monthly'?' selected':'')+'>Monthly</option><option value="Yearly"'+(a.sub_type==='Yearly'?' selected':'')+'>Yearly</option><option value="No charge"'+(a.sub_type==='No charge'?' selected':'')+'>No charge</option></select></div>'+
     '<div class="fgrp"><label class="flbl">Subscription amount ($)</label><input class="finput" id="fsa" type="text" placeholder="e.g. 1,200" value="'+(a.sub_amount?fmtC(a.sub_amount):'')+'"></div>'+
@@ -3185,6 +3216,7 @@ function showForm(acc){
     '</div>'+
     '<div class="modal-foot">'+delBtn+'<button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" data-eid="'+(a.id||'')+'" onclick="saveAcc(this.dataset.eid)">Save account</button></div>'+
     '</div></div>';
+  setTimeout(updateArrangement,0);
 }
 function autoD(){
   var g=document.getElementById('fgl').value;
@@ -3251,6 +3283,7 @@ async function saveAcc(eid){
     eval_end_date:document.getElementById('fe6').value||null,
     kit_count:document.getElementById('fkc').value?parseInt(document.getElementById('fkc').value):null,
     hardware_cost:parseC(document.getElementById('fhc').value),
+    hw_arrangement:document.getElementById('fhwa')?document.getElementById('fhwa').value:'Practice pays',
     hardware_paid:document.getElementById('fhp')?document.getElementById('fhp').checked:false,
     hardware_paid_date:(function(){var cb=document.getElementById('fhp');var dt=document.getElementById('fhpd');return (cb&&cb.checked&&dt&&dt.value)?dt.value:null;})(),
     sub_type:document.getElementById('fst2').value||null,
@@ -3349,6 +3382,7 @@ function openDetail(id){
     '<div class="dlbl">60-day eval end</div><div class="dval">'+(a.eval_end_date?'<span class="'+(ed!==null&&ed<=10?'warn':'')+'">'+fmt(a.eval_end_date)+' '+dl(ed)+'</span>':'—')+'</div>'+
     '<div class="dlbl">Kits</div><div class="dval">'+(a.kit_count||'—')+'</div>'+
     '<div class="dlbl">Hardware cost</div><div class="dval">'+(a.hardware_cost?'$'+fmtC(a.hardware_cost):'—')+'</div>'+
+    (a.hardware_cost?'<div class="dlbl">HW arrangement</div><div class="dval">'+esc(a.hw_arrangement||'Practice pays')+'</div>':'')+
     (a.hardware_cost?'<div class="dlbl">HW payment</div><div class="dval">'+hwPayStatus(a)+'</div>':'')+
     '<div class="dlbl">Phone</div><div class="dval">'+esc(a.phone||'—')+'</div>'+
     '<div class="dlbl">Website</div><div class="dval">'+esc(a.website||'—')+'</div>'+
