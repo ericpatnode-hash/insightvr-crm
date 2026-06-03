@@ -1020,12 +1020,12 @@ th.bulk-col,td.bulk-col{width:34px;padding-left:14px;padding-right:0;}
 const SB_URL='https://zqfctprzbcqxrbvgslkh.supabase.co';
 const SB_KEY='sb_publishable_i4w5l5cDDr9tmjNKvYlVlg_REgHxGOg';
 const SALES=['Prospect','Intro meeting','Early diligence','Late diligence','Proposal sent','Deal won','Deal lost'];
-const IMPL=['Discovery & planning','Go-live scheduled','60-day evaluation','Overdue'];
+const IMPL=['Discovery & planning','Go-live scheduled','Evaluation','Overdue'];
 const TYPES=['Practice','Private equity group','Industry partner','Other'];
 const SOURCES=['Website / inbound','Referral','Outbound / cold outreach','Conference / event','Industry partner','Alcon - Field','Alcon 45 Day','B&L - Field','J&J - Field','Other'];
 const LOST_REASONS=['Price','Timing','Competition','Did not see fit / value','No decision / went silent','Returned during eval','Budget cut','Other'];
 const HW_ARRANGEMENTS=['Practice pays','Alcon-supplied','No-charge eval'];
-const SBADGE={Prospect:'b-prospect','Intro meeting':'b-intro','Early diligence':'b-early','Late diligence':'b-late','Proposal sent':'b-proposal','Deal won':'b-won','Deal lost':'b-lost','Discovery & planning':'b-discovery','Go-live scheduled':'b-golive','60-day evaluation':'b-60day',Overdue:'b-overdue',Active:'b-active'};
+const SBADGE={Prospect:'b-prospect','Intro meeting':'b-intro','Early diligence':'b-early','Late diligence':'b-late','Proposal sent':'b-proposal','Deal won':'b-won','Deal lost':'b-lost','Discovery & planning':'b-discovery','Go-live scheduled':'b-golive','Evaluation':'b-60day',Overdue:'b-overdue',Active:'b-active'};
 const TITLES={dashboard:'Dashboard',pipeline:'Sales Pipeline',impl:'Implementation',calendar:'Calendar',active:'Active Accounts',lost:'Lost / Re-engage',renewals:'Renewals',reports:'Reports',activity:'Activity',settings:'Settings',followups:'My Follow-ups',snap:''};
 let accs=[],events=[],view='dashboard',q='',fs='all',ccount=1,sortCol='',sortDir=1,implMgrs=[];
 
@@ -1704,19 +1704,19 @@ function rDash(el,act){
     var d=daysFrom(a.renewal_date);
     alerts+='<div class="alert-row danger"><span class="a-text"><span class="a-dot"></span><strong>'+esc(a.name)+'</strong> — '+(d<0?'renewal OVERDUE by '+Math.abs(d)+' day'+(Math.abs(d)===1?'':'s')+' · '+fmt(a.renewal_date):'renewal in '+d+' day'+(d===1?'':'s')+' · '+fmt(a.renewal_date))+'</span>'+vBtn(a.id)+'</div>';
   });
-  impl.filter(function(a){return a.stage==='60-day evaluation'&&daysFrom(a.checkin_30_date)!==null&&daysFrom(a.checkin_30_date)<0&&!a.checkin_30_done;}).forEach(function(a){
+  impl.filter(function(a){return a.stage==='Evaluation'&&daysFrom(a.checkin_30_date)!==null&&daysFrom(a.checkin_30_date)<0&&!a.checkin_30_done;}).forEach(function(a){
     alerts+='<div class="alert-row danger"><span class="a-text"><span class="a-dot"></span><strong>'+esc(a.name)+'</strong> — 30-day check-in missed, due '+fmt(a.checkin_30_date)+'</span>'+vBtn(a.id)+'</div>';
   });
-  impl.filter(function(a){return a.stage==='60-day evaluation'&&daysFrom(a.checkin_30_date)!==null&&daysFrom(a.checkin_30_date)>=0&&daysFrom(a.checkin_30_date)<=7&&!a.checkin_30_done;}).forEach(function(a){
+  impl.filter(function(a){return a.stage==='Evaluation'&&daysFrom(a.checkin_30_date)!==null&&daysFrom(a.checkin_30_date)>=0&&daysFrom(a.checkin_30_date)<=7&&!a.checkin_30_done;}).forEach(function(a){
     var d=daysFrom(a.checkin_30_date);
     alerts+='<div class="alert-row warn"><span class="a-text"><span class="a-dot"></span><strong>'+esc(a.name)+'</strong> — 30-day check-in due in '+d+'d</span>'+vBtn(a.id)+'</div>';
   });
   impl.filter(function(a){return a.stage==='Overdue';}).forEach(function(a){
-    alerts+='<div class="alert-row danger"><span class="a-text"><span class="a-dot"></span><strong>'+esc(a.name)+'</strong> — 60-day evaluation overdue</span>'+vBtn(a.id)+'</div>';
+    alerts+='<div class="alert-row danger"><span class="a-text"><span class="a-dot"></span><strong>'+esc(a.name)+'</strong> — Evaluation overdue</span>'+vBtn(a.id)+'</div>';
   });
-  impl.filter(function(a){return a.stage==='60-day evaluation'&&daysFrom(a.eval_end_date)!==null&&daysFrom(a.eval_end_date)<=10&&daysFrom(a.eval_end_date)>=0;}).forEach(function(a){
+  impl.filter(function(a){return a.stage==='Evaluation'&&daysFrom(a.eval_end_date)!==null&&daysFrom(a.eval_end_date)<=10&&daysFrom(a.eval_end_date)>=0;}).forEach(function(a){
     var d=daysFrom(a.eval_end_date);
-    alerts+='<div class="alert-row warn"><span class="a-text"><span class="a-dot"></span><strong>'+esc(a.name)+'</strong> — 60-day evaluation ends in '+d+'d</span>'+vBtn(a.id)+'</div>';
+    alerts+='<div class="alert-row warn"><span class="a-text"><span class="a-dot"></span><strong>'+esc(a.name)+'</strong> — Evaluation ends in '+d+'d</span>'+vBtn(a.id)+'</div>';
   });
   // Hardware payment overdue (past go-live, still unpaid) — Practice-pays arrangements only
   accs.filter(function(a){
@@ -1746,7 +1746,7 @@ function rDash(el,act){
   var a45ConvRate=a45Total>0?Math.round(a45Won.length/a45Total*100):0;
   var a45Revenue=a45Active.reduce(function(s,a){var amt=parseC(a.sub_amount)||0;return s+(a.sub_type==='Monthly'?amt*12:amt);},0)+
     a45.filter(function(a){return a.stage==='Active'||IMPL.includes(a.stage);}).reduce(function(s,a){return s+(parseC(a.hardware_cost)||0);},0);
-  var a45InEval=a45.filter(function(a){return a.stage==='60-day evaluation';}).slice().sort(function(a,b){
+  var a45InEval=a45.filter(function(a){return a.stage==='Evaluation';}).slice().sort(function(a,b){
     var ad=daysFrom(a.eval_end_date);var bd=daysFrom(b.eval_end_date);
     if(ad===null)return 1;if(bd===null)return -1;
     return ad-bd;
@@ -1777,7 +1777,7 @@ function rDash(el,act){
         '<div style="text-align:right"><div style="font-family:var(--f-mono);font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:500">Lost</div>'+
         '<div style="font-family:var(--f-ui);font-size:26px;font-weight:700;color:'+(a45Lost.length?'var(--danger)':'var(--ink)')+';letter-spacing:-.02em;margin-top:4px;font-variant-numeric:tabular-nums;line-height:1">'+a45Lost.length+'</div></div>'+
       '</div>'+
-      (a45EvalRows?'<div style="padding:14px 22px"><div style="font-family:var(--f-mono);font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:500;margin-bottom:8px">In 60-day evaluation</div>'+a45EvalRows+'</div>':'')+
+      (a45EvalRows?'<div style="padding:14px 22px"><div style="font-family:var(--f-mono);font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:500;margin-bottom:8px">In Evaluation</div>'+a45EvalRows+'</div>':'')+
       '</div>';
   }
 
@@ -1796,7 +1796,7 @@ function rDash(el,act){
       '<div class="metric" onclick="nav(\'impl\')">'+
         '<div class="metric-lbl">In implementation</div>'+
         '<div class="metric-val">'+impl.length+'</div>'+
-        '<div class="metric-sub">'+impl.filter(function(a){return a.stage==='60-day evaluation';}).length+' in 60-day eval</div>'+
+        '<div class="metric-sub">'+impl.filter(function(a){return a.stage==='Evaluation';}).length+' in evaluation</div>'+
       '</div>'+
       '<div class="metric" onclick="nav(\'renewals\')">'+
         '<div class="metric-lbl">Renewing · 30 days</div>'+
@@ -1928,7 +1928,7 @@ function rImpl(el,act){
   var rows='';
   list.forEach(function(a){
     var ed=daysFrom(a.eval_end_date);
-    var ciBtn=a.stage==='60-day evaluation'?'<button class="btn btn-sm" style="margin-left:8px;'+(a.checkin_30_done?'background:var(--lime-wash);color:var(--lime-ink);border-color:var(--lime)':'')+'" data-id="'+a.id+'" onclick="event.stopPropagation();toggleCI(this.dataset.id)">'+(a.checkin_30_done?'Undo check-in':'Check-in done')+'</button>':'';
+    var ciBtn=a.stage==='Evaluation'?'<button class="btn btn-sm" style="margin-left:8px;'+(a.checkin_30_done?'background:var(--lime-wash);color:var(--lime-ink);border-color:var(--lime)':'')+'" data-id="'+a.id+'" onclick="event.stopPropagation();toggleCI(this.dataset.id)">'+(a.checkin_30_done?'Undo check-in':'Check-in done')+'</button>':'';
     var subCell;
     if(a.sub_type==='No charge')subCell='<span class="badge b-nocharge">No charge</span>';
     else if(a.sub_amount&&a.sub_type){
@@ -1940,7 +1940,7 @@ function rImpl(el,act){
     rows+=trO(a.id)+'<td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' · '+esc(a.state):'')+'</div></td><td>'+badge(a.stage)+'</td><td>'+(a.go_live_end_date&&a.go_live_end_date!==a.go_live_date?fmt(a.go_live_date)+' → '+fmt(a.go_live_end_date):fmt(a.go_live_date))+'</td><td>'+ciStatus(a)+ciBtn+'</td><td>'+(a.eval_end_date?'<span class="'+(ed!==null&&ed<=10?'warn':'')+'">'+fmt(a.eval_end_date)+' '+dl(ed)+'</span>':'—')+'</td><td>'+esc(a.impl_manager||'—')+'</td><td>'+(a.kit_count||'—')+'</td><td>'+hwSourceShort(a)+'</td><td>'+hwPayStatusShort(a)+'</td><td>'+subCell+'</td><td>'+eBtn(a.id)+'</td></tr>';
   });
   var stageOpts=IMPL.map(function(s){return '<option value="'+s+'"'+(fs===s?' selected':'')+'>'+s+'</option>';}).join('');
-  el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search account, contact, email…" value="'+esc(q)+'" oninput="searchInput(this.value)"><select class="finput" style="width:200px" onchange="fs=this.value;render()"><option value="all">All stages</option>'+stageOpts+'</select></div><div class="card"><div style="overflow-x:auto"><table><thead><tr>'+th('name','Account','16%')+th('stage','Stage','10%')+th('go_live','Go-live','8%')+th('checkin','30-day check-in','13%')+th('eval_end','60-day end','10%')+th('impl_manager','Impl. mgr','8%')+th('kit_count','Kits','5%')+th('hw_source','HW source','9%')+th('paid','HW paid','9%')+th('sub','Sub forecast','8%')+'<th style="width:4%"></th></tr></thead><tbody>'+(list.length?rows:'<tr><td colspan="11" class="empty">No accounts in implementation.</td></tr>')+'</tbody></table></div></div>';
+  el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search account, contact, email…" value="'+esc(q)+'" oninput="searchInput(this.value)"><select class="finput" style="width:200px" onchange="fs=this.value;render()"><option value="all">All stages</option>'+stageOpts+'</select></div><div class="card"><div style="overflow-x:auto"><table><thead><tr>'+th('name','Account','16%')+th('stage','Stage','10%')+th('go_live','Go-live','8%')+th('checkin','30-day check-in','13%')+th('eval_end','Eval end','10%')+th('impl_manager','Impl. mgr','8%')+th('kit_count','Kits','5%')+th('hw_source','HW source','9%')+th('paid','HW paid','9%')+th('sub','Sub forecast','8%')+'<th style="width:4%"></th></tr></thead><tbody>'+(list.length?rows:'<tr><td colspan="11" class="empty">No accounts in implementation.</td></tr>')+'</tbody></table></div></div>';
 }
 
 function rActive(el,act){
@@ -2606,7 +2606,7 @@ function rSnap(el,act){
     '<th>Kits</th><th>Stage</th>';
   var introHTML=type==='forecast'?
     '<div style="font-size:13px;color:var(--text-2);margin-bottom:14px;font-weight:500;line-height:1.5">'+
-    '<strong style="color:var(--ink)">Forecast = signed but not yet active.</strong> These accounts have committed to a subscription via contract but haven\'t started paying yet (still in implementation or 60-day eval). '+
+    '<strong style="color:var(--ink)">Forecast = signed but not yet active.</strong> These accounts have committed to a subscription via contract but haven\'t started paying yet (still in implementation or evaluation). '+
     'When they flip to <span class="badge b-active">Active</span>, their subscription rolls into your <strong>Subscription / yr</strong> total automatically. '+
     'Accounts marked <span style="color:var(--warn-ink);font-weight:600">missing</span> need their subscription terms entered (open the account → edit → Subscription section).'+
     '</div>':'';
@@ -2713,11 +2713,11 @@ function collectEvents(year,month){
         all.push({id:'auto-ci-'+a.id,manager:mgr,type:'30 Day Check-In',start:cd,end:cd,title:a.name,notes:'30-day check-in',accountId:a.id,source:'crm'});
       }
     }
-    // 60-day eval end
+    // Evaluation end
     if(a.eval_end_date){
       var ed=parseDateLocal(a.eval_end_date);
       if(ed&&ed>=monthStart&&ed<=monthEnd){
-        all.push({id:'auto-ev-'+a.id,manager:mgr,type:'Eval end',start:ed,end:ed,title:a.name,notes:'60-day evaluation end',accountId:a.id,source:'crm'});
+        all.push({id:'auto-ev-'+a.id,manager:mgr,type:'Eval end',start:ed,end:ed,title:a.name,notes:'Evaluation end',accountId:a.id,source:'crm'});
       }
     }
   });
@@ -3104,7 +3104,7 @@ function openStageGuide(){
       ['Definition','Hardware shipped or being shipped. Install dates on the calendar.'],
       ['Notes','The 2–3 day install window lives in this period. Set go-live start and end dates so the calendar shows the full block.']
     ]},
-    {name:'60-day evaluation',badge:'b-60day',rows:[
+    {name:'Evaluation',badge:'b-60day',rows:[
       ['Definition','They\'re using it. Clock is ticking on their decision to keep or return.'],
       ['Notes','The 30-day check-in lives here — you\'ll see a reminder on the dashboard.']
     ]},
@@ -3207,7 +3207,7 @@ function showForm(acc){
     '<div class="fgrp"><label class="flbl">Go-live date</label><input class="finput" id="fgl" type="date" value="'+(a.go_live_date||'')+'" data-prev="'+(a.go_live_date||'')+'" onchange="autoD()"></div>'+
     '<div class="fgrp"><label class="flbl">Go-live end date <span style="color:var(--lime-ink);font-size:10px">auto · for multi-day installs</span></label><input class="finput" id="fgle" type="date" value="'+(a.go_live_end_date||(a.go_live_date?addDays(a.go_live_date,2):''))+'" data-prev-start="'+(a.go_live_date||'')+'"></div>'+
     '<div class="fgrp"><label class="flbl">30-day check-in <span style="color:var(--lime-ink);font-size:10px">auto</span></label><input class="finput" id="fc3" type="date" value="'+(a.checkin_30_date||'')+'"></div>'+
-    '<div class="fgrp"><label class="flbl">60-day eval end <span style="color:var(--lime-ink);font-size:10px">auto</span></label><input class="finput" id="fe6" type="date" value="'+(a.eval_end_date||'')+'"></div>'+
+    '<div class="fgrp"><label class="flbl">Evaluation end <span style="color:var(--lime-ink);font-size:10px">auto</span></label><input class="finput" id="fe6" type="date" value="'+(a.eval_end_date||'')+'"></div>'+
     '<div class="fgrp"><label class="flbl">Number of kits</label><input class="finput" id="fkc" type="text" value="'+(a.kit_count||'')+'"></div>'+
     '<div class="fgrp"><label class="flbl">Hardware cost ($)</label><input class="finput" id="fhc" type="text" placeholder="e.g. 5,000" value="'+(a.hardware_cost?fmtC(a.hardware_cost):'')+'"></div>'+
     '<div class="fgrp"><label class="flbl">Hardware arrangement <span style="color:var(--muted);font-size:10px">who pays?</span></label><select class="finput" id="fhwa" onchange="updateArrangement()">'+
@@ -3386,7 +3386,7 @@ function openDetail(id){
     '<div class="dlbl">Signed date</div><div class="dval">'+fmt(a.signed_date)+'</div>'+
     '<div class="dlbl">Go-live date</div><div class="dval">'+(a.go_live_end_date&&a.go_live_end_date!==a.go_live_date?fmt(a.go_live_date)+' → '+fmt(a.go_live_end_date):fmt(a.go_live_date))+'</div>'+
     '<div class="dlbl">30-day check-in</div><div class="dval">'+ciStatus(a)+'</div>'+
-    '<div class="dlbl">60-day eval end</div><div class="dval">'+(a.eval_end_date?'<span class="'+(ed!==null&&ed<=10?'warn':'')+'">'+fmt(a.eval_end_date)+' '+dl(ed)+'</span>':'—')+'</div>'+
+    '<div class="dlbl">Evaluation end</div><div class="dval">'+(a.eval_end_date?'<span class="'+(ed!==null&&ed<=10?'warn':'')+'">'+fmt(a.eval_end_date)+' '+dl(ed)+'</span>':'—')+'</div>'+
     '<div class="dlbl">Kits</div><div class="dval">'+(a.kit_count||'—')+'</div>'+
     '<div class="dlbl">Hardware cost</div><div class="dval">'+(a.hardware_cost?'$'+fmtC(a.hardware_cost):'—')+'</div>'+
     (a.hardware_cost?'<div class="dlbl">HW arrangement</div><div class="dval">'+esc(a.hw_arrangement||'Practice pays')+'</div>':'')+
