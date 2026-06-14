@@ -788,7 +788,7 @@ textarea.finput{resize:vertical;min-height:64px;font-family:var(--f-ui);}
 .cal-event-bar.ev-practice{background:oklch(92% 0.08 280);color:oklch(40% 0.13 280);border-color:oklch(78% 0.12 280);}
 .cal-event-bar.ev-patient{background:oklch(92% 0.08 320);color:oklch(42% 0.13 320);border-color:oklch(78% 0.12 320);}
 .cal-event-bar.ev-checkin{background:oklch(92% 0.10 70);color:oklch(42% 0.12 65);border-color:oklch(78% 0.14 65);}
-.cal-event-bar.ev-evalend{background:oklch(92% 0.08 45);color:oklch(40% 0.13 40);border-color:oklch(78% 0.14 45);}
+.cal-event-bar.ev-evalend{background:oklch(90% 0.10 340);color:oklch(38% 0.16 340);border-color:oklch(76% 0.14 340);}
 .cal-event-bar.ev-pto{background:oklch(90% 0.01 255);color:var(--muted);border-color:var(--line-3);font-style:italic;}
 .cal-event-bar.ev-retrain{background:oklch(90% 0.10 95);color:oklch(38% 0.14 90);border-color:oklch(76% 0.14 92);}
 .cal-event-bar.ev-travel{background:oklch(90% 0.08 190);color:oklch(38% 0.10 200);border-color:oklch(76% 0.12 195);}
@@ -805,7 +805,7 @@ textarea.finput{resize:vertical;min-height:64px;font-family:var(--f-ui);}
 .cal-legend-swatch.ev-practice{background:oklch(92% 0.08 280);}
 .cal-legend-swatch.ev-patient{background:oklch(92% 0.08 320);}
 .cal-legend-swatch.ev-checkin{background:oklch(92% 0.10 70);}
-.cal-legend-swatch.ev-evalend{background:oklch(92% 0.08 45);}
+.cal-legend-swatch.ev-evalend{background:oklch(90% 0.10 340);}
 .cal-legend-swatch.ev-pto{background:oklch(90% 0.01 255);}
 .cal-legend-swatch.ev-retrain{background:oklch(90% 0.10 95);}
 .cal-legend-swatch.ev-travel{background:oklch(90% 0.08 190);}
@@ -3148,7 +3148,7 @@ function openEdit(id){showForm(accs.find(function(a){return a.id===id;}));}
 function cbHTML(c,i){
   var phType=c.phone_type||'';
   var ptOpts=['Cell','Office','Other'].map(function(t){return '<option value="'+t+'"'+(phType===t?' selected':'')+'>'+t+'</option>';}).join('');
-  return '<div class="cblock" id="cb-'+i+'"><div class="cblock-title">'+(i===0?'Primary contact':'Additional contact')+'</div>'+(i>0?'<button class="cbtn-remove" data-i="'+i+'" onclick="rmC(parseInt(this.dataset.i))">×</button>':'')+'<div class="fg"><div class="fgrp"><label class="flbl">First name</label><input class="finput" id="cfn-'+i+'" value="'+esc(c.first||c.name||'')+'"></div><div class="fgrp"><label class="flbl">Last name</label><input class="finput" id="cln-'+i+'" value="'+esc(c.last||'')+'"></div><div class="fgrp"><label class="flbl">Title</label><input class="finput" id="ct-'+i+'" value="'+esc(c.title||'')+'"></div><div class="fgrp"><label class="flbl">Email</label><input class="finput" id="ce-'+i+'" value="'+esc(c.email||'')+'"></div><div class="fgrp"><label class="flbl">Phone</label><input class="finput" id="cp-'+i+'" value="'+esc(c.phone||'')+'"></div><div class="fgrp"><label class="flbl">Phone type</label><select class="finput" id="cpt-'+i+'"><option value="">— Select —</option>'+ptOpts+'</select></div></div></div>';
+  return '<div class="cblock" id="cb-'+i+'"><div class="cblock-title">'+(i===0?'Primary contact':'Additional contact')+'</div>'+(i>0?'<button class="cbtn-remove" data-i="'+i+'" onclick="rmC(parseInt(this.dataset.i))">×</button>':'')+'<div class="fg"><div class="fgrp"><label class="flbl">First name</label><input class="finput" id="cfn-'+i+'" value="'+esc(c.first||c.name||'')+'"></div><div class="fgrp"><label class="flbl">Last name</label><input class="finput" id="cln-'+i+'" value="'+esc(c.last||'')+'"></div><div class="fgrp"><label class="flbl">Title</label><input class="finput" id="ct-'+i+'" value="'+esc(c.title||'')+'"></div><div class="fgrp"><label class="flbl">Email</label><input class="finput" id="ce-'+i+'" value="'+esc(c.email||'')+'"></div><div class="fgrp"><label class="flbl">Phone</label><input class="finput" id="cp-'+i+'" value="'+esc(c.phone||'')+'"></div><div class="fgrp"><label class="flbl">Phone type</label><select class="finput" id="cpt-'+i+'"><option value="">— Select —</option>'+ptOpts+'</select></div><div class="fgrp full"><label class="flbl">Personal notes <span style="color:var(--muted);font-size:10px">e.g. prefers calls in afternoon, allergic to mornings, kid in college</span></label><textarea class="finput" id="cn-'+i+'" rows="2" placeholder="Personal notes about this contact…">'+esc(c.notes||'')+'</textarea></div></div></div>';
 }
 function addC(){var i=ccount++;var d=document.createElement('div');d.innerHTML=cbHTML({},i);document.getElementById('cc').appendChild(d.firstElementChild);}
 function rmC(i){var e=document.getElementById('cb-'+i);if(e)e.remove();}
@@ -3162,7 +3162,8 @@ function gatherC(){
     var e=(document.getElementById('ce-'+i)||{}).value||'';
     var p=(document.getElementById('cp-'+i)||{}).value||'';
     var pt=(document.getElementById('cpt-'+i)||{}).value||'';
-    if(f||l||e||p)r.push({first:f,last:l,title:t,email:e,phone:p,phone_type:pt});
+    var n=(document.getElementById('cn-'+i)||{}).value||'';
+    if(f||l||e||p||n)r.push({first:f,last:l,title:t,email:e,phone:p,phone_type:pt,notes:n});
   });
   return r;
 }
@@ -3309,6 +3310,46 @@ async function saveAcc(eid){
   }catch(e){alert('Error: '+e.message);}
 }
 
+function editNote(id,i){
+  var a=accs.find(function(x){return x.id===id;});
+  if(!a)return;
+  var notes=getNotes(a);
+  var n=notes[i];
+  if(!n)return;
+  var row=document.getElementById('note-row-'+i);
+  if(!row)return;
+  // Replace row contents with editable textarea + Save/Cancel
+  row.innerHTML='<div style="font-family:var(--f-mono);font-size:10.5px;color:var(--muted);margin-bottom:6px;letter-spacing:.02em">'+
+      'Editing note · originally '+esc(n.author||'Unknown')+' · '+fmtDT(n.ts)+
+    '</div>'+
+    '<textarea id="note-edit-ta-'+i+'" class="finput" style="width:100%;min-height:80px;resize:vertical;font-family:var(--f-ui)">'+esc(n.text)+'</textarea>'+
+    '<div style="display:flex;justify-content:flex-end;gap:6px;margin-top:8px">'+
+      '<button class="btn btn-sm" data-id="'+id+'" onclick="openDetail(this.dataset.id);stab(\'n\')">Cancel</button>'+
+      '<button class="btn btn-sm btn-primary" data-id="'+id+'" data-i="'+i+'" onclick="saveEditedNote(this.dataset.id,parseInt(this.dataset.i))">Save</button>'+
+    '</div>';
+  // Focus the textarea
+  var ta=document.getElementById('note-edit-ta-'+i);
+  if(ta){ta.focus();ta.setSelectionRange(ta.value.length,ta.value.length);}
+}
+async function saveEditedNote(id,i){
+  var a=accs.find(function(x){return x.id===id;});
+  if(!a)return;
+  var notes=getNotes(a);
+  if(!notes[i])return;
+  var newText=(document.getElementById('note-edit-ta-'+i)||{}).value||'';
+  newText=newText.trim();
+  if(!newText){alert('Note cannot be empty. Use Remove to delete it instead.');return;}
+  if(newText===notes[i].text){openDetail(id);stab('n');return;}
+  // Update note with edited timestamp + audit info
+  notes[i].text=newText;
+  notes[i].edited_ts=new Date().toISOString();
+  notes[i].edited_by=getUser();
+  var updated=Object.assign({},a,{notes_log:JSON.stringify(notes),activity_log:logActivity(a,'Edited a note'),updated_at:new Date().toISOString()});
+  try{
+    await upsertAcc(updated);
+    openDetail(id);stab('n');
+  }catch(e){alert('Error: '+e.message);}
+}
 async function addNote(id){
   var text=(document.getElementById('note-input').value||'').trim();
   if(!text)return;
@@ -3335,12 +3376,22 @@ function openDetail(id){
       var cn=((c.first||'')+' '+(c.last||'')).trim()||c.name||'—';
       var emailLink=c.email?'<a href="mailto:'+esc(c.email)+'" style="color:var(--ink);font-weight:500;border-bottom:1px solid var(--line-2)">'+esc(c.email)+'</a>':'—';
       var phoneDisplay=c.phone?(esc(c.phone)+(c.phone_type?' <span style="color:var(--muted);font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:.05em;margin-left:4px">'+esc(c.phone_type)+'</span>':'')):'—';
-      ch+='<div style="'+(i>0?'padding-top:18px;border-top:1px solid var(--line);margin-top:18px':'')+'"><div style="font-family:var(--f-mono);font-size:10.5px;font-weight:600;color:var(--ink);margin-bottom:12px;text-transform:uppercase;letter-spacing:.1em">'+(i===0?'Primary contact':'Contact '+(i+1))+'</div><div class="dgrid"><div class="dlbl">Name</div><div class="dval">'+esc(cn)+'</div><div class="dlbl">Title</div><div class="dval">'+esc(c.title||'—')+'</div><div class="dlbl">Email</div><div class="dval">'+emailLink+'</div><div class="dlbl">Phone</div><div class="dval">'+phoneDisplay+'</div></div></div>';
+      var personalNotes=c.notes?'<div style="margin-top:10px;padding:10px 12px;background:var(--lime-wash);border-left:3px solid var(--lime);border-radius:4px;font-size:12.5px;line-height:1.55;color:var(--text);white-space:pre-wrap;font-style:italic">'+esc(c.notes)+'</div>':'';
+      ch+='<div style="'+(i>0?'padding-top:18px;border-top:1px solid var(--line);margin-top:18px':'')+'"><div style="font-family:var(--f-mono);font-size:10.5px;font-weight:600;color:var(--ink);margin-bottom:12px;text-transform:uppercase;letter-spacing:.1em">'+(i===0?'Primary contact':'Contact '+(i+1))+'</div><div class="dgrid"><div class="dlbl">Name</div><div class="dval">'+esc(cn)+'</div><div class="dlbl">Title</div><div class="dval">'+esc(c.title||'—')+'</div><div class="dlbl">Email</div><div class="dval">'+emailLink+'</div><div class="dlbl">Phone</div><div class="dval">'+phoneDisplay+'</div></div>'+personalNotes+'</div>';
     });
   }else{ch='<div style="color:var(--muted);font-size:13.5px">No contacts added.</div>';}
   var notes=getNotes(a);var activity=getActivity(a);
   var notesItems='';
-  notes.forEach(function(n){notesItems+='<div class="note-entry"><div class="note-meta">'+esc(n.author||'Unknown')+' · '+fmtDT(n.ts)+'</div><div class="note-text">'+esc(n.text)+'</div></div>';});
+  notes.forEach(function(n,ni){
+    var editedHint=n.edited_ts?' <span style="color:var(--muted-2);font-style:italic">· edited '+fmtDT(n.edited_ts)+'</span>':'';
+    notesItems+='<div class="note-entry" id="note-row-'+ni+'">'+
+      '<div class="note-meta" style="display:flex;justify-content:space-between;align-items:center;gap:8px">'+
+        '<span>'+esc(n.author||'Unknown')+' · '+fmtDT(n.ts)+editedHint+'</span>'+
+        '<button class="btn btn-sm" style="padding:2px 8px;font-size:11px" data-id="'+a.id+'" data-i="'+ni+'" onclick="event.stopPropagation();editNote(this.dataset.id,parseInt(this.dataset.i))">Edit</button>'+
+      '</div>'+
+      '<div class="note-text" id="note-text-'+ni+'">'+esc(n.text)+'</div>'+
+    '</div>';
+  });
   var notesHTML='<div class="note-input-area"><textarea id="note-input" placeholder="Add a note…" rows="3"></textarea><div class="note-input-area-foot"><button class="btn btn-primary btn-sm" data-id="'+a.id+'" id="note-save-btn" onclick="addNote(this.dataset.id)">Add note</button></div></div>'+(notesItems||'<div style="color:var(--muted);font-size:13.5px;padding:8px 0">No notes yet.</div>');
   var actItems='';
   activity.forEach(function(e){actItems+='<div class="activity-entry"><span style="font-weight:600;color:var(--ink)">'+esc(e.who||'Unknown')+'</span><span style="font-family:var(--f-mono);color:var(--muted);margin-left:8px;font-size:11px;letter-spacing:.02em">'+fmtDT(e.ts)+'</span><div style="color:var(--text);margin-top:3px;font-size:12.5px">'+esc(e.what)+'</div></div>';});
