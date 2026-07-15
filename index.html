@@ -1123,9 +1123,31 @@ function th(col,label,w){
   var inner=a?('<span style="color:var(--ink)">'+label+arr+'</span>'):label;
   return '<th style="cursor:pointer;width:'+w+'" onclick="sortBy(\''+col+'\')">'+inner+'</th>';
 }
-function daysFrom(d){if(!d)return null;return Math.round((new Date(d)-new Date())/86400000);}
+function daysFrom(d){
+  if(!d)return null;
+  var target;
+  if(typeof d==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(d)){
+    var parts=d.split('-');
+    target=new Date(parseInt(parts[0]),parseInt(parts[1])-1,parseInt(parts[2]));
+  } else {
+    target=new Date(d);
+  }
+  // Compare at midnight-local for both to avoid time-of-day skew
+  var now=new Date();
+  var todayLocal=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  return Math.round((target-todayLocal)/86400000);
+}
 function addDays(s,n){if(!s)return'';var d=new Date(s);d.setDate(d.getDate()+n);return d.toISOString().split('T')[0];}
-function fmt(d){if(!d)return'—';return new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
+function fmt(d){
+  if(!d)return'—';
+  // Detect plain date-only strings (YYYY-MM-DD) and parse as local time to avoid UTC-offset day-shift bug
+  if(typeof d==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(d)){
+    var parts=d.split('-');
+    var localDate=new Date(parseInt(parts[0]),parseInt(parts[1])-1,parseInt(parts[2]));
+    return localDate.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+  }
+  return new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+}
 function fmtDT(d){if(!d)return'';var dt=new Date(d);return dt.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+' at '+dt.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});}
 function badge(s){return'<span class="badge '+(SBADGE[s]||'b-prospect')+'">'+esc(s)+'</span>';}
 function dl(d){if(d===null)return'';return d<0?'('+Math.abs(d)+'d overdue)':'('+d+'d)';}
