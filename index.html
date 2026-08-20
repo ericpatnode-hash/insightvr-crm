@@ -1596,7 +1596,7 @@ async function toggleCI(id){
   var a=accs.find(function(x){return x.id===id;});
   if(!a)return;
   var done=!a.checkin_30_done;
-  await upsertAcc(Object.assign({},a,{checkin_30_done:done,activity_log:logActivity(a,done?'Marked 30-day check-in complete':'Undid 30-day check-in'),updated_at:new Date().toISOString()}));
+  await upsertAcc(Object.assign({},a,{checkin_30_done:done,activity_log:logActivity(a,done?'Marked Eval Check-In complete':'Undid Eval Check-In'),updated_at:new Date().toISOString()}));
 }
 function navDrill(drillId){
   view='reports';q='';sortCol='';sortDir=1;
@@ -1713,11 +1713,11 @@ function rDash(el,act){
     alerts+='<div class="alert-row danger"><span class="a-text"><span class="a-dot"></span><strong>'+esc(a.name)+'</strong> — '+(d<0?'renewal OVERDUE by '+Math.abs(d)+' day'+(Math.abs(d)===1?'':'s')+' · '+fmt(a.renewal_date):'renewal in '+d+' day'+(d===1?'':'s')+' · '+fmt(a.renewal_date))+'</span>'+vBtn(a.id)+'</div>';
   });
   impl.filter(function(a){return a.stage==='Evaluation'&&daysFrom(a.checkin_30_date)!==null&&daysFrom(a.checkin_30_date)<0&&!a.checkin_30_done;}).forEach(function(a){
-    alerts+='<div class="alert-row danger"><span class="a-text"><span class="a-dot"></span><strong>'+esc(a.name)+'</strong> — 30-day check-in missed, due '+fmt(a.checkin_30_date)+'</span>'+vBtn(a.id)+'</div>';
+    alerts+='<div class="alert-row danger"><span class="a-text"><span class="a-dot"></span><strong>'+esc(a.name)+'</strong> — Eval Check-In missed, due '+fmt(a.checkin_30_date)+'</span>'+vBtn(a.id)+'</div>';
   });
   impl.filter(function(a){return a.stage==='Evaluation'&&daysFrom(a.checkin_30_date)!==null&&daysFrom(a.checkin_30_date)>=0&&daysFrom(a.checkin_30_date)<=7&&!a.checkin_30_done;}).forEach(function(a){
     var d=daysFrom(a.checkin_30_date);
-    alerts+='<div class="alert-row warn"><span class="a-text"><span class="a-dot"></span><strong>'+esc(a.name)+'</strong> — 30-day check-in due in '+d+'d</span>'+vBtn(a.id)+'</div>';
+    alerts+='<div class="alert-row warn"><span class="a-text"><span class="a-dot"></span><strong>'+esc(a.name)+'</strong> — Eval Check-In due in '+d+'d</span>'+vBtn(a.id)+'</div>';
   });
   impl.filter(function(a){return a.stage==='Overdue';}).forEach(function(a){
     alerts+='<div class="alert-row danger"><span class="a-text"><span class="a-dot"></span><strong>'+esc(a.name)+'</strong> — Evaluation overdue</span>'+vBtn(a.id)+'</div>';
@@ -1948,7 +1948,7 @@ function rImpl(el,act){
     rows+=trO(a.id)+'<td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' · '+esc(a.state):'')+'</div></td><td>'+badge(a.stage)+'</td><td>'+(a.go_live_end_date&&a.go_live_end_date!==a.go_live_date?fmt(a.go_live_date)+' → '+fmt(a.go_live_end_date):fmt(a.go_live_date))+'</td><td>'+ciStatus(a)+ciBtn+'</td><td>'+(a.eval_end_date?'<span class="'+(ed!==null&&ed<=10?'warn':'')+'">'+fmt(a.eval_end_date)+' '+dl(ed)+'</span>':'—')+'</td><td>'+esc(a.impl_manager||'—')+'</td><td>'+(a.kit_count||'—')+'</td><td>'+hwSourceShort(a)+'</td><td>'+hwPayStatusShort(a)+'</td><td>'+subCell+'</td><td>'+eBtn(a.id)+'</td></tr>';
   });
   var stageOpts=IMPL.map(function(s){return '<option value="'+s+'"'+(fs===s?' selected':'')+'>'+s+'</option>';}).join('');
-  el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search account, contact, email…" value="'+esc(q)+'" oninput="searchInput(this.value)"><select class="finput" style="width:200px" onchange="fs=this.value;render()"><option value="all">All stages</option>'+stageOpts+'</select></div><div class="card"><div style="overflow-x:auto"><table><thead><tr>'+th('name','Account','16%')+th('stage','Stage','10%')+th('go_live','Go-live','8%')+th('checkin','30-day check-in','13%')+th('eval_end','Eval end','10%')+th('impl_manager','Impl. mgr','8%')+th('kit_count','Kits','5%')+th('hw_source','HW source','9%')+th('paid','HW paid','9%')+th('sub','Sub forecast','8%')+'<th style="width:4%"></th></tr></thead><tbody>'+(list.length?rows:'<tr><td colspan="11" class="empty">No accounts in implementation.</td></tr>')+'</tbody></table></div></div>';
+  el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search account, contact, email…" value="'+esc(q)+'" oninput="searchInput(this.value)"><select class="finput" style="width:200px" onchange="fs=this.value;render()"><option value="all">All stages</option>'+stageOpts+'</select></div><div class="card"><div style="overflow-x:auto"><table><thead><tr>'+th('name','Account','16%')+th('stage','Stage','10%')+th('go_live','Go-live','8%')+th('checkin','Eval Check-In','13%')+th('eval_end','Eval end','10%')+th('impl_manager','Impl. mgr','8%')+th('kit_count','Kits','5%')+th('hw_source','HW source','9%')+th('paid','HW paid','9%')+th('sub','Sub forecast','8%')+'<th style="width:4%"></th></tr></thead><tbody>'+(list.length?rows:'<tr><td colspan="11" class="empty">No accounts in implementation.</td></tr>')+'</tbody></table></div></div>';
 }
 
 function rActive(el,act){
@@ -2718,7 +2718,7 @@ function collectEvents(year,month){
     if(a.checkin_30_date){
       var cd=parseDateLocal(a.checkin_30_date);
       if(cd&&cd>=monthStart&&cd<=monthEnd){
-        all.push({id:'auto-ci-'+a.id,manager:mgr,type:'30 Day Check-In',start:cd,end:cd,title:a.name,notes:'30-day check-in',accountId:a.id,source:'crm'});
+        all.push({id:'auto-ci-'+a.id,manager:mgr,type:'30 Day Check-In',start:cd,end:cd,title:a.name,notes:'Eval Check-In',accountId:a.id,source:'crm'});
       }
     }
     // Evaluation end
@@ -3114,7 +3114,7 @@ function openStageGuide(){
     ]},
     {name:'Evaluation',badge:'b-60day',rows:[
       ['Definition','They\'re using it. Clock is ticking on their decision to keep or return.'],
-      ['Notes','The 30-day check-in lives here — you\'ll see a reminder on the dashboard.']
+      ['Notes','The Eval Check-In lives here — you\'ll see a reminder on the dashboard.']
     ]},
     {name:'Overdue',badge:'b-overdue',rows:[
       ['Definition','Past 60 days but no decision/transition recorded.'],
@@ -3215,7 +3215,7 @@ function showForm(acc){
     '<div class="fgrp"><label class="flbl">Signed / close date</label><input class="finput" id="fsd" type="date" value="'+(a.signed_date||'')+'"></div>'+
     '<div class="fgrp"><label class="flbl">Go-live date</label><input class="finput" id="fgl" type="date" value="'+(a.go_live_date||'')+'" data-prev="'+(a.go_live_date||'')+'" onchange="autoD()"></div>'+
     '<div class="fgrp"><label class="flbl">Go-live end date <span style="color:var(--lime-ink);font-size:10px">auto · for multi-day installs</span></label><input class="finput" id="fgle" type="date" value="'+(a.go_live_end_date||(a.go_live_date?addDays(a.go_live_date,2):''))+'" data-prev-start="'+(a.go_live_date||'')+'"></div>'+
-    '<div class="fgrp"><label class="flbl">30-day check-in <span style="color:var(--lime-ink);font-size:10px">auto</span></label><input class="finput" id="fc3" type="date" value="'+(a.checkin_30_date||'')+'"></div>'+
+    '<div class="fgrp"><label class="flbl">Eval Check-In <span style="color:var(--lime-ink);font-size:10px">auto · 2 wks post go-live · editable</span></label><input class="finput" id="fc3" type="date" value="'+(a.checkin_30_date||'')+'"></div>'+
     '<div class="fgrp"><label class="flbl">Evaluation end <span style="color:var(--lime-ink);font-size:10px">auto</span></label><input class="finput" id="fe6" type="date" value="'+(a.eval_end_date||'')+'"></div>'+
     '<div class="fgrp"><label class="flbl">Number of kits</label><input class="finput" id="fkc" type="text" value="'+(a.kit_count||'')+'"></div>'+
     '<div class="fgrp"><label class="flbl">Hardware cost ($)</label><input class="finput" id="fhc" type="text" placeholder="e.g. 5,000" value="'+(a.hardware_cost?fmtC(a.hardware_cost):'')+'"></div>'+
@@ -3251,7 +3251,7 @@ function autoD(){
     gleEl.value=addDays(g,2);
   }
   gleEl.setAttribute('data-prev-start',g);
-  document.getElementById('fc3').value=addDays(g,30);
+  document.getElementById('fc3').value=addDays(g,14);
   document.getElementById('fe6').value=addDays(g,60);
 }
 function autoRenewal(){var s=document.getElementById('fssd').value;if(s){var d=new Date(s);d.setFullYear(d.getFullYear()+1);document.getElementById('frd').value=d.toISOString().split('T')[0];}}
@@ -3444,7 +3444,7 @@ function openDetail(id){
     '<div class="dlbl">Impl. manager</div><div class="dval">'+esc(a.impl_manager||'—')+'</div>'+
     '<div class="dlbl">Signed date</div><div class="dval">'+fmt(a.signed_date)+'</div>'+
     '<div class="dlbl">Go-live date</div><div class="dval">'+(a.go_live_end_date&&a.go_live_end_date!==a.go_live_date?fmt(a.go_live_date)+' → '+fmt(a.go_live_end_date):fmt(a.go_live_date))+'</div>'+
-    '<div class="dlbl">30-day check-in</div><div class="dval">'+ciStatus(a)+'</div>'+
+    '<div class="dlbl">Eval Check-In</div><div class="dval">'+ciStatus(a)+'</div>'+
     '<div class="dlbl">Evaluation end</div><div class="dval">'+(a.eval_end_date?'<span class="'+(ed!==null&&ed<=10?'warn':'')+'">'+fmt(a.eval_end_date)+' '+dl(ed)+'</span>':'—')+'</div>'+
     '<div class="dlbl">Kits</div><div class="dval">'+(a.kit_count||'—')+'</div>'+
     '<div class="dlbl">Hardware cost</div><div class="dval">'+(a.hardware_cost?'$'+fmtC(a.hardware_cost):'—')+'</div>'+
