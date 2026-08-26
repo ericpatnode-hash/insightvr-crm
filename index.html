@@ -1371,7 +1371,13 @@ function subYear(a){
   if(todayLocal.getDate()<start.getDate())monthsElapsed--;
   var yearNum=Math.floor(monthsElapsed/12)+1;
   if(yearNum<1)yearNum=1;
-  return '<span class="badge" style="background:var(--lime-wash);color:var(--lime-ink);border-color:var(--lime)"><span style="background:var(--lime-ink)"></span>Year '+yearNum+'</span>';
+  // Color by year: lime → teal → navy → gold (freshest to most loyal)
+  var bg,fg,dot;
+  if(yearNum===1){bg='var(--lime-wash)';fg='var(--lime-ink)';dot='var(--lime-ink)';}
+  else if(yearNum===2){bg='oklch(93% 0.06 200)';fg='oklch(35% 0.10 205)';dot='oklch(45% 0.14 205)';}
+  else if(yearNum===3){bg='oklch(92% 0.04 255)';fg='oklch(32% 0.08 255)';dot='oklch(42% 0.12 255)';}
+  else {bg='oklch(93% 0.10 85)';fg='oklch(38% 0.14 75)';dot='oklch(50% 0.16 75)';}
+  return '<span class="badge" style="background:'+bg+';color:'+fg+';border-color:'+dot+'"><span style="background:'+dot+'"></span>Year '+yearNum+'</span>';
 }
 function subYearNum(a){
   // Numeric-only version, for sorting
