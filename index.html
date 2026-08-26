@@ -1351,6 +1351,47 @@ function hwSourceShort(a){
   if(arr==='No-charge eval'){return '<span class="badge" style="background:var(--navy-soft);color:var(--navy);border-color:var(--line-2)"><span style="background:var(--navy)"></span>Loaner</span>';}
   return '<span style="color:var(--text-2);font-size:12px;font-weight:500">Practice</span>';
 }
+function subYear(a){
+  // Returns HTML snippet showing subscription year, or a placeholder if start date missing.
+  if(!a||!a.subscription_start_date)return '<span style="color:var(--muted-2);font-size:11px">—</span>';
+  var s=a.subscription_start_date;
+  // Parse date-only strings as local time (avoid UTC day-shift bug)
+  var start;
+  if(typeof s==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(s)){
+    var parts=s.split('-');
+    start=new Date(parseInt(parts[0]),parseInt(parts[1])-1,parseInt(parts[2]));
+  } else {
+    start=new Date(s);
+  }
+  if(isNaN(start.getTime()))return '<span style="color:var(--muted-2);font-size:11px">—</span>';
+  var now=new Date();
+  var todayLocal=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  var monthsElapsed=(todayLocal.getFullYear()-start.getFullYear())*12+(todayLocal.getMonth()-start.getMonth());
+  // Same-day-of-month or earlier this month = still last year's number
+  if(todayLocal.getDate()<start.getDate())monthsElapsed--;
+  var yearNum=Math.floor(monthsElapsed/12)+1;
+  if(yearNum<1)yearNum=1;
+  return '<span class="badge" style="background:var(--lime-wash);color:var(--lime-ink);border-color:var(--lime)"><span style="background:var(--lime-ink)"></span>Year '+yearNum+'</span>';
+}
+function subYearNum(a){
+  // Numeric-only version, for sorting
+  if(!a||!a.subscription_start_date)return 0;
+  var s=a.subscription_start_date;
+  var start;
+  if(typeof s==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(s)){
+    var parts=s.split('-');
+    start=new Date(parseInt(parts[0]),parseInt(parts[1])-1,parseInt(parts[2]));
+  } else {
+    start=new Date(s);
+  }
+  if(isNaN(start.getTime()))return 0;
+  var now=new Date();
+  var todayLocal=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  var monthsElapsed=(todayLocal.getFullYear()-start.getFullYear())*12+(todayLocal.getMonth()-start.getMonth());
+  if(todayLocal.getDate()<start.getDate())monthsElapsed--;
+  var yearNum=Math.floor(monthsElapsed/12)+1;
+  return Math.max(1,yearNum);
+}
 function pcon(a){try{var c=JSON.parse(a.contacts_json||'[]');return c.length?c[0]:{}}catch(e){return{};}}
 // ============ BULK ACTIONS ============
 window._bulkEnabled=false;
@@ -1957,7 +1998,7 @@ function rActive(el,act){
   if(q)list=list.filter(function(a){return matchAccount(a,q);});
   list=applyTagFilter(list);
   if(!sortCol)sortCol='name';
-  list=srt(list,{name:function(a){return a.name;},city:function(a){return a.city||'';},state:function(a){return a.state||'';},sub_type:function(a){return a.sub_type||'';},renewal_date:function(a){return a.renewal_date||'';},kit_count:function(a){return a.kit_count||0;},hardware_cost:function(a){return parseC(a.hardware_cost)||0;},sub_amount:function(a){return parseC(a.sub_amount)||0;},contact:function(a){return cname(a);}});
+  list=srt(list,{name:function(a){return a.name;},city:function(a){return a.city||'';},state:function(a){return a.state||'';},sub_type:function(a){return a.sub_type||'';},year:function(a){return subYearNum(a);},renewal_date:function(a){return a.renewal_date||'';},kit_count:function(a){return a.kit_count||0;},hardware_cost:function(a){return parseC(a.hardware_cost)||0;},sub_amount:function(a){return parseC(a.sub_amount)||0;},contact:function(a){return cname(a);}});
   var rows='';
   list.forEach(function(a){
     var d=daysFrom(a.renewal_date);
@@ -1970,6 +2011,7 @@ function rActive(el,act){
       '<td style="color:var(--muted)">'+esc(a.city||'—')+'</td>'+
       '<td style="color:var(--muted)">'+esc(a.state||'—')+'</td>'+
       '<td>'+subBadge+'</td>'+
+      '<td>'+subYear(a)+'</td>'+
       '<td>'+renewCell+'</td>'+
       '<td>'+(a.kit_count||'—')+'</td>'+
       '<td>'+(a.hardware_cost?'$'+fmtC(a.hardware_cost):'—')+'</td>'+
@@ -1989,15 +2031,16 @@ function rActive(el,act){
     '</div>'+
     '<div class="card"><div style="overflow-x:auto"><table><thead><tr>'+
     (window._bulkEnabled?'<th class="bulk-col"><input type="checkbox" class="bulk-cb" onchange="toggleBulkAll(this.checked)"></th>':'')+
-    th('name','Account','18%')+th('city','City','9%')+th('state','State','7%')+th('sub_type','Sub type','9%')+th('renewal_date','Renewal','12%')+th('kit_count','Kits','6%')+th('hardware_cost','HW cost','9%')+th('sub_amount','Sub amt','9%')+th('contact','Contact','12%')+'<th style="width:9%"></th></tr></thead><tbody>'+
-    (list.length?rows:'<tr><td colspan="11" class="empty">No active accounts.</td></tr>')+
+    th('name','Account','16%')+th('city','City','8%')+th('state','State','6%')+th('sub_type','Sub type','8%')+th('year','Year','7%')+th('renewal_date','Renewal','11%')+th('kit_count','Kits','5%')+th('hardware_cost','HW cost','8%')+th('sub_amount','Sub amt','8%')+th('contact','Contact','11%')+'<th style="width:8%"></th></tr></thead><tbody>'+
+    (list.length?rows:'<tr><td colspan="12" class="empty">No active accounts.</td></tr>')+
     '</tbody></table></div></div>'+
     bulkBarHTML();
 }
 function exportActive(){
   exportCSV(accs.filter(function(a){return a.stage==='Active';}),
     [{label:'Account',fn:function(a){return a.name;}},{label:'City',fn:function(a){return a.city;}},{label:'State',fn:function(a){return a.state;}},
-     {label:'Sub Type',fn:function(a){return a.sub_type;}},{label:'Sub Start',fn:function(a){return fmt(a.sub_start_date);}},
+     {label:'Sub Type',fn:function(a){return a.sub_type;}},{label:'Year',fn:function(a){return a.subscription_start_date?subYearNum(a):'';}},
+     {label:'Original Start',fn:function(a){return fmt(a.subscription_start_date);}},{label:'Sub Start',fn:function(a){return fmt(a.sub_start_date);}},
      {label:'Renewal Date',fn:function(a){return fmt(a.renewal_date);}},{label:'Kits',fn:function(a){return a.kit_count;}},
      {label:'Hardware Cost',fn:function(a){return a.hardware_cost;}},{label:'Sub Amount',fn:function(a){return a.sub_amount;}},
      {label:'Contact',fn:function(a){return cname(a);}}],
@@ -3228,6 +3271,7 @@ function showForm(acc){
     '<div class="fg"><div class="fgrp"><label class="flbl">Subscription type</label><select class="finput" id="fst2"><option value=""'+((!a.sub_type)?' selected':'')+'>—</option><option value="Monthly"'+(a.sub_type==='Monthly'?' selected':'')+'>Monthly</option><option value="Yearly"'+(a.sub_type==='Yearly'?' selected':'')+'>Yearly</option><option value="No charge"'+(a.sub_type==='No charge'?' selected':'')+'>No charge</option></select></div>'+
     '<div class="fgrp"><label class="flbl">Subscription amount ($)</label><input class="finput" id="fsa" type="text" placeholder="e.g. 1,200" value="'+(a.sub_amount?fmtC(a.sub_amount):'')+'"></div>'+
     '<div class="fgrp full"><label class="flbl">Subscription start date <span style="color:var(--lime-ink);font-size:10px">auto-fills renewal</span></label><input class="finput" id="fssd" type="date" value="'+(a.sub_start_date||'')+'" onchange="autoRenewal()"></div>'+
+    '<div class="fgrp"><label class="flbl">Original start date <span style="color:var(--muted);font-size:10px">for tenure · when they first became a paying customer, doesn\'t change on renewal</span></label><input class="finput" id="fosd" type="date" value="'+(a.subscription_start_date||'')+'"></div>'+
     '<div class="fgrp"><label class="flbl">Renewal date <span style="color:var(--lime-ink);font-size:10px">auto</span></label><input class="finput" id="frd" type="date" value="'+(a.renewal_date||'')+'"></div></div>'+
     '</div>'+
     '<div class="modal-foot">'+delBtn+'<button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" data-eid="'+(a.id||'')+'" onclick="saveAcc(this.dataset.eid)">Save account</button></div>'+
@@ -3305,6 +3349,7 @@ async function saveAcc(eid){
     sub_type:document.getElementById('fst2').value||null,
     sub_amount:parseC(document.getElementById('fsa').value),
     sub_start_date:document.getElementById('fssd').value||null,
+    subscription_start_date:document.getElementById('fosd')?document.getElementById('fosd').value||null:null,
     renewal_date:document.getElementById('frd').value||null,
     notes_log:prev.notes_log||'[]',
     activity_log:activity,
@@ -3460,6 +3505,8 @@ function openDetail(id){
     '<div class="dlbl">Sub type</div><div class="dval">'+(a.sub_type?'<span class="badge '+(a.sub_type==='Monthly'?'b-monthly':'b-yearly')+'">'+a.sub_type+'</span>':'—')+'</div>'+
     '<div class="dlbl">Amount</div><div class="dval">'+(a.sub_amount?'$'+fmtC(a.sub_amount)+(a.sub_type==='Monthly'?'/mo':'/yr'):'—')+'</div>'+
     '<div class="dlbl">Renewal date</div><div class="dval">'+(a.renewal_date?'<span class="'+(d!==null&&d<=30?d<=7?'danger':'warn':'')+'">'+fmt(a.renewal_date)+' '+dl(d)+'</span>':'—')+'</div>'+
+    (a.stage==='Active'?'<div class="dlbl">Original start</div><div class="dval">'+(a.subscription_start_date?fmt(a.subscription_start_date):'<span style="color:var(--muted)">—</span>')+'</div>'+
+      '<div class="dlbl">Tenure</div><div class="dval">'+subYear(a)+'</div>':'')+
     '</div></div>'+
     '<div id="dc-n" style="display:none">'+notesHTML+'</div>'+
     '<div id="dc-a" style="display:none">'+actHTML+'</div>'+
