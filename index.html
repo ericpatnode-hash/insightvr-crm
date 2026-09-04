@@ -1147,6 +1147,7 @@ function matchAccount(a,query){
   if((a.city||'').toLowerCase().includes(q))return true;
   if((a.state||'').toLowerCase().includes(q))return true;
   if((a.tags||'').toLowerCase().includes(q))return true;
+  if((a.referral_source||'').toLowerCase().includes(q))return true;
   // Search contacts: first name, last name, full name, email
   var contacts=[];try{contacts=JSON.parse(a.contacts_json||'[]');}catch(e){}
   for(var i=0;i<contacts.length;i++){
@@ -1397,6 +1398,30 @@ function subYearNum(a){
   if(todayLocal.getDate()<start.getDate())monthsElapsed--;
   var yearNum=Math.floor(monthsElapsed/12)+1;
   return Math.max(1,yearNum);
+}
+function updateReferralLabel(){
+  var srcEl=document.getElementById('fsrc');
+  var lblEl=document.getElementById('fref-lbl');
+  var hintEl=document.getElementById('fref-hint');
+  var inpEl=document.getElementById('fref');
+  if(!srcEl||!lblEl)return;
+  var src=srcEl.value;
+  var label='Referral source';
+  var placeholder='Name or company';
+  var applies=true;
+  if(src==='Alcon - Field'||src==='Alcon 45 Day'){label='Alcon rep name';placeholder='e.g. Sarah Chen';}
+  else if(src==='B&L - Field'){label='B&L rep name';placeholder='e.g. Sarah Chen';}
+  else if(src==='J&J - Field'){label='J&J rep name';placeholder='e.g. Sarah Chen';}
+  else if(src==='Referral'){label='Referred by';placeholder='Who referred them?';}
+  else if(src==='Industry partner'){label='Partner name / company';placeholder='e.g. Acme Optical Group';}
+  else if(src==='Other'){label='Source detail';placeholder='Describe the source';}
+  else {applies=false;label='Referral source';placeholder='N/A for this source';}
+  lblEl.textContent=label;
+  if(inpEl){
+    inpEl.placeholder=placeholder;
+    inpEl.style.opacity=applies?'1':'.55';
+  }
+  if(hintEl)hintEl.style.display=applies?'':'none';
 }
 function pcon(a){try{var c=JSON.parse(a.contacts_json||'[]');return c.length?c[0]:{}}catch(e){return{};}}
 // ============ BULK ACTIONS ============
@@ -3247,11 +3272,12 @@ function showForm(acc){
     '<div class="fsec">Account info</div>'+
     '<div class="fg"><div class="fgrp full"><label class="flbl">Account name *</label><input class="finput" id="fn" value="'+esc(a.name||'')+'"></div>'+
     '<div class="fgrp"><label class="flbl">Type</label><select class="finput" id="ft" onchange="updPEField()"><option value="">— Select —</option>'+typeOpts+'</select></div>'+
-    '<div class="fgrp"><label class="flbl">Source</label><select class="finput" id="fsrc"><option value="">— Select —</option>'+srcOpts+'</select></div></div>'+
+    '<div class="fgrp"><label class="flbl">Source</label><select class="finput" id="fsrc" onchange="updateReferralLabel()"><option value="">— Select —</option>'+srcOpts+'</select></div></div>'+
     '<div id="pe-group-field" style="display:'+(a.acct_type==="Private equity group"?"block":"none")+';margin-top:14px"><div class="fgrp"><label class="flbl">PE Group name</label><input class="finput" id="fpe" placeholder="e.g. Warburg Pincus" value="'+(a.pe_group||'')+'" ></div></div>'+
     '<div class="fgrp full" style="margin-top:14px"><label class="flbl">Street address</label><input class="finput" id="faddr" value="'+esc(a.address||'')+'"></div>'+
     '<div class="fg3" style="margin-top:14px"><div class="fgrp"><label class="flbl">City</label><input class="finput" id="fci" value="'+esc(a.city||'')+'"></div><div class="fgrp"><label class="flbl">State</label><input class="finput" id="fst" value="'+esc(a.state||'')+'"></div><div class="fgrp"><label class="flbl">Zip</label><input class="finput" id="fzp" value="'+esc(a.zip||'')+'"></div></div>'+
     '<div class="fg" style="margin-top:14px"><div class="fgrp"><label class="flbl">Phone</label><input class="finput" id="fph" value="'+esc(a.phone||'')+'"></div><div class="fgrp"><label class="flbl">Website</label><input class="finput" id="fwb" value="'+esc(a.website||'')+'"></div></div>'+
+    '<div class="fgrp full" style="margin-top:14px"><label class="flbl"><span id="fref-lbl">Referral source</span> <span id="fref-hint" style="color:var(--muted);font-size:10px">who provided this lead — auto-labels based on Source</span></label><input class="finput" id="fref" value="'+esc(a.referral_source||'')+'" placeholder="Name or company"></div>'+
     '<div class="fgrp full" style="margin-top:14px"><label class="flbl">Tags <span style="color:var(--muted);font-size:10px">comma-separated · for grouping & re-engagement campaigns</span></label><div class="tag-input-wrap"><input class="finput" id="ftags" autocomplete="off" placeholder="e.g. conference-invite, q1-2027, fl-region" value="'+esc(a.tags||'')+'" oninput="updateTagSuggest(this)" onfocus="updateTagSuggest(this)" onblur="setTimeout(hideTagSuggest,200)"><div id="tag-suggest" class="tag-suggest"></div></div></div>'+
     '<div class="fsec">Pipeline stage</div>'+
     '<div class="fg"><div class="fgrp"><label class="flbl">Pipeline type</label><select class="finput" id="fpt" onchange="updStage()"><option value="sales"'+(pt==='sales'?' selected':'')+'>Sales Pipeline</option><option value="impl"'+(pt==='impl'?' selected':'')+'>Implementation</option><option value="active"'+(pt==='active'?' selected':'')+'>Active account</option></select></div>'+
@@ -3283,6 +3309,7 @@ function showForm(acc){
     '<div class="modal-foot">'+delBtn+'<button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" data-eid="'+(a.id||'')+'" onclick="saveAcc(this.dataset.eid)">Save account</button></div>'+
     '</div></div>';
   setTimeout(updateArrangement,0);
+  setTimeout(updateReferralLabel,0);
 }
 function autoD(){
   var g=document.getElementById('fgl').value;
@@ -3336,6 +3363,7 @@ async function saveAcc(eid){
     zip:document.getElementById('fzp').value.trim()||null,
     phone:document.getElementById('fph').value.trim()||null,
     website:document.getElementById('fwb').value.trim()||null,
+    referral_source:document.getElementById('fref')?document.getElementById('fref').value.trim()||null:null,
     stage:newStage,
     deal_value:parseC(document.getElementById('fdv').value),
     lost_reason:document.getElementById('flr').value||null,
@@ -3503,6 +3531,7 @@ function openDetail(id){
     (a.hardware_cost?'<div class="dlbl">HW payment</div><div class="dval">'+hwPayStatus(a)+'</div>':'')+
     '<div class="dlbl">Phone</div><div class="dval">'+esc(a.phone||'—')+'</div>'+
     '<div class="dlbl">Website</div><div class="dval">'+esc(a.website||'—')+'</div>'+
+    (a.referral_source?'<div class="dlbl">'+(function(){var s=a.source;if(s==='Alcon - Field'||s==='Alcon 45 Day')return 'Alcon rep';if(s==='B&L - Field')return 'B&L rep';if(s==='J&J - Field')return 'J&J rep';if(s==='Referral')return 'Referred by';if(s==='Industry partner')return 'Partner';if(s==='Other')return 'Source detail';return 'Referral source';})()+'</div><div class="dval">'+esc(a.referral_source)+'</div>':'')+
     (a.deal_value?'<div class="dlbl">Deal value</div><div class="dval">$'+fmtC(a.deal_value)+'</div>':'')+
     (a.lost_reason?'<div class="dlbl">Lost reason</div><div class="dval">'+esc(a.lost_reason)+'</div>':'')+
     '</div></div>'+
