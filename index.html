@@ -1159,6 +1159,7 @@ function matchAccount(a,query){
   if((a.state||'').toLowerCase().includes(q))return true;
   if((a.tags||'').toLowerCase().includes(q))return true;
   if((a.referral_source||'').toLowerCase().includes(q))return true;
+  if((a.launch_window||'').toLowerCase().includes(q))return true;
   // Search contacts: first name, last name, full name, email
   var contacts=[];try{contacts=JSON.parse(a.contacts_json||'[]');}catch(e){}
   for(var i=0;i<contacts.length;i++){
@@ -1443,6 +1444,19 @@ function sortSrcReport(col){
   if(window._srcSortCol===col)window._srcSortDir=(window._srcSortDir||1)*-1;
   else{window._srcSortCol=col;window._srcSortDir=1;}
   rReports(document.getElementById('pcontent'),document.getElementById('pactions'));
+}
+function goLiveCell(a){
+  // Returns HTML for the go-live display: real date range if scheduled, else launch_window caption if set, else "—"
+  if(a.go_live_date){
+    if(a.go_live_end_date&&a.go_live_end_date!==a.go_live_date){
+      return fmt(a.go_live_date)+' → '+fmt(a.go_live_end_date);
+    }
+    return fmt(a.go_live_date);
+  }
+  if(a.launch_window){
+    return '<span style="color:var(--muted);font-style:italic;font-size:12.5px;font-weight:500">'+esc(a.launch_window)+'</span><div style="font-family:var(--f-mono);font-size:9.5px;color:var(--muted-2);letter-spacing:.05em;text-transform:uppercase;margin-top:2px;font-weight:600;font-style:normal">Target window</div>';
+  }
+  return '—';
 }
 function pcon(a){try{var c=JSON.parse(a.contacts_json||'[]');return c.length?c[0]:{}}catch(e){return{};}}
 // ============ BULK ACTIONS ============
@@ -2031,7 +2045,7 @@ function rImpl(el,act){
   if(q)list=list.filter(function(a){return matchAccount(a,q);});
   list=applyTagFilter(list);
   if(fs!=='all')list=list.filter(function(a){return a.stage===fs;});
-  list=srt(list,{name:function(a){return a.name;},stage:function(a){return a.stage;},go_live:function(a){return a.go_live_date||'';},checkin:function(a){return a.checkin_30_date||'';},eval_end:function(a){return a.eval_end_date||'';},impl_manager:function(a){return a.impl_manager||'';},kit_count:function(a){return a.kit_count||0;},hw_source:function(a){return a.hw_arrangement||'Practice pays';},sub:function(a){var amt=parseC(a.sub_amount)||0;return a.sub_type==='Monthly'?amt*12:amt;},paid:function(a){return a.hardware_paid?2:(a.go_live_date&&daysFrom(a.go_live_date)<=0?0:1);}});
+  list=srt(list,{name:function(a){return a.name;},stage:function(a){return a.stage;},go_live:function(a){return a.go_live_date?'A:'+a.go_live_date:(a.launch_window?'B:'+a.launch_window:'C:');},checkin:function(a){return a.checkin_30_date||'';},eval_end:function(a){return a.eval_end_date||'';},impl_manager:function(a){return a.impl_manager||'';},kit_count:function(a){return a.kit_count||0;},hw_source:function(a){return a.hw_arrangement||'Practice pays';},sub:function(a){var amt=parseC(a.sub_amount)||0;return a.sub_type==='Monthly'?amt*12:amt;},paid:function(a){return a.hardware_paid?2:(a.go_live_date&&daysFrom(a.go_live_date)<=0?0:1);}});
   var rows='';
   list.forEach(function(a){
     var ed=daysFrom(a.eval_end_date);
@@ -2044,7 +2058,7 @@ function rImpl(el,act){
     } else {
       subCell='<span style="color:var(--warn-ink);font-size:11px;font-weight:600">missing</span>';
     }
-    rows+=trO(a.id)+'<td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' · '+esc(a.state):'')+'</div></td><td>'+badge(a.stage)+'</td><td>'+(a.go_live_end_date&&a.go_live_end_date!==a.go_live_date?fmt(a.go_live_date)+' → '+fmt(a.go_live_end_date):fmt(a.go_live_date))+'</td><td>'+ciStatus(a)+ciBtn+'</td><td>'+(a.eval_end_date?'<span class="'+(ed!==null&&ed<=10?'warn':'')+'">'+fmt(a.eval_end_date)+' '+dl(ed)+'</span>':'—')+'</td><td>'+esc(a.impl_manager||'—')+'</td><td>'+(a.kit_count||'—')+'</td><td>'+hwSourceShort(a)+'</td><td>'+hwPayStatusShort(a)+'</td><td>'+subCell+'</td><td>'+eBtn(a.id)+'</td></tr>';
+    rows+=trO(a.id)+'<td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' · '+esc(a.state):'')+'</div></td><td>'+badge(a.stage)+'</td><td>'+goLiveCell(a)+'</td><td>'+ciStatus(a)+ciBtn+'</td><td>'+(a.eval_end_date?'<span class="'+(ed!==null&&ed<=10?'warn':'')+'">'+fmt(a.eval_end_date)+' '+dl(ed)+'</span>':'—')+'</td><td>'+esc(a.impl_manager||'—')+'</td><td>'+(a.kit_count||'—')+'</td><td>'+hwSourceShort(a)+'</td><td>'+hwPayStatusShort(a)+'</td><td>'+subCell+'</td><td>'+eBtn(a.id)+'</td></tr>';
   });
   var stageOpts=IMPL.map(function(s){return '<option value="'+s+'"'+(fs===s?' selected':'')+'>'+s+'</option>';}).join('');
   el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search account, contact, email…" value="'+esc(q)+'" oninput="searchInput(this.value)"><select class="finput" style="width:200px" onchange="fs=this.value;render()"><option value="all">All stages</option>'+stageOpts+'</select></div><div class="card"><div style="overflow-x:auto"><table><thead><tr>'+th('name','Account','16%')+th('stage','Stage','10%')+th('go_live','Go-live','8%')+th('checkin','Eval Check-In','13%')+th('eval_end','Eval end','10%')+th('impl_manager','Impl. mgr','8%')+th('kit_count','Kits','5%')+th('hw_source','HW source','9%')+th('paid','HW paid','9%')+th('sub','Sub forecast','8%')+'<th style="width:4%"></th></tr></thead><tbody>'+(list.length?rows:'<tr><td colspan="11" class="empty">No accounts in implementation.</td></tr>')+'</tbody></table></div></div>';
@@ -3433,6 +3447,7 @@ function showForm(acc){
     '<div class="fgrp"><label class="flbl">Signed / close date</label><input class="finput" id="fsd" type="date" value="'+(a.signed_date||'')+'"></div>'+
     '<div class="fgrp"><label class="flbl">Go-live date</label><input class="finput" id="fgl" type="date" value="'+(a.go_live_date||'')+'" data-prev="'+(a.go_live_date||'')+'" onchange="autoD()"></div>'+
     '<div class="fgrp"><label class="flbl">Go-live end date <span style="color:var(--lime-ink);font-size:10px">auto · for multi-day installs</span></label><input class="finput" id="fgle" type="date" value="'+(a.go_live_end_date||(a.go_live_date?addDays(a.go_live_date,2):''))+'" data-prev-start="'+(a.go_live_date||'')+'"></div>'+
+    '<div class="fgrp full"><label class="flbl">Target launch window <span style="color:var(--muted);font-size:10px">free-form when Go-live isn\'t scheduled yet — e.g. "End of Oct", "Q1 2027", "Post-remodel"</span></label><input class="finput" id="flw" value="'+esc(a.launch_window||'')+'" placeholder="Rough timing estimate"></div>'+
     '<div class="fgrp"><label class="flbl">Eval Check-In <span style="color:var(--lime-ink);font-size:10px">auto · 2 wks post go-live · editable</span></label><input class="finput" id="fc3" type="date" value="'+(a.checkin_30_date||'')+'"></div>'+
     '<div class="fgrp"><label class="flbl">Evaluation end <span style="color:var(--lime-ink);font-size:10px">auto</span></label><input class="finput" id="fe6" type="date" value="'+(a.eval_end_date||'')+'"></div>'+
     '<div class="fgrp"><label class="flbl">Number of kits</label><input class="finput" id="fkc" type="text" value="'+(a.kit_count||'')+'"></div>'+
@@ -3516,6 +3531,7 @@ async function saveAcc(eid){
     signed_date:document.getElementById('fsd').value||null,
     go_live_date:document.getElementById('fgl').value||null,
     go_live_end_date:document.getElementById('fgle').value||null,
+    launch_window:document.getElementById('flw')?(document.getElementById('flw').value||'').trim()||null:null,
     checkin_30_date:document.getElementById('fc3').value||null,
     eval_end_date:document.getElementById('fe6').value||null,
     kit_count:document.getElementById('fkc').value?parseInt(document.getElementById('fkc').value):null,
@@ -3665,7 +3681,7 @@ function openDetail(id){
     '<div id="dc-i" style="display:none"><div class="dgrid">'+
     '<div class="dlbl">Impl. manager</div><div class="dval">'+esc(a.impl_manager||'—')+'</div>'+
     '<div class="dlbl">Signed date</div><div class="dval">'+fmt(a.signed_date)+'</div>'+
-    '<div class="dlbl">Go-live date</div><div class="dval">'+(a.go_live_end_date&&a.go_live_end_date!==a.go_live_date?fmt(a.go_live_date)+' → '+fmt(a.go_live_end_date):fmt(a.go_live_date))+'</div>'+
+    '<div class="dlbl">Go-live date</div><div class="dval">'+goLiveCell(a)+'</div>'+
     '<div class="dlbl">Eval Check-In</div><div class="dval">'+ciStatus(a)+'</div>'+
     '<div class="dlbl">Evaluation end</div><div class="dval">'+(a.eval_end_date?'<span class="'+(ed!==null&&ed<=10?'warn':'')+'">'+fmt(a.eval_end_date)+' '+dl(ed)+'</span>':'—')+'</div>'+
     '<div class="dlbl">Kits</div><div class="dval">'+(a.kit_count||'—')+'</div>'+
