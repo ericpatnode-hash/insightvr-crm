@@ -1027,7 +1027,7 @@ const LOST_REASONS=['Price','Timing','Competition','Did not see fit / value','No
 const HW_ARRANGEMENTS=['Practice pays','Alcon-supplied','No-charge eval'];
 const SBADGE={Prospect:'b-prospect','Intro meeting':'b-intro','Early diligence':'b-early','Late diligence':'b-late','Proposal sent':'b-proposal','Deal won':'b-won','Deal lost':'b-lost','Discovery & planning':'b-discovery','Go-live scheduled':'b-golive','Evaluation':'b-60day',Overdue:'b-overdue',Active:'b-active'};
 const TITLES={dashboard:'Dashboard',pipeline:'Sales Pipeline',impl:'Implementation',calendar:'Calendar',active:'Active Accounts',lost:'Lost / Re-engage',renewals:'Renewals',reports:'Reports',activity:'Activity',settings:'Settings',followups:'My Follow-ups',snap:''};
-let accs=[],events=[],view='dashboard',q='',fs='all',ccount=1,sortCol='',sortDir=1,implMgrs=[];
+let accs=[],events=[],view='dashboard',q='',fs='all',ccount=1,sortCol='',sortDir=1,implMgrs=[],partnerships=[];
 
 function getUser(){return localStorage.getItem('crm_user_name')||'Unknown';}
 function saveName(){
@@ -1066,11 +1066,13 @@ async function loadAll(){
     var res=await Promise.all([
       req('GET','accounts',null,null,'updated_at.desc'),
       req('GET','impl_managers',null,null,'name.asc').catch(function(){return[];}),
-      req('GET','events',null,null,'start_date.asc').catch(function(){return[];})
+      req('GET','events',null,null,'start_date.asc').catch(function(){return[];}),
+      req('GET','partnerships',null,null,'created_at.desc').catch(function(){return[];})
     ]);
     accs=res[0];
     implMgrs=res[1].length?res[1].map(function(x){return x.name;}):['Leah Orr','Chris Morgan','Eric Patnode','Matt Larson'];
     events=res[2]||[];
+    partnerships=res[3]||[];
     updRnb();updFUBadge();render();
   }catch(e){
     document.getElementById('pcontent').innerHTML='<div class="empty">Could not load data.<br><small style="color:var(--danger);display:block;margin-top:8px">'+e.message+'</small><br><button class="btn btn-navy" onclick="loadAll()" style="margin-top:12px">Retry</button></div>';
@@ -1767,6 +1769,68 @@ function rDash(el,act){
   var subForecastCount=accs.filter(function(a){return IMPL.includes(a.stage)&&a.sub_type&&a.sub_type!=='No charge'&&parseC(a.sub_amount)>0;}).length;
   var implMissingSub=accs.filter(function(a){return IMPL.includes(a.stage)&&(!a.sub_type||a.sub_type==='No charge'||!parseC(a.sub_amount));}).length;
   var implTotal=accs.filter(function(a){return IMPL.includes(a.stage);}).length;
+  // Partnership revenue block — active corporate partnerships (e.g. Alcon)
+  var partnershipHTML='';
+  if(partnerships&&partnerships.length){
+    var partnershipCards='';
+    partnerships.forEach(function(p){
+      var monthly=parseFloat(p.monthly_amount)||0;
+      if(monthly<=0)return;
+      var annual=monthly*12;
+      var devices=p.device_count||0;
+      var contractEnd=p.contract_end_date;
+      var paidThrough=p.paid_through_date;
+      var today=new Date();
+      var todayLocal=new Date(today.getFullYear(),today.getMonth(),today.getDate());
+      // Status color and label
+      var statusColor='var(--text-2)';
+      var statusLabel='';
+      if(contractEnd){
+        var end=parseDateLocal(contractEnd);
+        if(end){
+          var daysToEnd=Math.round((end-todayLocal)/86400000);
+          if(daysToEnd<0){statusColor='var(--danger)';statusLabel='Contract expired '+Math.abs(daysToEnd)+'d ago';}
+          else if(daysToEnd<=60){statusColor='var(--warn-ink)';statusLabel='Contract ends in '+daysToEnd+'d';}
+          else{statusLabel='Contract through '+fmt(contractEnd);}
+        }
+      }
+      // Unbilled amount: months between paid-through and today (informational only)
+      var unbilledInfo='';
+      if(paidThrough){
+        var paid=parseDateLocal(paidThrough);
+        if(paid&&paid<todayLocal){
+          var monthsUnbilled=(todayLocal.getFullYear()-paid.getFullYear())*12+(todayLocal.getMonth()-paid.getMonth());
+          if(todayLocal.getDate()>=paid.getDate())monthsUnbilled++;
+          if(monthsUnbilled>0){
+            var unbilledAmt=monthsUnbilled*monthly;
+            unbilledInfo='<div style="font-size:12px;color:var(--muted);margin-top:6px;font-weight:500">Paid through '+fmt(paidThrough)+' · $'+fmtC(unbilledAmt)+' unbilled ('+monthsUnbilled+' mo)</div>';
+          }
+        } else if(paid){
+          unbilledInfo='<div style="font-size:12px;color:var(--muted);margin-top:6px;font-weight:500">Paid through '+fmt(paidThrough)+'</div>';
+        }
+      }
+      partnershipCards+='<div style="padding:16px 20px;border-bottom:1px solid var(--line)">'+
+        '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px">'+
+          '<div style="flex:1">'+
+            '<div style="font-family:var(--f-ui);font-size:14px;font-weight:700;color:var(--ink);margin-bottom:4px">'+esc(p.name||'Partnership')+(devices?' <span style="color:var(--muted);font-weight:500;font-size:12.5px">· '+devices+' unit'+(devices===1?'':'s')+'</span>':'')+'</div>'+
+            (statusLabel?'<div style="font-family:var(--f-mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;font-weight:600;color:'+statusColor+'">'+esc(statusLabel)+'</div>':'')+
+            unbilledInfo+
+          '</div>'+
+          '<div style="text-align:right;white-space:nowrap">'+
+            '<div style="font-family:var(--f-ui);font-size:22px;font-weight:700;color:oklch(38% 0.12 285);letter-spacing:-.015em;font-variant-numeric:tabular-nums">$'+fmtC(annual)+'<span style="font-size:12px;font-weight:600;color:var(--muted)">/yr</span></div>'+
+            '<div style="font-family:var(--f-mono);font-size:11px;color:var(--muted);letter-spacing:.04em;margin-top:2px">$'+fmtC(monthly)+'/mo</div>'+
+          '</div>'+
+        '</div>'+
+      '</div>';
+    });
+    // Sum totals across all active partnerships
+    var totalPartnershipAnnual=partnerships.reduce(function(s,p){return s+((parseFloat(p.monthly_amount)||0)*12);},0);
+    partnershipHTML='<div class="card" style="margin-top:20px;background:oklch(97% 0.03 285);border-color:oklch(85% 0.05 285)">'+
+      '<div class="card-hdr" style="border-bottom-color:oklch(85% 0.05 285)"><span class="card-title" style="color:oklch(28% 0.10 285)">Partnership Revenue <span style="color:var(--muted);font-weight:500;font-size:11px;letter-spacing:.02em">· not counted in subscription / yr</span></span>'+
+      '<span style="font-family:var(--f-ui);font-size:15px;font-weight:700;color:oklch(38% 0.12 285);letter-spacing:-.01em;font-variant-numeric:tabular-nums">Total · $'+fmtC(totalPartnershipAnnual)+'/yr</span></div>'+
+      partnershipCards+
+      '</div>';
+  }
   var totalKits=active.reduce(function(s,a){return s+(a.kit_count||0);},0);
 
   // Alerts
@@ -1908,6 +1972,7 @@ function rDash(el,act){
         '</div>'+
       '</div></div>'+
     '</div>'+
+    partnershipHTML+
     alcon45HTML+
     '<div class="card" style="margin-top:20px"><div class="card-hdr"><span class="card-title">Alerts</span><span style="font-family:var(--f-mono);font-size:10.5px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase">Needs attention</span></div>'+(alerts?alerts:'<div style="padding:16px 22px;font-size:13.5px;font-weight:500;color:var(--ok)"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--ok);margin-right:10px"></span>All clear — nothing needs your attention right now.</div>')+'</div>';
 }
@@ -2387,14 +2452,92 @@ function rSettings(el,act){
   }else{
     tagsHTML='<div style="font-size:13px;color:var(--muted);font-weight:500;padding:12px 16px">No tags created yet. Tag accounts in the Edit form to start grouping.</div>';
   }
+  // Partnerships list for Settings
+  var partnershipsHTML='';
+  if(partnerships&&partnerships.length){
+    partnerships.forEach(function(p){
+      var monthly=parseFloat(p.monthly_amount)||0;
+      var annual=monthly*12;
+      var devices=p.device_count||0;
+      partnershipsHTML+='<div class="mgr-row" style="padding:12px 0">'+
+        '<div style="flex:1">'+
+          '<div style="font-weight:600;color:var(--ink);font-size:13.5px">'+esc(p.name||'Partnership')+(devices?' <span style="color:var(--muted);font-weight:500;font-size:12px">· '+devices+' unit'+(devices===1?'':'s')+'</span>':'')+'</div>'+
+          '<div style="font-family:var(--f-mono);font-size:11px;color:var(--muted);letter-spacing:.03em;margin-top:3px">$'+fmtC(monthly)+'/mo · $'+fmtC(annual)+'/yr'+
+            (p.contract_end_date?' · through '+fmt(p.contract_end_date):'')+
+            (p.paid_through_date?' · paid through '+fmt(p.paid_through_date):'')+
+          '</div>'+
+        '</div>'+
+        '<div style="display:flex;gap:6px">'+
+          '<button class="btn btn-sm" data-id="'+esc(p.id)+'" onclick="openEditPartnership(this.dataset.id)">Edit</button>'+
+          '<button class="btn btn-sm btn-danger" data-id="'+esc(p.id)+'" onclick="deletePartnership(this.dataset.id)">Delete</button>'+
+        '</div>'+
+      '</div>';
+    });
+  } else {
+    partnershipsHTML='<div style="font-size:13px;color:var(--muted);font-weight:500;padding:12px 16px">No partnerships yet. Add one to show partnership revenue on the dashboard.</div>';
+  }
   el.innerHTML='<div style="max-width:720px">'+
     '<div class="card" style="margin-bottom:24px"><div class="card-hdr"><span class="card-title">Implementation managers</span><button class="btn btn-sm btn-primary" onclick="showAddMgr()">+ Add</button></div><div id="mgr-list">'+mgrs+'</div></div>'+
     '<div style="font-size:11.5px;color:var(--muted);margin-bottom:24px;font-weight:500">Shared across all users. Changes are visible to everyone on your team.</div>'+
+    '<div class="card" style="margin-bottom:24px"><div class="card-hdr"><span class="card-title">Corporate partnerships</span><button class="btn btn-sm btn-primary" onclick="openAddPartnership()">+ Add</button></div><div>'+partnershipsHTML+'</div></div>'+
+    '<div style="font-size:11.5px;color:var(--muted);margin-bottom:24px;font-weight:500">Corporate revenue contracts (e.g. Alcon) shown separately from subscription revenue on the dashboard.</div>'+
     '<div class="card" style="margin-bottom:24px"><div class="card-hdr"><span class="card-title">Tags</span><span style="font-family:var(--f-mono);font-size:10.5px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase">'+tagKeys.length+' tag'+(tagKeys.length===1?'':'s')+'</span></div><div>'+tagsHTML+'</div></div>'+
     '<div style="font-size:11.5px;color:var(--muted);margin-bottom:24px;font-weight:500">Rename a tag to fix typos across every account at once. Delete a tag to remove it from every account it\'s on.</div>'+
     '<div class="card"><div class="card-hdr"><span class="card-title">Possible duplicate accounts</span><span style="font-family:var(--f-mono);font-size:10.5px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase">'+dupes.length+' group'+(dupes.length===1?'':'s')+'</span></div><div style="padding:16px">'+dupesHTML+ignoredHTML+'</div></div>'+
     '<div style="font-size:11.5px;color:var(--muted);margin-top:10px;font-weight:500">Detected by comparing normalized account names (ignoring punctuation and common words like "Eye Care," "LLC," etc.). Open any account to merge or delete.</div>'+
     '</div>';
+}
+
+function openAddPartnership(){openEditPartnership(null);}
+function openEditPartnership(id){
+  var p=id?partnerships.find(function(x){return x.id===id;}):{};
+  if(!p)p={};
+  document.getElementById('mc').innerHTML=
+    '<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal" style="max-width:600px">'+
+    '<div class="modal-hdr"><span class="modal-title">'+(id?'Edit partnership':'Add partnership')+'</span><button class="xbtn" onclick="closeModal()">×</button></div>'+
+    '<div class="modal-body">'+
+    '<div class="fg">'+
+      '<div class="fgrp full"><label class="flbl">Partnership name *</label><input class="finput" id="pn" placeholder="e.g. Alcon corporate partnership" value="'+esc(p.name||'')+'"></div>'+
+      '<div class="fgrp"><label class="flbl">Monthly amount ($) *</label><input class="finput" id="pma" type="text" placeholder="e.g. 12,000" value="'+(p.monthly_amount?fmtC(p.monthly_amount):'')+'"></div>'+
+      '<div class="fgrp"><label class="flbl">Device count</label><input class="finput" id="pdc" type="number" placeholder="e.g. 4" value="'+(p.device_count||'')+'"></div>'+
+      '<div class="fgrp"><label class="flbl">Contract start date</label><input class="finput" id="pcs" type="date" value="'+(p.contract_start_date||'')+'"></div>'+
+      '<div class="fgrp"><label class="flbl">Contract end date</label><input class="finput" id="pce" type="date" value="'+(p.contract_end_date||'')+'"></div>'+
+      '<div class="fgrp full"><label class="flbl">Paid through date <span style="color:var(--muted);font-size:10px">how far in the future they\'ve prepaid</span></label><input class="finput" id="ppt" type="date" value="'+(p.paid_through_date||'')+'"></div>'+
+      '<div class="fgrp full"><label class="flbl">Notes</label><textarea class="finput" id="pno" rows="3" placeholder="Optional details about the arrangement">'+esc(p.notes||'')+'</textarea></div>'+
+    '</div></div>'+
+    '<div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" data-id="'+(id||'')+'" onclick="savePartnership(this.dataset.id)">Save</button></div>'+
+    '</div></div>';
+}
+async function savePartnership(id){
+  var name=(document.getElementById('pn').value||'').trim();
+  if(!name){alert('Partnership name is required.');return;}
+  var monthly=parseC(document.getElementById('pma').value);
+  if(!monthly||monthly<=0){alert('Monthly amount is required.');return;}
+  var payload={
+    name:name,
+    monthly_amount:monthly,
+    device_count:parseInt(document.getElementById('pdc').value)||null,
+    contract_start_date:document.getElementById('pcs').value||null,
+    contract_end_date:document.getElementById('pce').value||null,
+    paid_through_date:document.getElementById('ppt').value||null,
+    notes:(document.getElementById('pno').value||'').trim()||null,
+    updated_at:new Date().toISOString()
+  };
+  if(id)payload.id=id;
+  try{
+    await req('POST','partnerships',[payload],null,null);
+    closeModal();
+    await loadAll();
+  }catch(e){alert('Error: '+e.message);}
+}
+async function deletePartnership(id){
+  var p=partnerships.find(function(x){return x.id===id;});
+  if(!p)return;
+  if(!confirm('Delete partnership "'+p.name+'"?\n\nThis removes it from the dashboard revenue tracking.'))return;
+  try{
+    await req('DELETE','partnerships',null,'id=eq.'+id,null);
+    await loadAll();
+  }catch(e){alert('Error: '+e.message);}
 }
 async function renameTagGlobal(oldTag){
   var newTag=prompt('Rename "'+oldTag+'" to:',oldTag);
