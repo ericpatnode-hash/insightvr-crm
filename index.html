@@ -1900,13 +1900,23 @@ function rDash(el,act){
       '<div class="card" style="margin-bottom:0;display:flex;flex-direction:column"><div class="card-hdr"><span class="card-title">Pipeline Breakdown</span><button class="btn btn-sm btn-navy" onclick="nav(\'pipeline\')">View all</button></div><div style="padding:6px 22px 10px;display:flex;flex-direction:column;flex:1;justify-content:space-evenly">'+pipeHTML+'</div></div>'+
       '<div class="card" style="margin-bottom:0"><div class="card-hdr"><span class="card-title">Revenue Snapshot</span><button class="btn btn-sm btn-navy" onclick="nav(\'reports\')">Reports</button></div>'+
       '<div style="padding:16px 18px">'+
-        '<div style="display:grid;grid-template-columns:'+(partnershipTotal>0?'1fr 1fr 1fr':'1fr 1fr')+';gap:12px">'+
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">'+
           '<div class="snap-box" onclick="navSnap(\'hardware\')"><div class="snap-lbl">Hardware</div><div class="snap-val">'+(hwRev?'$'+fmtC(hwRev):'—')+'</div></div>'+
           '<div class="snap-box" onclick="navSnap(\'subscription\')"><div class="snap-lbl">Subscription / yr</div><div class="snap-val">'+(subRev?'$'+fmtC(subRev):'—')+'</div></div>'+
-          (partnershipTotal>0?'<div class="snap-box snap-partnership" onclick="nav(\'settings\')"><div class="snap-lbl">Corporate partnerships</div><div class="snap-val">$'+fmtC(partnershipTotal)+'</div></div>':'')+
           '<div class="snap-box" onclick="navPipeVal()"><div class="snap-lbl">Pipeline</div><div class="snap-val">'+(pipeVal?'$'+fmtC(pipeVal):'—')+'</div></div>'+
           '<div class="snap-box" onclick="navSnap(\'kits\')"><div class="snap-lbl">Kits deployed</div><div class="snap-val">'+totalKits+'</div></div>'+
         '</div>'+
+        (partnershipTotal>0?'<div class="snap-box snap-partnership" onclick="nav(\'settings\')" style="margin-top:12px">'+
+          '<div style="display:flex;justify-content:space-between;align-items:flex-start">'+
+            '<div>'+
+              '<div class="snap-lbl">Corporate partnerships <span style="color:oklch(38% 0.12 285);font-weight:700;letter-spacing:.06em">· '+partnershipCount+' ACTIVE</span></div>'+
+              '<div class="snap-val" style="margin-top:6px">$'+fmtC(partnershipTotal)+'<span style="font-size:14px;font-weight:600;color:var(--muted);margin-left:4px">/yr</span></div>'+
+            '</div>'+
+            '<div style="text-align:right;font-family:var(--f-mono);font-size:10.5px;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;font-weight:500;line-height:1.5">'+
+              'not counted in<br>subscription / yr'+
+            '</div>'+
+          '</div>'+
+        '</div>':'')+
         '<div class="snap-box snap-forecast" onclick="navSnap(\'forecast\')" style="margin-top:12px">'+
           '<div style="display:flex;justify-content:space-between;align-items:flex-start">'+
             '<div>'+
