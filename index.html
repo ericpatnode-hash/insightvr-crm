@@ -239,6 +239,7 @@ th{
   border-bottom:1px solid var(--line);background:var(--bg);
   white-space:nowrap;text-transform:uppercase;letter-spacing:.08em;
 }
+th[onclick]:hover{color:var(--ink);background:var(--navy-soft);}
 td{
   padding:13px 18px;font-size:13.5px;border-bottom:1px solid var(--line);
   vertical-align:middle;font-weight:500;color:var(--text);
@@ -1433,6 +1434,16 @@ function updateReferralLabel(){
   }
   if(hintEl)hintEl.style.display=applies?'':'none';
 }
+function sortLostReport(col){
+  if(window._lostSortCol===col)window._lostSortDir=(window._lostSortDir||1)*-1;
+  else{window._lostSortCol=col;window._lostSortDir=1;}
+  rReports(document.getElementById('pcontent'),document.getElementById('pactions'));
+}
+function sortSrcReport(col){
+  if(window._srcSortCol===col)window._srcSortDir=(window._srcSortDir||1)*-1;
+  else{window._srcSortCol=col;window._srcSortDir=1;}
+  rReports(document.getElementById('pcontent'),document.getElementById('pactions'));
+}
 function pcon(a){try{var c=JSON.parse(a.contacts_json||'[]');return c.length?c[0]:{}}catch(e){return{};}}
 // ============ BULK ACTIONS ============
 window._bulkEnabled=false;
@@ -1904,19 +1915,12 @@ function rDash(el,act){
           '<div class="snap-box" onclick="navSnap(\'hardware\')"><div class="snap-lbl">Hardware</div><div class="snap-val">'+(hwRev?'$'+fmtC(hwRev):'—')+'</div></div>'+
           '<div class="snap-box" onclick="navSnap(\'subscription\')"><div class="snap-lbl">Subscription / yr</div><div class="snap-val">'+(subRev?'$'+fmtC(subRev):'—')+'</div></div>'+
           '<div class="snap-box" onclick="navPipeVal()"><div class="snap-lbl">Pipeline</div><div class="snap-val">'+(pipeVal?'$'+fmtC(pipeVal):'—')+'</div></div>'+
-          '<div class="snap-box" onclick="navSnap(\'kits\')"><div class="snap-lbl">Kits deployed</div><div class="snap-val">'+totalKits+'</div></div>'+
+          (partnershipTotal>0?
+            '<div class="snap-box snap-partnership" onclick="nav(\'settings\')" title="Corporate partnership revenue · not counted in subscription / yr"><div class="snap-lbl">Corporate partnerships</div><div class="snap-val">$'+fmtC(partnershipTotal)+'</div></div>'
+            :
+            '<div class="snap-box" style="opacity:.55" onclick="nav(\'settings\')" title="Add a corporate partnership in Settings"><div class="snap-lbl">Corporate partnerships</div><div class="snap-val" style="font-size:14px;font-weight:600;color:var(--muted);margin-top:8px">Add in Settings</div></div>'
+          )+
         '</div>'+
-        (partnershipTotal>0?'<div class="snap-box snap-partnership" onclick="nav(\'settings\')" style="margin-top:12px">'+
-          '<div style="display:flex;justify-content:space-between;align-items:flex-start">'+
-            '<div>'+
-              '<div class="snap-lbl">Corporate partnerships <span style="color:oklch(38% 0.12 285);font-weight:700;letter-spacing:.06em">· '+partnershipCount+' ACTIVE</span></div>'+
-              '<div class="snap-val" style="margin-top:6px">$'+fmtC(partnershipTotal)+'<span style="font-size:14px;font-weight:600;color:var(--muted);margin-left:4px">/yr</span></div>'+
-            '</div>'+
-            '<div style="text-align:right;font-family:var(--f-mono);font-size:10.5px;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;font-weight:500;line-height:1.5">'+
-              'not counted in<br>subscription / yr'+
-            '</div>'+
-          '</div>'+
-        '</div>':'')+
         '<div class="snap-box snap-forecast" onclick="navSnap(\'forecast\')" style="margin-top:12px">'+
           '<div style="display:flex;justify-content:space-between;align-items:flex-start">'+
             '<div>'+
@@ -2239,6 +2243,44 @@ function rReports(el,act){
   var filteredLost=lf==='all'?lost:lost.filter(function(a){return (a.lost_reason||'Unknown')===lf;});
   var filteredSrc=sf==='all'?accs.filter(function(a){return a.source;}):accs.filter(function(a){return a.source===sf;});
 
+  // Reports-scoped sorting (independent from other pages)
+  var lostSortCol=window._lostSortCol||'name';
+  var lostSortDir=window._lostSortDir||1;
+  var srcSortCol=window._srcSortCol||'name';
+  var srcSortDir=window._srcSortDir||1;
+  function reportsSrt(list,dict,col,dir){
+    if(!col||!dict[col])return list;
+    var fn=dict[col];
+    return list.slice().sort(function(a,b){
+      var av=fn(a),bv=fn(b);
+      if(av==null)av='';if(bv==null)bv='';
+      if(typeof av==='number'&&typeof bv==='number')return (av-bv)*dir;
+      return String(av).localeCompare(String(bv))*dir;
+    });
+  }
+  filteredLost=reportsSrt(filteredLost,{
+    name:function(a){return a.name||'';},
+    city:function(a){return a.city||'';},
+    lost_reason:function(a){return a.lost_reason||'';},
+    contact:function(a){return cname(a);},
+    source:function(a){return a.source||'';}
+  },lostSortCol,lostSortDir);
+  filteredSrc=reportsSrt(filteredSrc,{
+    name:function(a){return a.name||'';},
+    stage:function(a){return a.stage||'';},
+    source:function(a){return a.source||'';},
+    contact:function(a){return cname(a);},
+    updated:function(a){return a.updated_at||'';}
+  },srcSortCol,srcSortDir);
+  function thLost(k,label,w){
+    var arrow=lostSortCol===k?(lostSortDir===1?' ↑':' ↓'):'';
+    return '<th style="width:'+w+';cursor:pointer;user-select:none" onclick="sortLostReport(\''+k+'\')">'+label+arrow+'</th>';
+  }
+  function thSrc(k,label,w){
+    var arrow=srcSortCol===k?(srcSortDir===1?' ↑':' ↓'):'';
+    return '<th style="width:'+w+';cursor:pointer;user-select:none" onclick="sortSrcReport(\''+k+'\')">'+label+arrow+'</th>';
+  }
+
   function drillTable(rows,cols){
     var trs='';
     rows.forEach(function(r){trs+=trO(r.id)+cols.map(function(c){return '<td>'+(c.fn(r)||'—')+'</td>';}).join('')+'</tr>';});
@@ -2274,7 +2316,7 @@ function rReports(el,act){
     '<select class="finput" style="width:220px;font-size:12.5px" onchange="window._lf=this.value;rReports(document.getElementById(\'pcontent\'),document.getElementById(\'pactions\'))">'+
     '<option value="all"'+(lf==='all'?' selected':'')+'>All lost reasons</option>'+lrOpts+'</select>'+
     '<span style="font-size:12.5px;color:var(--muted)">'+filteredLost.length+' account'+(filteredLost.length===1?'':'s')+'</span></div>'+
-    '<div style="overflow-x:auto"><table><thead><tr><th style="width:28%">Account</th><th style="width:14%">City</th><th style="width:14%">Lost reason</th><th style="width:16%">Contact</th><th style="width:14%">Source</th><th style="width:14%"></th></tr></thead><tbody>'+
+    '<div style="overflow-x:auto"><table><thead><tr>'+thLost('name','Account','28%')+thLost('city','City','14%')+thLost('lost_reason','Lost reason','14%')+thLost('contact','Contact','16%')+thLost('source','Source','14%')+'<th style="width:14%"></th></tr></thead><tbody>'+
     (lostRows||'<tr><td colspan="6" class="empty" style="padding:24px">No lost accounts'+(lf!=='all'?' for this reason':'')+'.</td></tr>')+
     '</tbody></table></div></div></div>'+
     '<div><div class="card"><div class="card-hdr"><span class="card-title">Lead sources</span><span style="font-family:var(--f-mono);font-size:10.5px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase">'+accs.filter(function(a){return a.source;}).length+' with source</span></div>'+
@@ -2282,7 +2324,7 @@ function rReports(el,act){
     '<select class="finput" style="width:240px;font-size:12.5px" onchange="window._sf=this.value;rReports(document.getElementById(\'pcontent\'),document.getElementById(\'pactions\'))">'+
     '<option value="all"'+(sf==='all'?' selected':'')+'>All sources</option>'+srcOpts+'</select>'+
     '<span style="font-size:12.5px;color:var(--muted)">'+filteredSrc.length+' account'+(filteredSrc.length===1?'':'s')+'</span></div>'+
-    '<div style="overflow-x:auto"><table><thead><tr><th style="width:28%">Account</th><th style="width:16%">Stage</th><th style="width:18%">Source</th><th style="width:18%">Contact</th><th style="width:14%">Updated</th><th style="width:6%"></th></tr></thead><tbody>'+
+    '<div style="overflow-x:auto"><table><thead><tr>'+thSrc('name','Account','28%')+thSrc('stage','Stage','16%')+thSrc('source','Source','18%')+thSrc('contact','Contact','18%')+thSrc('updated','Updated','14%')+'<th style="width:6%"></th></tr></thead><tbody>'+
     (srcRows||'<tr><td colspan="6" class="empty" style="padding:24px">No accounts with source data yet.</td></tr>')+
     '</tbody></table></div></div></div>'+
     '</div>';
