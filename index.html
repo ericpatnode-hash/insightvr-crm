@@ -2070,7 +2070,7 @@ function rActive(el,act){
   if(q)list=list.filter(function(a){return matchAccount(a,q);});
   list=applyTagFilter(list);
   if(!sortCol)sortCol='name';
-  list=srt(list,{name:function(a){return a.name;},city:function(a){return a.city||'';},state:function(a){return a.state||'';},sub_type:function(a){return a.sub_type||'';},year:function(a){return subYearNum(a);},renewal_date:function(a){return a.renewal_date||'';},kit_count:function(a){return a.kit_count||0;},hardware_cost:function(a){return parseC(a.hardware_cost)||0;},sub_amount:function(a){return parseC(a.sub_amount)||0;},contact:function(a){return cname(a);}});
+  list=srt(list,{name:function(a){return a.name;},city:function(a){return a.city||'';},state:function(a){return a.state||'';},sub_type:function(a){return a.sub_type||'';},year:function(a){return subYearNum(a);},start_date:function(a){return a.subscription_start_date||'';},renewal_date:function(a){return a.renewal_date||'';},kit_count:function(a){return a.kit_count||0;},hardware_cost:function(a){return parseC(a.hardware_cost)||0;},sub_amount:function(a){return parseC(a.sub_amount)||0;},contact:function(a){return cname(a);}});
   var rows='';
   list.forEach(function(a){
     var d=daysFrom(a.renewal_date);
@@ -2084,6 +2084,7 @@ function rActive(el,act){
       '<td style="color:var(--muted)">'+esc(a.state||'—')+'</td>'+
       '<td>'+subBadge+'</td>'+
       '<td>'+subYear(a)+'</td>'+
+      '<td style="color:var(--muted)">'+(a.subscription_start_date?fmt(a.subscription_start_date):'—')+'</td>'+
       '<td>'+renewCell+'</td>'+
       '<td>'+(a.kit_count||'—')+'</td>'+
       '<td>'+(a.hardware_cost?'$'+fmtC(a.hardware_cost):'—')+'</td>'+
@@ -2103,8 +2104,8 @@ function rActive(el,act){
     '</div>'+
     '<div class="card"><div style="overflow-x:auto"><table><thead><tr>'+
     (window._bulkEnabled?'<th class="bulk-col"><input type="checkbox" class="bulk-cb" onchange="toggleBulkAll(this.checked)"></th>':'')+
-    th('name','Account','16%')+th('city','City','8%')+th('state','State','6%')+th('sub_type','Sub type','8%')+th('year','Year','7%')+th('renewal_date','Renewal','11%')+th('kit_count','Kits','5%')+th('hardware_cost','HW cost','8%')+th('sub_amount','Sub amt','8%')+th('contact','Contact','11%')+'<th style="width:8%"></th></tr></thead><tbody>'+
-    (list.length?rows:'<tr><td colspan="12" class="empty">No active accounts.</td></tr>')+
+    th('name','Account','15%')+th('city','City','7%')+th('state','State','5%')+th('sub_type','Sub type','8%')+th('year','Year','6%')+th('start_date','Start date','10%')+th('renewal_date','Renewal','10%')+th('kit_count','Kits','5%')+th('hardware_cost','HW cost','8%')+th('sub_amount','Sub amt','8%')+th('contact','Contact','10%')+'<th style="width:8%"></th></tr></thead><tbody>'+
+    (list.length?rows:'<tr><td colspan="13" class="empty">No active accounts.</td></tr>')+
     '</tbody></table></div></div>'+
     bulkBarHTML();
 }
