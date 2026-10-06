@@ -1033,7 +1033,7 @@ const IMPL=['Discovery & planning','Go-live scheduled','Evaluation','Overdue'];
 const TYPES=['Practice','Private equity group','Industry partner','Other'];
 const SOURCES=['Website / inbound','Referral','Outbound / cold outreach','Conference / event','Industry partner','Alcon - Field','Alcon 45 Day','B&L - Field','J&J - Field','Other'];
 const LOST_REASONS=['Price','Timing','Competition','Did not see fit / value','No decision / went silent','Returned during eval','Budget cut','Other'];
-const HW_ARRANGEMENTS=['Practice pays','Alcon-supplied','No-charge eval'];
+const HW_ARRANGEMENTS=['Practice pays','Alcon-supplied','No-charge eval','Razer Laptop'];
 const SBADGE={Prospect:'b-prospect','Intro meeting':'b-intro','Early diligence':'b-early','Late diligence':'b-late','Proposal sent':'b-proposal','Deal won':'b-won','Deal lost':'b-lost','Discovery & planning':'b-discovery','Go-live scheduled':'b-golive','Evaluation':'b-60day',Overdue:'b-overdue',Active:'b-active'};
 const TITLES={dashboard:'Dashboard',pipeline:'Sales Pipeline',impl:'Implementation',calendar:'Calendar',active:'Active Accounts',lost:'Lost / Re-engage',renewals:'Renewals',reports:'Reports',activity:'Activity',settings:'Settings',followups:'My Follow-ups',snap:''};
 let accs=[],events=[],view='dashboard',q='',fs='all',ccount=1,sortCol='',sortDir=1,implMgrs=[],partnerships=[];
@@ -1321,6 +1321,7 @@ function hwPayStatus(a){
   var arr=a.hw_arrangement||'Practice pays';
   if(arr==='Alcon-supplied'){return '<span style="color:var(--text-2);font-weight:600">Alcon-supplied · n/a</span>';}
   if(arr==='No-charge eval'){return '<span style="color:var(--text-2);font-weight:600">Loaner · n/a</span>';}
+  if(arr==='Razer Laptop'){return '<span style="color:var(--text-2);font-weight:600">Razer Laptop · n/a</span>';}
   if(a.hardware_paid){
     var dateStr=a.hardware_paid_date?' · '+fmt(a.hardware_paid_date):'';
     return '<span style="color:var(--lime-ink);font-weight:600">✓ Paid'+dateStr+'</span>';
@@ -1362,6 +1363,7 @@ function hwSourceShort(a){
   var arr=a.hw_arrangement||'Practice pays';
   if(arr==='Alcon-supplied'){return '<span class="badge" style="background:oklch(91% 0.10 50);color:oklch(38% 0.12 50);border-color:oklch(78% 0.14 50)"><span style="background:oklch(38% 0.12 50)"></span>Alcon</span>';}
   if(arr==='No-charge eval'){return '<span class="badge" style="background:var(--navy-soft);color:var(--navy);border-color:var(--line-2)"><span style="background:var(--navy)"></span>Loaner</span>';}
+  if(arr==='Razer Laptop'){return '<span class="badge" style="background:oklch(92% 0.08 155);color:oklch(32% 0.12 155);border-color:oklch(75% 0.14 155)"><span style="background:oklch(32% 0.12 155)"></span>Razer</span>';}
   return '<span style="color:var(--text-2);font-size:12px;font-weight:500">Practice</span>';
 }
 function subYear(a){
