@@ -190,12 +190,13 @@ html,body{font-family:var(--f-ui);font-size:14px;color:var(--text);background:va
   font-weight:500;text-transform:uppercase;letter-spacing:.1em;
 }
 .metric-val{
-  font-family:var(--f-display);
-  font-size:38px;font-weight:400;color:var(--ink);
-  letter-spacing:-.035em;line-height:.95;
-  font-variation-settings:"opsz" 144;
+  font-family:var(--f-ui);
+  font-size:38px;font-weight:700;color:var(--ink);
+  letter-spacing:-.025em;line-height:1;
+  font-variant-numeric:tabular-nums;
+  font-feature-settings:'tnum','cv11';
 }
-.metric-val.huge{font-size:54px;}
+.metric-val.huge{font-size:54px;letter-spacing:-.03em;}
 .metric-val.red{color:var(--danger);}
 .metric-val.lime{color:var(--lime-ink);}
 .metric-sub{font-size:12px;color:var(--muted);margin-top:10px;font-weight:500;}
@@ -225,9 +226,8 @@ html,body{font-family:var(--f-ui);font-size:14px;color:var(--text);background:va
   display:flex;align-items:center;justify-content:space-between;
 }
 .card-title{
-  font-family:var(--f-display);
-  font-size:16px;font-weight:500;color:var(--ink);letter-spacing:-.015em;
-  font-variation-settings:"opsz" 144;
+  font-family:var(--f-ui);
+  font-size:14px;font-weight:700;color:var(--ink);letter-spacing:-.005em;
 }
 
 /* ============ TABLES ============ */
@@ -239,6 +239,7 @@ th{
   border-bottom:1px solid var(--line);background:var(--bg);
   white-space:nowrap;text-transform:uppercase;letter-spacing:.08em;
 }
+th[onclick]:hover{color:var(--ink);background:var(--navy-soft);}
 td{
   padding:13px 18px;font-size:13.5px;border-bottom:1px solid var(--line);
   vertical-align:middle;font-weight:500;color:var(--text);
@@ -443,9 +444,11 @@ textarea.finput{resize:vertical;min-height:64px;font-family:var(--f-ui);}
   font-weight:500;text-transform:uppercase;letter-spacing:.1em;
 }
 .report-val{
-  font-family:var(--f-display);
-  font-size:32px;font-weight:400;color:var(--ink);letter-spacing:-.03em;
-  font-variation-settings:"opsz" 144;line-height:1;
+  font-family:var(--f-ui);
+  font-size:32px;font-weight:700;color:var(--ink);letter-spacing:-.025em;
+  font-variant-numeric:tabular-nums;
+  font-feature-settings:'tnum';
+  line-height:1;
 }
 .report-sub{font-size:11.5px;color:var(--muted);margin-top:8px;font-weight:500;}
 
@@ -462,10 +465,26 @@ textarea.finput{resize:vertical;min-height:64px;font-family:var(--f-ui);}
   text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;
 }
 .snap-val{
-  font-family:var(--f-display);
-  font-size:26px;font-weight:400;color:var(--ink);letter-spacing:-.025em;
-  font-variation-settings:"opsz" 144;line-height:1;
+  font-family:var(--f-ui);
+  font-size:26px;font-weight:700;color:var(--ink);letter-spacing:-.02em;
+  font-variant-numeric:tabular-nums;
+  font-feature-settings:'tnum';
+  line-height:1;
 }
+.snap-forecast{
+  background:var(--lime-wash) !important;
+  border-color:var(--lime) !important;
+}
+.snap-forecast .snap-val{color:var(--lime-ink);}
+.snap-forecast:hover{background:oklch(94% 0.10 155) !important;}
+
+.snap-partnership{
+  background:oklch(97% 0.03 285) !important;
+  border-color:oklch(85% 0.05 285) !important;
+}
+.snap-partnership .snap-val{color:oklch(38% 0.12 285);}
+.snap-partnership .snap-lbl{color:oklch(38% 0.08 285);}
+.snap-partnership:hover{background:oklch(95% 0.04 285) !important;}
 
 /* ============ PIPELINE BAR — make it the star of the dashboard ============ */
 .pipe-row{
@@ -491,9 +510,11 @@ textarea.finput{resize:vertical;min-height:64px;font-family:var(--f-ui);}
 .pipe-row:hover .pipe-bar{background:oklch(78% 0.22 155);}
 .pipe-count{
   width:36px;text-align:right;
-  font-family:var(--f-display);
-  font-size:18px;font-weight:500;color:var(--ink);letter-spacing:-.02em;
-  font-variation-settings:"opsz" 144;line-height:1;
+  font-family:var(--f-ui);
+  font-size:18px;font-weight:700;color:var(--ink);letter-spacing:-.015em;
+  font-variant-numeric:tabular-nums;
+  font-feature-settings:'tnum';
+  line-height:1;
 }
 
 /* ============ WELCOME SCREEN — editorial, confident ============ */
@@ -571,6 +592,373 @@ textarea.finput{resize:vertical;min-height:64px;font-family:var(--f-ui);}
   letter-spacing:.04em;text-transform:uppercase;font-weight:500;
 }
 
+/* ============ CALENDAR ============ */
+.cal-toolbar{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  margin-bottom:16px;
+}
+.cal-month-display{
+  font-family:var(--f-display);
+  font-size:22px;font-weight:500;color:var(--ink);letter-spacing:-.025em;
+  font-variation-settings:"opsz" 144;
+  margin-right:auto;padding-right:16px;
+}
+.cal-nav{display:flex;gap:4px;}
+.cal-nav .btn{padding:6px 10px;min-width:34px;}
+.cal-legend{
+  display:flex;flex-wrap:wrap;gap:14px 18px;align-items:center;
+  padding:12px 16px;background:var(--bg);border:1px solid var(--line);
+  border-radius:var(--r);margin-bottom:16px;
+}
+.cal-legend-item{
+  display:flex;align-items:center;gap:7px;
+  font-size:11.5px;font-weight:500;color:var(--text-2);
+  cursor:pointer;user-select:none;
+  transition:opacity .12s;
+}
+.cal-legend-item.off{opacity:.35;}
+.cal-legend-swatch{width:10px;height:10px;border-radius:2px;flex-shrink:0;}
+.cal-legend-label{
+  font-family:var(--f-mono);font-size:10.5px;font-weight:500;
+  color:var(--muted);letter-spacing:.08em;text-transform:uppercase;
+  margin-right:4px;
+}
+
+/* Grid wrapper — horizontally scrollable */
+.cal-grid-wrap{
+  background:var(--bg);border:1px solid var(--line);border-radius:var(--rl);
+  overflow-x:auto;overflow-y:visible;
+}
+/* A row is: manager cell (fixed) + day-area (flex with N day cells) */
+.cal-row-flex{
+  display:flex;
+  min-width:max-content;
+  border-bottom:1px solid var(--line);
+}
+.cal-row-flex:last-child{border-bottom:none;}
+.cal-header-row{background:var(--bg);position:sticky;top:0;z-index:10;}
+/* Day area: flex container holding day cells equally, with absolute event bars on top */
+.cal-day-area{
+  flex:1;
+  display:flex;
+  position:relative;
+  min-width:calc(75px * var(--days-in-month, 31));
+}
+.cal-day-area > .cal-day-cell,
+.cal-day-area > .cal-head-cell{
+  flex:1 1 0;
+  min-width:75px;
+}
+.cal-head-cell{
+  padding:8px 6px;
+  font-family:var(--f-mono);
+  font-size:10px;font-weight:600;color:var(--muted);
+  text-align:center;letter-spacing:.04em;
+  border-bottom:1px solid var(--line-2);
+  border-right:1px solid var(--line);
+  text-transform:uppercase;
+  line-height:1.3;
+  background:var(--bg);
+}
+.cal-head-cell .cal-dow{display:block;color:var(--muted-2);font-size:9px;margin-top:1px;}
+.cal-head-cell.weekend{background:var(--navy-softer);color:var(--muted-2);}
+.cal-head-cell.today{background:var(--ink);color:#fff;}
+.cal-head-cell.today .cal-dow{color:var(--lime);}
+.cal-mgr-head{
+  padding:8px 14px;text-align:left;
+  font-family:var(--f-mono);
+  font-size:10px;font-weight:600;color:var(--muted);
+  background:var(--bg);border-bottom:1px solid var(--line-2);
+  border-right:1px solid var(--line-2);
+  position:sticky;left:0;z-index:11;
+  text-transform:uppercase;letter-spacing:.08em;
+  width:150px;min-width:150px;flex-shrink:0;
+  box-shadow:1px 0 0 var(--line-2);
+  display:flex;align-items:center;
+}
+.cal-mgr-cell{
+  padding:10px 14px;
+  font-family:var(--f-ui);font-size:13px;font-weight:600;color:var(--ink);
+  background:var(--bg);
+  border-right:1px solid var(--line-2);
+  position:sticky;left:0;z-index:8;
+  display:flex;align-items:center;
+  width:150px;min-width:150px;flex-shrink:0;
+  box-shadow:1px 0 0 var(--line-2);
+}
+.cal-day-cell{
+  border-right:1px solid var(--line);
+  background:var(--bg);
+  cursor:pointer;
+}
+.cal-day-cell.weekend{background:var(--navy-softer);}
+.cal-day-cell:hover{background:var(--navy-soft);}
+.cal-day-cell.weekend:hover{background:oklch(94% 0.02 255);}
+
+/* Tooltip for event bars */
+.cal-tooltip{
+  position:fixed;
+  background:var(--ink);
+  color:#fff;
+  padding:10px 14px;
+  border-radius:6px;
+  font-size:12.5px;
+  line-height:1.5;
+  font-weight:500;
+  box-shadow:0 8px 24px oklch(20% 0.04 255 / .35);
+  pointer-events:none;
+  z-index:500;
+  max-width:280px;
+  opacity:0;
+  transition:opacity .1s;
+  border-left:3px solid var(--lime);
+}
+.cal-tooltip.show{opacity:1;}
+.cal-tooltip-title{
+  font-family:var(--f-display);
+  font-size:14px;font-weight:600;letter-spacing:-.01em;
+  color:#fff;margin-bottom:4px;
+  font-variation-settings:"opsz" 144;
+}
+.cal-tooltip-meta{
+  font-family:var(--f-mono);font-size:10.5px;
+  color:var(--lime);letter-spacing:.04em;
+  text-transform:uppercase;font-weight:500;
+  margin-bottom:6px;
+}
+.cal-tooltip-dates{
+  font-size:12px;color:oklch(85% 0.02 255);
+  margin-bottom:6px;
+}
+.cal-tooltip-notes{
+  font-size:12px;color:oklch(82% 0.02 255);
+  font-style:italic;
+  padding-top:6px;
+  border-top:1px solid oklch(35% 0.05 255);
+  margin-top:4px;
+}
+
+/* Event bar — absolutely positioned inside the day-area */
+.cal-event-bar{
+  position:absolute;
+  padding:6px 10px;
+  border-radius:4px;
+  font-size:12.5px;font-weight:600;
+  line-height:1.25;
+  cursor:pointer;
+  overflow:hidden;
+  border:1px solid transparent;
+  transition:transform .1s, box-shadow .1s;
+  display:flex;flex-direction:column;justify-content:center;gap:2px;
+  z-index:5;
+  box-sizing:border-box;
+}
+.cal-event-bar:hover{
+  transform:translateY(-1px);
+  box-shadow:0 2px 6px oklch(50% 0.04 255 / .22);
+  z-index:6;
+}
+.cal-event-bar.readonly{border-style:dashed;}
+.cal-event-label{
+  display:block;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font-size:13px;font-weight:700;
+}
+.cal-event-bar .cal-event-sub{
+  display:block;font-size:10.5px;font-weight:500;opacity:.85;
+  font-family:var(--f-mono);letter-spacing:.02em;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.cal-event-bar:hover{
+  transform:translateY(-1px);
+  box-shadow:0 2px 6px oklch(50% 0.04 255 / .22);
+  z-index:2;
+}
+.cal-event-bar.readonly{border-style:dashed;}
+.cal-event-label{
+  display:block;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font-size:11.5px;
+}
+.cal-event-bar .cal-event-sub{
+  display:block;font-size:9.5px;font-weight:500;opacity:.85;margin-top:2px;
+  font-family:var(--f-mono);letter-spacing:.02em;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+
+/* Event type colors — aligned to app palette. Applied to .cal-event-bar */
+/* Using solid opaque backgrounds so underlying cell shading doesn't bleed through */
+.cal-event-bar.ev-implementation{background:oklch(92% 0.12 155);color:var(--lime-ink);border-color:var(--lime);}
+.cal-event-bar.ev-golive{background:oklch(85% 0.20 155);color:var(--ink);border-color:oklch(70% 0.22 155);}
+.cal-event-bar.ev-alcon{background:oklch(91% 0.10 50);color:oklch(38% 0.12 50);border-color:oklch(78% 0.14 50);}
+.cal-event-bar.ev-alcon45{background:oklch(89% 0.12 35);color:oklch(40% 0.15 30);border-color:oklch(76% 0.16 35);}
+.cal-event-bar.ev-uvp{background:oklch(92% 0.08 30);color:oklch(40% 0.13 30);border-color:oklch(78% 0.12 30);}
+.cal-event-bar.ev-nocharge{background:oklch(92% 0.07 220);color:oklch(38% 0.10 220);border-color:oklch(78% 0.10 220);}
+.cal-event-bar.ev-practice{background:oklch(92% 0.08 280);color:oklch(40% 0.13 280);border-color:oklch(78% 0.12 280);}
+.cal-event-bar.ev-patient{background:oklch(92% 0.08 320);color:oklch(42% 0.13 320);border-color:oklch(78% 0.12 320);}
+.cal-event-bar.ev-checkin{background:oklch(92% 0.10 70);color:oklch(42% 0.12 65);border-color:oklch(78% 0.14 65);}
+.cal-event-bar.ev-evalend{background:oklch(90% 0.10 340);color:oklch(38% 0.16 340);border-color:oklch(76% 0.14 340);}
+.cal-event-bar.ev-pto{background:oklch(90% 0.01 255);color:var(--muted);border-color:var(--line-3);font-style:italic;}
+.cal-event-bar.ev-retrain{background:oklch(90% 0.10 95);color:oklch(38% 0.14 90);border-color:oklch(76% 0.14 92);}
+.cal-event-bar.ev-travel{background:oklch(90% 0.08 190);color:oklch(38% 0.10 200);border-color:oklch(76% 0.12 195);}
+.cal-event-bar.ev-unavailable{background:oklch(88% 0.01 255);color:var(--muted);border-color:var(--line-3);font-style:italic;}
+.cal-event-bar.ev-other{background:oklch(92% 0.02 255);color:var(--navy);border-color:var(--line-3);}
+
+/* Legend swatches use the same palette */
+.cal-legend-swatch.ev-implementation{background:oklch(92% 0.12 155);}
+.cal-legend-swatch.ev-golive{background:oklch(85% 0.20 155);}
+.cal-legend-swatch.ev-alcon{background:oklch(91% 0.10 50);}
+.cal-legend-swatch.ev-alcon45{background:oklch(89% 0.12 35);}
+.cal-legend-swatch.ev-uvp{background:oklch(92% 0.08 30);}
+.cal-legend-swatch.ev-nocharge{background:oklch(92% 0.07 220);}
+.cal-legend-swatch.ev-practice{background:oklch(92% 0.08 280);}
+.cal-legend-swatch.ev-patient{background:oklch(92% 0.08 320);}
+.cal-legend-swatch.ev-checkin{background:oklch(92% 0.10 70);}
+.cal-legend-swatch.ev-evalend{background:oklch(90% 0.10 340);}
+.cal-legend-swatch.ev-pto{background:oklch(90% 0.01 255);}
+.cal-legend-swatch.ev-retrain{background:oklch(90% 0.10 95);}
+.cal-legend-swatch.ev-travel{background:oklch(90% 0.08 190);}
+.cal-legend-swatch.ev-unavailable{background:oklch(88% 0.01 255);}
+.cal-legend-swatch.ev-other{background:oklch(92% 0.02 255);}
+
+.cal-more{
+  display:block;font-family:var(--f-mono);font-size:9.5px;font-weight:600;
+  color:var(--muted);padding:2px 6px;cursor:pointer;
+  letter-spacing:.02em;
+}
+.cal-more:hover{color:var(--ink);}
+
+.cal-empty-cell{color:var(--muted-2);}
+
+/* Tag chips */
+.tag-chips{display:inline-flex;flex-wrap:wrap;gap:4px;}
+.tag-chips.inline{margin-left:6px;vertical-align:middle;}
+.tag-chip{
+  display:inline-block;
+  font-size:10.5px;font-weight:600;
+  padding:2px 8px;border-radius:3px;
+  background:var(--navy-soft);color:var(--navy);
+  border:1px solid var(--line-2);
+  cursor:pointer;
+  font-family:var(--f-ui);letter-spacing:.005em;
+  transition:background .12s, color .12s;
+  white-space:nowrap;
+}
+.tag-chip:hover{background:var(--ink);color:#fff;border-color:var(--ink);}
+
+/* Tag filter pill (when active) */
+.tag-filter-active{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--lime-wash);color:var(--lime-ink);
+  padding:6px 10px 6px 12px;border-radius:6px;
+  font-size:12px;font-weight:600;
+  border:1px solid var(--lime);
+}
+.tag-filter-active button{
+  background:none;border:none;color:var(--lime-ink);
+  cursor:pointer;font-size:14px;line-height:1;padding:0;font-weight:700;
+}
+.tag-filter-active button:hover{color:var(--ink);}
+
+/* Tag input with autocomplete suggestions */
+.tag-input-wrap{position:relative;}
+.tag-suggest{
+  position:absolute;top:100%;left:0;right:0;
+  background:var(--bg);border:1px solid var(--line-2);
+  border-radius:var(--r);box-shadow:var(--shadow-md);
+  margin-top:4px;max-height:180px;overflow-y:auto;
+  z-index:50;display:none;
+}
+.tag-suggest.show{display:block;}
+.tag-suggest-item{
+  padding:8px 12px;cursor:pointer;font-size:13px;font-weight:500;
+}
+.tag-suggest-item:hover,.tag-suggest-item.active{background:var(--navy-soft);}
+
+/* Bulk select & action bar */
+.bulk-bar{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+  background:var(--ink);color:#fff;
+  border-radius:var(--rl);
+  padding:10px 12px;
+  box-shadow:0 12px 32px oklch(20% 0.04 255 / .35);
+  display:flex;align-items:center;gap:10px;
+  z-index:150;
+  border:1px solid oklch(35% 0.05 255);
+}
+.bulk-count{
+  font-family:var(--f-mono);font-size:11px;color:var(--lime);
+  font-weight:600;letter-spacing:.05em;text-transform:uppercase;
+  padding:0 8px 0 4px;
+}
+.bulk-bar .btn{background:oklch(30% 0.05 255);color:#fff;border-color:oklch(35% 0.05 255);font-size:12.5px;}
+.bulk-bar .btn:hover{background:oklch(34% 0.06 255);}
+.bulk-bar .btn-primary{background:var(--lime);color:var(--ink);border-color:var(--lime);}
+.bulk-bar .btn-primary:hover{background:oklch(80% 0.22 155);}
+
+th.bulk-col,td.bulk-col{width:34px;padding-left:14px;padding-right:0;}
+.bulk-cb{
+  width:15px;height:15px;cursor:pointer;
+  accent-color:var(--lime);
+}
+
+/* Stage guide popover — info button next to stage dropdown */
+.flbl-with-info{display:flex;align-items:center;gap:6px;}
+.info-btn{
+  background:none;border:1px solid var(--line-3);
+  width:16px;height:16px;border-radius:50%;
+  font-family:var(--f-ui);font-size:10px;font-weight:700;
+  color:var(--muted);cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;
+  padding:0;line-height:1;transition:all .12s;
+}
+.info-btn:hover{background:var(--ink);color:#fff;border-color:var(--ink);}
+
+/* Stage guide modal */
+.guide-modal{max-width:780px;}
+.guide-section{margin-bottom:20px;}
+.guide-h{
+  font-family:var(--f-display);
+  font-size:18px;font-weight:600;color:var(--ink);
+  letter-spacing:-.015em;margin-bottom:14px;
+  font-variation-settings:"opsz" 144;
+  display:flex;align-items:center;gap:10px;
+}
+.guide-h::before{
+  content:'';display:inline-block;width:4px;height:20px;
+  background:var(--lime);border-radius:2px;
+}
+.guide-stage{
+  background:var(--bg);border:1px solid var(--line);border-radius:var(--r);
+  padding:14px 18px;margin-bottom:10px;
+}
+.guide-stage-name{
+  font-family:var(--f-ui);font-size:13.5px;font-weight:700;color:var(--ink);
+  margin-bottom:6px;display:flex;align-items:center;gap:8px;
+}
+.guide-row{
+  display:grid;grid-template-columns:140px 1fr;gap:10px 14px;
+  font-size:12.5px;line-height:1.55;margin-top:8px;
+}
+.guide-lbl{
+  font-family:var(--f-mono);font-size:10.5px;font-weight:600;
+  color:var(--muted);text-transform:uppercase;letter-spacing:.06em;
+  padding-top:1px;
+}
+.guide-val{color:var(--text);font-weight:500;}
+.guide-principle{
+  background:var(--lime-wash);border-left:3px solid var(--lime);
+  padding:14px 18px;border-radius:var(--r);margin-bottom:20px;
+  font-size:13px;line-height:1.6;color:var(--lime-ink);font-weight:500;
+}
+.guide-principle strong{color:var(--ink);}
+.guide-rule{
+  background:var(--surface);border:1px solid var(--line);
+  padding:14px 18px;border-radius:var(--r);
+  font-size:13px;line-height:1.6;color:var(--text-2);font-weight:500;
+}
+.guide-rule strong{color:var(--ink);}
+
 /* Responsive */
 @media (max-width: 980px){
   .metrics-hero{grid-template-columns:1fr 1fr;}
@@ -607,9 +995,11 @@ textarea.finput{resize:vertical;min-height:64px;font-family:var(--f-ui);}
       <div class="nav-item" id="nav-pipeline" onclick="nav('pipeline')">Sales Pipeline</div>
       <div class="nav-sec">Implementation</div>
       <div class="nav-item" id="nav-impl" onclick="nav('impl')">Implementation</div>
+      <div class="nav-item" id="nav-calendar" onclick="nav('calendar')">Calendar</div>
       <div class="nav-sec">Accounts</div>
       <div class="nav-item" id="nav-active" onclick="nav('active')">Active Accounts</div>
       <div class="nav-item" id="nav-renewals" onclick="nav('renewals')">Renewals<span class="nav-badge" id="rnb" style="display:none">0</span></div>
+      <div class="nav-item" id="nav-lost" onclick="nav('lost')">Lost / Re-engage</div>
       <div class="nav-sec">Insights</div>
       <div class="nav-item" id="nav-reports" onclick="nav('reports')">Reports</div>
       <div class="nav-item" id="nav-activity" onclick="nav('activity')">Activity</div>
@@ -639,13 +1029,14 @@ textarea.finput{resize:vertical;min-height:64px;font-family:var(--f-ui);}
 const SB_URL='https://zqfctprzbcqxrbvgslkh.supabase.co';
 const SB_KEY='sb_publishable_i4w5l5cDDr9tmjNKvYlVlg_REgHxGOg';
 const SALES=['Prospect','Intro meeting','Early diligence','Late diligence','Proposal sent','Deal won','Deal lost'];
-const IMPL=['Discovery & planning','Go-live scheduled','60-day evaluation','Overdue'];
+const IMPL=['Discovery & planning','Go-live scheduled','Evaluation','Overdue'];
 const TYPES=['Practice','Private equity group','Industry partner','Other'];
-const SOURCES=['Website / inbound','Referral','Outbound / cold outreach','Conference / event','Industry partner','Alcon - Field','B&L - Field','J&J - Field','Other'];
-const LOST_REASONS=['Price','Timing','Competition','No decision / went silent','Returned during eval','Budget cut','Other'];
-const SBADGE={Prospect:'b-prospect','Intro meeting':'b-intro','Early diligence':'b-early','Late diligence':'b-late','Proposal sent':'b-proposal','Deal won':'b-won','Deal lost':'b-lost','Discovery & planning':'b-discovery','Go-live scheduled':'b-golive','60-day evaluation':'b-60day',Overdue:'b-overdue',Active:'b-active'};
-const TITLES={dashboard:'Dashboard',pipeline:'Sales Pipeline',impl:'Implementation',active:'Active Accounts',renewals:'Renewals',reports:'Reports',activity:'Activity',settings:'Settings',followups:'My Follow-ups',snap:''};
-let accs=[],view='dashboard',q='',fs='all',ccount=1,sortCol='',sortDir=1,implMgrs=[];
+const SOURCES=['Website / inbound','Referral','Outbound / cold outreach','Conference / event','Industry partner','Alcon - Field','Alcon 45 Day','B&L - Field','J&J - Field','Other'];
+const LOST_REASONS=['Price','Timing','Competition','Did not see fit / value','No decision / went silent','Returned during eval','Budget cut','Other'];
+const HW_ARRANGEMENTS=['Practice pays','Alcon-supplied','No-charge eval','Razer Laptop'];
+const SBADGE={Prospect:'b-prospect','Intro meeting':'b-intro','Early diligence':'b-early','Late diligence':'b-late','Proposal sent':'b-proposal','Deal won':'b-won','Deal lost':'b-lost','Discovery & planning':'b-discovery','Go-live scheduled':'b-golive','Evaluation':'b-60day',Overdue:'b-overdue',Active:'b-active'};
+const TITLES={dashboard:'Dashboard',pipeline:'Sales Pipeline',impl:'Implementation',calendar:'Calendar',active:'Active Accounts',lost:'Lost / Re-engage',renewals:'Renewals',reports:'Reports',activity:'Activity',settings:'Settings',followups:'My Follow-ups',snap:''};
+let accs=[],events=[],view='dashboard',q='',fs='all',ccount=1,sortCol='',sortDir=1,implMgrs=[],partnerships=[];
 
 function getUser(){return localStorage.getItem('crm_user_name')||'Unknown';}
 function saveName(){
@@ -683,14 +1074,24 @@ async function loadAll(){
   try{
     var res=await Promise.all([
       req('GET','accounts',null,null,'updated_at.desc'),
-      req('GET','impl_managers',null,null,'name.asc').catch(function(){return[];})
+      req('GET','impl_managers',null,null,'name.asc').catch(function(){return[];}),
+      req('GET','events',null,null,'start_date.asc').catch(function(){return[];}),
+      req('GET','partnerships',null,null,'created_at.desc').catch(function(){return[];})
     ]);
     accs=res[0];
-    implMgrs=res[1].length?res[1].map(function(x){return x.name;}):['Leah Orr','Chris Morgan'];
+    implMgrs=res[1].length?res[1].map(function(x){return x.name;}):['Leah Orr','Chris Morgan','Eric Patnode','Matt Larson'];
+    events=res[2]||[];
+    partnerships=res[3]||[];
     updRnb();updFUBadge();render();
   }catch(e){
     document.getElementById('pcontent').innerHTML='<div class="empty">Could not load data.<br><small style="color:var(--danger);display:block;margin-top:8px">'+e.message+'</small><br><button class="btn btn-navy" onclick="loadAll()" style="margin-top:12px">Retry</button></div>';
   }
+}
+async function upsertEvent(ev){await req('POST','events',Array.isArray(ev)?ev:[ev],null,null);await loadAll();}
+async function deleteEvent(id){
+  if(!confirm('Delete this event?'))return;
+  await req('DELETE','events',null,['id=eq.'+id],null);
+  closeModal();await loadAll();
 }
 async function upsertAcc(a){await req('POST','accounts',Array.isArray(a)?a:[a],null,null);await loadAll();}
 async function deleteAcc(id){
@@ -735,14 +1136,562 @@ function th(col,label,w){
 }
 function daysFrom(d){if(!d)return null;return Math.round((new Date(d)-new Date())/86400000);}
 function addDays(s,n){if(!s)return'';var d=new Date(s);d.setDate(d.getDate()+n);return d.toISOString().split('T')[0];}
-function fmt(d){if(!d)return'—';return new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
+function fmt(d){
+  if(!d)return'—';
+  if(typeof d==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(d)){
+    var parts=d.split('-');
+    var localDate=new Date(parseInt(parts[0]),parseInt(parts[1])-1,parseInt(parts[2]));
+    return localDate.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+  }
+  return new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+}
 function fmtDT(d){if(!d)return'';var dt=new Date(d);return dt.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+' at '+dt.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});}
 function badge(s){return'<span class="badge '+(SBADGE[s]||'b-prospect')+'">'+esc(s)+'</span>';}
 function dl(d){if(d===null)return'';return d<0?'('+Math.abs(d)+'d overdue)':'('+d+'d)';}
 function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function fmtC(v){if(!v&&v!==0)return'';return Number(v).toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:2});}
 function parseC(s){if(!s)return null;var n=parseFloat(String(s).replace(/,/g,''));return isNaN(n)?null:n;}
+function matchAccount(a,query){
+  if(!query)return true;
+  var q=query.toLowerCase();
+  if((a.name||'').toLowerCase().includes(q))return true;
+  if((a.city||'').toLowerCase().includes(q))return true;
+  if((a.state||'').toLowerCase().includes(q))return true;
+  if((a.tags||'').toLowerCase().includes(q))return true;
+  if((a.referral_source||'').toLowerCase().includes(q))return true;
+  if((a.launch_window||'').toLowerCase().includes(q))return true;
+  // Search contacts: first name, last name, full name, email
+  var contacts=[];try{contacts=JSON.parse(a.contacts_json||'[]');}catch(e){}
+  for(var i=0;i<contacts.length;i++){
+    var c=contacts[i];
+    if((c.first||'').toLowerCase().includes(q))return true;
+    if((c.last||'').toLowerCase().includes(q))return true;
+    var full=((c.first||'')+' '+(c.last||'')).toLowerCase();
+    if(full.includes(q))return true;
+    if((c.email||'').toLowerCase().includes(q))return true;
+  }
+  return false;
+}
+function normName(name){
+  if(!name)return '';
+  return String(name).toLowerCase()
+    .replace(/[.,'\u2019&]/g,'')
+    .replace(/\b(inc|llc|llp|pllc|pc|pa|corp|co|ltd|the)\b/g,'')
+    .replace(/\b(eye care|eye center|eyecare|vision|optical|laser|cataract|surgery|surgical|associates|associate|practice|institute|clinic|center|group|family)\b/g,'')
+    .replace(/\s+/g,' ')
+    .trim();
+}
+function findDuplicates(includeIgnored){
+  // Returns array of duplicate groups: each group is an array of accounts that match
+  var groups={};
+  accs.forEach(function(a){
+    var n=normName(a.name);
+    if(!n||n.length<3)return;
+    if(!groups[n])groups[n]=[];
+    groups[n].push(a);
+  });
+  var ignored=getIgnoredDupes();
+  var dupes=[];
+  Object.keys(groups).forEach(function(k){
+    if(groups[k].length>1){
+      var grp=groups[k];
+      var key=dupeKey(grp);
+      if(includeIgnored||!ignored[key]){
+        dupes.push(grp);
+      }
+    }
+  });
+  return dupes;
+}
+function dupeKey(grp){
+  // Stable key: sorted account IDs joined
+  return grp.map(function(a){return a.id;}).sort().join('|');
+}
+function getIgnoredDupes(){
+  try{return JSON.parse(localStorage.getItem('crm_ignored_dupes')||'{}');}catch(e){return{};}
+}
+function ignoreDupeByKey(key){
+  var ignored=getIgnoredDupes();
+  ignored[key]=new Date().toISOString();
+  localStorage.setItem('crm_ignored_dupes',JSON.stringify(ignored));
+  render();
+}
+function ignoreDupe(grp){
+  var ignored=getIgnoredDupes();
+  ignored[dupeKey(grp)]=new Date().toISOString();
+  localStorage.setItem('crm_ignored_dupes',JSON.stringify(ignored));
+  render();
+}
+function unignoreDupe(key){
+  var ignored=getIgnoredDupes();
+  delete ignored[key];
+  localStorage.setItem('crm_ignored_dupes',JSON.stringify(ignored));
+  render();
+}
+function findPossibleDuplicate(name,excludeId){
+  // Used at save-time. Returns first matching account or null.
+  var n=normName(name);
+  if(!n||n.length<3)return null;
+  for(var i=0;i<accs.length;i++){
+    if(excludeId&&accs[i].id===excludeId)continue;
+    if(normName(accs[i].name)===n)return accs[i];
+  }
+  return null;
+}
+function updateTagSuggest(inp){
+  var box=document.getElementById('tag-suggest');
+  if(!box)return;
+  var val=inp.value;
+  // Find the last partial tag (after the last comma)
+  var lastComma=val.lastIndexOf(',');
+  var partial=(lastComma===-1?val:val.slice(lastComma+1)).trim().toLowerCase();
+  if(!partial){hideTagSuggest();return;}
+  var existing=getCurrentTagsFromInput(val);
+  var matches=allTags().filter(function(t){
+    return t.toLowerCase().indexOf(partial)===0&&existing.map(normTag).indexOf(normTag(t))===-1;
+  }).slice(0,8);
+  if(!matches.length){hideTagSuggest();return;}
+  box.innerHTML=matches.map(function(t){return '<div class="tag-suggest-item" onmousedown="pickTagSuggest(\''+esc(t).replace(/'/g,"\\'")+'\')">'+esc(t)+'</div>';}).join('');
+  box.classList.add('show');
+}
+function hideTagSuggest(){
+  var box=document.getElementById('tag-suggest');
+  if(box)box.classList.remove('show');
+}
+function getCurrentTagsFromInput(val){
+  return val.split(',').map(function(s){return s.trim();}).filter(function(s){return s;});
+}
+function pickTagSuggest(tag){
+  var inp=document.getElementById('ftags');
+  if(!inp)return;
+  var val=inp.value;
+  var lastComma=val.lastIndexOf(',');
+  var prefix=lastComma===-1?'':val.slice(0,lastComma+1);
+  inp.value=(prefix?prefix+' ':'')+tag+', ';
+  hideTagSuggest();
+  inp.focus();
+}
+function tagFilterBar(){
+  if(!window._tagFilter)return '';
+  return '<span class="tag-filter-active" style="margin-left:8px">Tag: <strong>'+esc(window._tagFilter)+'</strong><button onclick="clearTagFilter()" title="Clear filter">×</button></span>';
+}
+function applyTagFilter(list){
+  if(!window._tagFilter)return list;
+  var t=normTag(window._tagFilter);
+  return list.filter(function(a){
+    return getTags(a).map(normTag).indexOf(t)!==-1;
+  });
+}
+function togglePaidDate(){
+  var cb=document.getElementById('fhp');
+  var dt=document.getElementById('fhpd');
+  if(!cb||!dt)return;
+  if(cb.checked){
+    dt.disabled=false;
+    dt.style.opacity='1';
+    if(!dt.value)dt.value=new Date().toISOString().split('T')[0];
+  } else {
+    dt.disabled=true;
+    dt.style.opacity='.5';
+  }
+}
+function toggleCheckinSkip(){
+  var cb=document.getElementById('fcs');
+  var dt=document.getElementById('fc3');
+  if(!cb||!dt)return;
+  if(cb.checked){
+    dt.disabled=true;
+    dt.style.opacity='.5';
+  } else {
+    dt.disabled=false;
+    dt.style.opacity='1';
+  }
+}
+function updateArrangement(){
+  var sel=document.getElementById('fhwa');
+  var payRow=document.getElementById('hw-payment-row');
+  var dateRow=document.getElementById('hw-paiddate-row');
+  var cb=document.getElementById('fhp');
+  var dt=document.getElementById('fhpd');
+  if(!sel)return;
+  var isPracticePays=sel.value==='Practice pays';
+  // Dim the payment fields when arrangement isn't Practice pays
+  if(payRow)payRow.style.opacity=isPracticePays?'1':'.4';
+  if(dateRow)dateRow.style.opacity=isPracticePays?'1':'.4';
+  if(cb)cb.disabled=!isPracticePays;
+  if(dt&&!isPracticePays){
+    dt.disabled=true;
+  } else if(dt&&cb){
+    // Re-apply normal paid-date toggle logic
+    togglePaidDate();
+  }
+}
+function hwPayStatus(a){
+  // Returns styled HTML showing payment state with appropriate visual treatment
+  if(!a.hardware_cost||parseC(a.hardware_cost)<=0){return '<span style="color:var(--muted)">—</span>';}
+  // Non-direct arrangements skip payment tracking
+  var arr=a.hw_arrangement||'Practice pays';
+  if(arr==='Alcon-supplied'){return '<span style="color:var(--text-2);font-weight:600">Alcon-supplied · n/a</span>';}
+  if(arr==='No-charge eval'){return '<span style="color:var(--text-2);font-weight:600">Loaner · n/a</span>';}
+  if(arr==='Razer Laptop'){return '<span style="color:var(--text-2);font-weight:600">Razer Laptop · n/a</span>';}
+  if(a.hardware_paid){
+    var dateStr=a.hardware_paid_date?' · '+fmt(a.hardware_paid_date):'';
+    return '<span style="color:var(--lime-ink);font-weight:600">✓ Paid'+dateStr+'</span>';
+  }
+  // Unpaid — check if past go-live = overdue
+  var goLive=a.go_live_date;
+  if(goLive){
+    var d=daysFrom(goLive);
+    if(d!==null&&d<=0){
+      // Go-live has happened (today or past) and still not paid
+      var daysOverdue=Math.abs(d);
+      return '<span style="color:var(--danger);font-weight:700">⚠ Unpaid · '+daysOverdue+'d past go-live</span>';
+    } else if(d!==null&&d>0){
+      return '<span style="color:var(--warn-ink);font-weight:600">Pending · go-live in '+d+'d</span>';
+    }
+  }
+  return '<span style="color:var(--warn-ink);font-weight:600">Pending payment</span>';
+}
+function hwPayStatusShort(a){
+  // Compact version for table cells. Now strictly about payment — arrangement is shown separately.
+  if(!a.hardware_cost||parseC(a.hardware_cost)<=0){return '<span style="color:var(--muted-2);font-size:11px">—</span>';}
+  var arr=a.hw_arrangement||'Practice pays';
+  // Non-direct arrangements: payment tracking doesn't apply
+  if(arr!=='Practice pays'){return '<span style="color:var(--muted);font-size:11.5px;font-weight:500;font-style:italic">n/a</span>';}
+  if(a.hardware_paid){
+    return '<span style="color:var(--lime-ink);font-weight:600;font-size:12px">✓ '+(a.hardware_paid_date?fmt(a.hardware_paid_date):'Paid')+'</span>';
+  }
+  var goLive=a.go_live_date;
+  if(goLive){
+    var d=daysFrom(goLive);
+    if(d!==null&&d<=0){
+      return '<span style="color:var(--danger);font-weight:700;font-size:12px">⚠ '+Math.abs(d)+'d overdue</span>';
+    }
+  }
+  return '<span style="color:var(--warn-ink);font-weight:600;font-size:12px">Pending</span>';
+}
+function hwSourceShort(a){
+  // Compact badge for the new HW Source column. Shows the arrangement always (even with no cost).
+  var arr=a.hw_arrangement||'Practice pays';
+  if(arr==='Alcon-supplied'){return '<span class="badge" style="background:oklch(91% 0.10 50);color:oklch(38% 0.12 50);border-color:oklch(78% 0.14 50)"><span style="background:oklch(38% 0.12 50)"></span>Alcon</span>';}
+  if(arr==='No-charge eval'){return '<span class="badge" style="background:var(--navy-soft);color:var(--navy);border-color:var(--line-2)"><span style="background:var(--navy)"></span>Loaner</span>';}
+  if(arr==='Razer Laptop'){return '<span class="badge" style="background:oklch(92% 0.08 155);color:oklch(32% 0.12 155);border-color:oklch(75% 0.14 155)"><span style="background:oklch(32% 0.12 155)"></span>Razer</span>';}
+  return '<span style="color:var(--text-2);font-size:12px;font-weight:500">Practice</span>';
+}
+function subYear(a){
+  // Returns HTML snippet showing subscription year, or a placeholder if start date missing.
+  if(!a||!a.subscription_start_date)return '<span style="color:var(--muted-2);font-size:11px">—</span>';
+  var s=a.subscription_start_date;
+  // Parse date-only strings as local time (avoid UTC day-shift bug)
+  var start;
+  if(typeof s==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(s)){
+    var parts=s.split('-');
+    start=new Date(parseInt(parts[0]),parseInt(parts[1])-1,parseInt(parts[2]));
+  } else {
+    start=new Date(s);
+  }
+  if(isNaN(start.getTime()))return '<span style="color:var(--muted-2);font-size:11px">—</span>';
+  var now=new Date();
+  var todayLocal=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  var monthsElapsed=(todayLocal.getFullYear()-start.getFullYear())*12+(todayLocal.getMonth()-start.getMonth());
+  // Same-day-of-month or earlier this month = still last year's number
+  if(todayLocal.getDate()<start.getDate())monthsElapsed--;
+  var yearNum=Math.floor(monthsElapsed/12)+1;
+  if(yearNum<1)yearNum=1;
+  // Color by year: lime → teal → navy → gold (freshest to most loyal)
+  var bg,fg,dot;
+  if(yearNum===1){bg='var(--lime-wash)';fg='var(--lime-ink)';dot='var(--lime-ink)';}
+  else if(yearNum===2){bg='oklch(93% 0.06 200)';fg='oklch(35% 0.10 205)';dot='oklch(45% 0.14 205)';}
+  else if(yearNum===3){bg='oklch(92% 0.04 255)';fg='oklch(32% 0.08 255)';dot='oklch(42% 0.12 255)';}
+  else {bg='oklch(93% 0.10 85)';fg='oklch(38% 0.14 75)';dot='oklch(50% 0.16 75)';}
+  return '<span class="badge" style="background:'+bg+';color:'+fg+';border-color:'+dot+'"><span style="background:'+dot+'"></span>Year '+yearNum+'</span>';
+}
+function subYearNum(a){
+  // Numeric-only version, for sorting
+  if(!a||!a.subscription_start_date)return 0;
+  var s=a.subscription_start_date;
+  var start;
+  if(typeof s==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(s)){
+    var parts=s.split('-');
+    start=new Date(parseInt(parts[0]),parseInt(parts[1])-1,parseInt(parts[2]));
+  } else {
+    start=new Date(s);
+  }
+  if(isNaN(start.getTime()))return 0;
+  var now=new Date();
+  var todayLocal=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  var monthsElapsed=(todayLocal.getFullYear()-start.getFullYear())*12+(todayLocal.getMonth()-start.getMonth());
+  if(todayLocal.getDate()<start.getDate())monthsElapsed--;
+  var yearNum=Math.floor(monthsElapsed/12)+1;
+  return Math.max(1,yearNum);
+}
+function updateReferralLabel(){
+  var srcEl=document.getElementById('fsrc');
+  var lblEl=document.getElementById('fref-lbl');
+  var hintEl=document.getElementById('fref-hint');
+  var inpEl=document.getElementById('fref');
+  if(!srcEl||!lblEl)return;
+  var src=srcEl.value;
+  var label='Referral source';
+  var placeholder='Name or company';
+  var applies=true;
+  if(src==='Alcon - Field'||src==='Alcon 45 Day'){label='Alcon rep name';placeholder='e.g. Sarah Chen';}
+  else if(src==='B&L - Field'){label='B&L rep name';placeholder='e.g. Sarah Chen';}
+  else if(src==='J&J - Field'){label='J&J rep name';placeholder='e.g. Sarah Chen';}
+  else if(src==='Referral'){label='Referred by';placeholder='Who referred them?';}
+  else if(src==='Industry partner'){label='Partner name / company';placeholder='e.g. Acme Optical Group';}
+  else if(src==='Other'){label='Source detail';placeholder='Describe the source';}
+  else {applies=false;label='Referral source';placeholder='N/A for this source';}
+  lblEl.textContent=label;
+  if(inpEl){
+    inpEl.placeholder=placeholder;
+    inpEl.style.opacity=applies?'1':'.55';
+  }
+  if(hintEl)hintEl.style.display=applies?'':'none';
+}
+function sortLostReport(col){
+  if(window._lostSortCol===col)window._lostSortDir=(window._lostSortDir||1)*-1;
+  else{window._lostSortCol=col;window._lostSortDir=1;}
+  rReports(document.getElementById('pcontent'),document.getElementById('pactions'));
+}
+function sortSrcReport(col){
+  if(window._srcSortCol===col)window._srcSortDir=(window._srcSortDir||1)*-1;
+  else{window._srcSortCol=col;window._srcSortDir=1;}
+  rReports(document.getElementById('pcontent'),document.getElementById('pactions'));
+}
+function goLiveCell(a){
+  // Returns HTML for the go-live display: real date range if scheduled, else launch_window caption if set, else "—"
+  if(a.go_live_date){
+    if(a.go_live_end_date&&a.go_live_end_date!==a.go_live_date){
+      return fmt(a.go_live_date)+' → '+fmt(a.go_live_end_date);
+    }
+    return fmt(a.go_live_date);
+  }
+  if(a.launch_window){
+    return '<span style="color:var(--muted);font-style:italic;font-size:12.5px;font-weight:500">'+esc(a.launch_window)+'</span><div style="font-family:var(--f-mono);font-size:9.5px;color:var(--muted-2);letter-spacing:.05em;text-transform:uppercase;margin-top:2px;font-weight:600;font-style:normal">Target window</div>';
+  }
+  return '—';
+}
 function pcon(a){try{var c=JSON.parse(a.contacts_json||'[]');return c.length?c[0]:{}}catch(e){return{};}}
+// ============ BULK ACTIONS ============
+window._bulkEnabled=false;
+window._bulkSelected=new Set();
+function toggleBulkMode(){
+  window._bulkEnabled=!window._bulkEnabled;
+  if(!window._bulkEnabled)window._bulkSelected.clear();
+  render();
+}
+function toggleBulk(id,checked){
+  if(checked)window._bulkSelected.add(id);
+  else window._bulkSelected.delete(id);
+  // Just refresh the bulk bar count without full re-render
+  var bar=document.getElementById('bulk-bar');
+  if(bar){
+    if(window._bulkSelected.size>0){
+      bar.style.display='flex';
+      var ct=document.getElementById('bulk-count');
+      if(ct)ct.textContent=window._bulkSelected.size+' selected';
+    } else {
+      bar.style.display='none';
+    }
+  }
+}
+function toggleBulkAll(checked){
+  // Select/deselect all visible rows
+  document.querySelectorAll('tbody .bulk-cb').forEach(function(cb){
+    cb.checked=checked;
+    var id=cb.getAttribute('data-id');
+    if(id){if(checked)window._bulkSelected.add(id);else window._bulkSelected.delete(id);}
+  });
+  toggleBulk(); // refresh bar
+}
+function bulkBarHTML(){
+  if(!window._bulkEnabled)return '';
+  var visible=window._bulkSelected.size>0?'flex':'none';
+  return '<div id="bulk-bar" class="bulk-bar" style="display:'+visible+'">'+
+    '<span class="bulk-count" id="bulk-count">'+window._bulkSelected.size+' selected</span>'+
+    '<button class="btn" onclick="bulkSetFollowup()">Set follow-up</button>'+
+    '<button class="btn" onclick="bulkAddTag()">Add tag</button>'+
+    '<button class="btn" onclick="bulkRemoveTag()">Remove tag</button>'+
+    '<button class="btn" onclick="bulkChangeStage()">Change stage</button>'+
+    '<button class="btn" onclick="bulkClear()">Clear</button>'+
+    '</div>';
+}
+function bulkClear(){
+  window._bulkSelected.clear();
+  // Uncheck all visible boxes
+  document.querySelectorAll('tbody .bulk-cb').forEach(function(cb){cb.checked=false;});
+  document.querySelectorAll('thead .bulk-cb').forEach(function(cb){cb.checked=false;});
+  toggleBulk();
+}
+async function bulkSetFollowup(){
+  if(!window._bulkSelected.size)return;
+  var note=prompt('Follow-up note for '+window._bulkSelected.size+' account'+(window._bulkSelected.size===1?'':'s')+':','6-month re-engagement check');
+  if(note===null)return;
+  var dateStr=prompt('Due date (YYYY-MM-DD):',(function(){var d=new Date();d.setMonth(d.getMonth()+6);return d.toISOString().split('T')[0];})());
+  if(!dateStr)return;
+  var ids=Array.from(window._bulkSelected);
+  var owner=getUser();
+  var updated=[];
+  ids.forEach(function(id){
+    var a=accs.find(function(x){return x.id===id;});
+    if(!a)return;
+    var fus=[];try{fus=JSON.parse(a.followups_json||'[]');}catch(e){}
+    fus.push({note:note||'Follow-up',date:dateStr,owner:owner,done:false,created:new Date().toISOString()});
+    updated.push(Object.assign({},a,{followups_json:JSON.stringify(fus),activity_log:logActivity(a,'Bulk: set follow-up "'+(note||'Follow-up')+'" for '+fmt(dateStr)),updated_at:new Date().toISOString()}));
+  });
+  try{
+    await req('POST','accounts',updated,null,null);
+    window._bulkSelected.clear();
+    await loadAll();
+    alert('Follow-up set on '+ids.length+' account'+(ids.length===1?'':'s')+'.');
+  }catch(e){alert('Error: '+e.message);}
+}
+async function bulkAddTag(){
+  if(!window._bulkSelected.size)return;
+  var existing=allTags();
+  var hint=existing.length?'\n\nExisting tags: '+existing.slice(0,8).join(', ')+(existing.length>8?'…':''):'';
+  var tag=prompt('Tag to add to '+window._bulkSelected.size+' account'+(window._bulkSelected.size===1?'':'s')+':'+hint);
+  if(!tag||!tag.trim())return;
+  tag=tag.trim();
+  var ids=Array.from(window._bulkSelected);
+  var updated=[];
+  ids.forEach(function(id){
+    var a=accs.find(function(x){return x.id===id;});
+    if(!a)return;
+    var current=getTags(a);
+    var existsAlready=current.map(normTag).indexOf(normTag(tag))!==-1;
+    if(existsAlready)return;
+    current.push(tag);
+    updated.push(Object.assign({},a,{tags:current.join(', '),activity_log:logActivity(a,'Bulk: tagged "'+tag+'"'),updated_at:new Date().toISOString()}));
+  });
+  if(!updated.length){alert('All selected accounts already have that tag.');return;}
+  try{
+    await req('POST','accounts',updated,null,null);
+    window._bulkSelected.clear();
+    await loadAll();
+    alert('Tag "'+tag+'" added to '+updated.length+' account'+(updated.length===1?'':'s')+'.');
+  }catch(e){alert('Error: '+e.message);}
+}
+async function bulkRemoveTag(){
+  if(!window._bulkSelected.size)return;
+  // Gather tags actually present on any of the selected accounts
+  var ids=Array.from(window._bulkSelected);
+  var presentTags={};
+  ids.forEach(function(id){
+    var a=accs.find(function(x){return x.id===id;});
+    if(!a)return;
+    getTags(a).forEach(function(t){presentTags[normTag(t)]=t;});
+  });
+  var presentList=Object.values(presentTags).sort();
+  if(!presentList.length){alert('None of the selected accounts have any tags.');return;}
+  var promptText='Remove which tag from the '+ids.length+' selected account'+(ids.length===1?'':'s')+'?\n\nTags currently present:\n'+
+    presentList.map(function(t,i){return (i+1)+'. '+t;}).join('\n')+
+    '\n\nType the number or the exact tag name:';
+  var input=prompt(promptText);
+  if(!input||!input.trim())return;
+  input=input.trim();
+  var target=null;
+  var num=parseInt(input);
+  if(!isNaN(num)&&num>=1&&num<=presentList.length){target=presentList[num-1];}
+  else {
+    var matched=presentList.find(function(t){return normTag(t)===normTag(input);});
+    if(matched)target=matched;
+  }
+  if(!target){alert('Tag not recognized. Type the number from the list or the exact tag name.');return;}
+  if(!confirm('Remove tag "'+target+'" from '+ids.length+' account'+(ids.length===1?'':'s')+'?'))return;
+  var updated=[];
+  ids.forEach(function(id){
+    var a=accs.find(function(x){return x.id===id;});
+    if(!a)return;
+    var current=getTags(a);
+    var idx=current.map(normTag).indexOf(normTag(target));
+    if(idx===-1)return;
+    current.splice(idx,1);
+    updated.push(Object.assign({},a,{tags:current.length?current.join(', '):null,activity_log:logActivity(a,'Bulk: removed tag "'+target+'"'),updated_at:new Date().toISOString()}));
+  });
+  if(!updated.length){alert('No accounts had that tag.');return;}
+  try{
+    await req('POST','accounts',updated,null,null);
+    window._bulkSelected.clear();
+    await loadAll();
+    alert('Tag "'+target+'" removed from '+updated.length+' account'+(updated.length===1?'':'s')+'.');
+  }catch(e){alert('Error: '+e.message);}
+}
+async function bulkChangeStage(){
+  if(!window._bulkSelected.size)return;
+  var allStages=SALES.concat(IMPL).concat(['Active']);
+  var prompt_text='Change stage for '+window._bulkSelected.size+' account'+(window._bulkSelected.size===1?'':'s')+' to one of:\n\n'+allStages.map(function(s,i){return (i+1)+'. '+s;}).join('\n')+'\n\nType the number or the exact stage name:';
+  var input=prompt(prompt_text);
+  if(!input||!input.trim())return;
+  input=input.trim();
+  var newStage=null;
+  // Number?
+  var num=parseInt(input);
+  if(!isNaN(num)&&num>=1&&num<=allStages.length){newStage=allStages[num-1];}
+  else {
+    // Match name
+    var matched=allStages.find(function(s){return s.toLowerCase()===input.toLowerCase();});
+    if(matched)newStage=matched;
+  }
+  if(!newStage){alert('Stage not recognized.');return;}
+  if(!confirm('Change stage to "'+newStage+'" for '+window._bulkSelected.size+' account'+(window._bulkSelected.size===1?'':'s')+'?'))return;
+  var ids=Array.from(window._bulkSelected);
+  var updated=[];
+  ids.forEach(function(id){
+    var a=accs.find(function(x){return x.id===id;});
+    if(!a||a.stage===newStage)return;
+    updated.push(Object.assign({},a,{stage:newStage,activity_log:logActivity(a,'Bulk: stage changed from '+a.stage+' to '+newStage),updated_at:new Date().toISOString()}));
+  });
+  if(!updated.length){alert('No changes (all selected already at that stage).');return;}
+  try{
+    await req('POST','accounts',updated,null,null);
+    window._bulkSelected.clear();
+    await loadAll();
+    alert('Stage changed for '+updated.length+' account'+(updated.length===1?'':'s')+'.');
+  }catch(e){alert('Error: '+e.message);}
+}
+// ============ TAGS ============
+function getTags(a){
+  if(!a||!a.tags)return [];
+  return String(a.tags).split(',').map(function(t){return t.trim();}).filter(function(t){return t;});
+}
+function normTag(t){return String(t||'').trim().toLowerCase();}
+function allTags(){
+  var seen={};
+  var out=[];
+  accs.forEach(function(a){
+    getTags(a).forEach(function(t){
+      var k=normTag(t);
+      if(!seen[k]){seen[k]=true;out.push(t);}
+    });
+  });
+  return out.sort();
+}
+function renderTagChips(a,opts){
+  opts=opts||{};
+  var tags=getTags(a);
+  if(!tags.length)return '';
+  var chips=tags.map(function(t){
+    return '<span class="tag-chip" data-tag="'+esc(t)+'" onclick="event.stopPropagation();filterByTag(this.dataset.tag)">'+esc(t)+'</span>';
+  }).join('');
+  return '<span class="tag-chips '+(opts.inline?'inline':'')+'">'+chips+'</span>';
+}
+function filterByTag(tag){
+  // Jump to a view that filters by this tag. Default: pipeline view filtered.
+  window._tagFilter=tag;
+  // Stay in current view if it supports filtering, else go to pipeline
+  var supportedViews=['pipeline','active','lost','impl'];
+  if(supportedViews.indexOf(view)===-1){
+    nav('pipeline');
+  } else {
+    render();
+  }
+}
+function clearTagFilter(){
+  window._tagFilter=null;
+  render();
+}
 function cname(a){var c=pcon(a);return((c.first||'')+' '+(c.last||'')).trim()||c.name||'—';}
 function updRnb(){
   var n=accs.filter(function(a){return a.stage==='Active'&&daysFrom(a.renewal_date)!==null&&daysFrom(a.renewal_date)<=30&&daysFrom(a.renewal_date)>=0;}).length;
@@ -757,6 +1706,7 @@ function logActivity(acc,what){
   return JSON.stringify(log.slice(0,50));
 }
 function ciStatus(a){
+  if(a.checkin_skip)return'<span style="color:var(--muted);font-style:italic;font-size:12.5px">N/A — skipped</span>';
   if(!a.checkin_30_date)return'—';
   var d=daysFrom(a.checkin_30_date);
   if(a.checkin_30_done)return'<span style="color:var(--ok);font-weight:600">✓ Done</span>';
@@ -768,7 +1718,7 @@ async function toggleCI(id){
   var a=accs.find(function(x){return x.id===id;});
   if(!a)return;
   var done=!a.checkin_30_done;
-  await upsertAcc(Object.assign({},a,{checkin_30_done:done,activity_log:logActivity(a,done?'Marked 30-day check-in complete':'Undid 30-day check-in'),updated_at:new Date().toISOString()}));
+  await upsertAcc(Object.assign({},a,{checkin_30_done:done,activity_log:logActivity(a,done?'Marked Eval Check-In complete':'Undid Eval Check-In'),updated_at:new Date().toISOString()}));
 }
 function navDrill(drillId){
   view='reports';q='';sortCol='';sortDir=1;
@@ -785,8 +1735,16 @@ function navDrill(drillId){
 function navSnap(type){
   view='snap';window._snapType=type;q='';sortCol='';sortDir=1;
   document.querySelectorAll('.nav-item').forEach(function(e){e.classList.remove('active');});
-  var titles={hardware:'Hardware Revenue',subscription:'Subscription Revenue',kits:'Kits Deployed'};
+  var titles={hardware:'Hardware Revenue',subscription:'Subscription Revenue',kits:'Kits Deployed',forecast:'Subscription Forecast'};
   document.getElementById('ptitle').textContent=titles[type]||'';
+  render();
+}
+function navAlcon45(){
+  view='reports';q='';sortCol='';sortDir=1;
+  window._lf='all';window._sf='Alcon 45 Day';
+  document.querySelectorAll('.nav-item').forEach(function(e){e.classList.remove('active');});
+  var el=document.getElementById('nav-reports');if(el)el.classList.add('active');
+  document.getElementById('ptitle').textContent='Reports';
   render();
 }
 function nav(v){
@@ -822,7 +1780,9 @@ function render(){
   if(view==='dashboard')rDash(c,a);
   else if(view==='pipeline')rPipe(c,a);
   else if(view==='impl')rImpl(c,a);
+  else if(view==='calendar')rCal(c,a);
   else if(view==='active')rActive(c,a);
+  else if(view==='lost')rLost(c,a);
   else if(view==='renewals')rRenewals(c,a);
   else if(view==='reports')rReports(c,a);
   else if(view==='activity')rActivity(c,a);
@@ -851,17 +1811,15 @@ function rDash(el,act){
   var hwRev=accs.filter(function(a){return a.stage==='Active'||IMPL.includes(a.stage);}).reduce(function(s,a){return s+(parseC(a.hardware_cost)||0);},0);
   var subRev=active.reduce(function(s,a){var amt=parseC(a.sub_amount)||0;return s+(a.sub_type==='Monthly'?amt*12:amt);},0);
   var pipeVal=pipe.reduce(function(s,a){return s+(parseC(a.deal_value)||0);},0);
+  var pipeWithValue=pipe.filter(function(a){return parseC(a.deal_value)>0;}).length;
+  // Subscription forecast: annualized subs from accounts in implementation (signed but not yet active)
+  var subForecast=accs.filter(function(a){return IMPL.includes(a.stage)&&a.sub_type&&a.sub_type!=='No charge';}).reduce(function(s,a){var amt=parseC(a.sub_amount)||0;return s+(a.sub_type==='Monthly'?amt*12:amt);},0);
+  var subForecastCount=accs.filter(function(a){return IMPL.includes(a.stage)&&a.sub_type&&a.sub_type!=='No charge'&&parseC(a.sub_amount)>0;}).length;
+  var implMissingSub=accs.filter(function(a){return IMPL.includes(a.stage)&&(!a.sub_type||a.sub_type==='No charge'||!parseC(a.sub_amount));}).length;
+  var implTotal=accs.filter(function(a){return IMPL.includes(a.stage);}).length;
+  var partnershipTotal=(partnerships||[]).reduce(function(s,p){return s+((parseFloat(p.monthly_amount)||0)*12);},0);
+  var partnershipCount=(partnerships||[]).filter(function(p){return (parseFloat(p.monthly_amount)||0)>0;}).length;
   var totalKits=active.reduce(function(s,a){return s+(a.kit_count||0);},0);
-
-  // Build sparkline from pipeline by stage (visual, not literal time-series)
-  var stageBars=SALES.filter(function(s){return s!=='Deal won'&&s!=='Deal lost';})
-    .map(function(s){return pipe.filter(function(a){return a.stage===s;}).length;});
-  var maxBar=Math.max.apply(null,stageBars.concat([1]));
-  var sparkHTML=stageBars.map(function(n,i){
-    var h=Math.max(8,Math.round(n/maxBar*100));
-    var hi=i>=3?' hi':'';
-    return '<div class="spark-bar'+hi+'" style="height:'+h+'%"></div>';
-  }).join('');
 
   // Alerts
   var alerts='';
@@ -878,19 +1836,27 @@ function rDash(el,act){
     var d=daysFrom(a.renewal_date);
     alerts+='<div class="alert-row danger"><span class="a-text"><span class="a-dot"></span><strong>'+esc(a.name)+'</strong> — '+(d<0?'renewal OVERDUE by '+Math.abs(d)+' day'+(Math.abs(d)===1?'':'s')+' · '+fmt(a.renewal_date):'renewal in '+d+' day'+(d===1?'':'s')+' · '+fmt(a.renewal_date))+'</span>'+vBtn(a.id)+'</div>';
   });
-  impl.filter(function(a){return a.stage==='60-day evaluation'&&daysFrom(a.checkin_30_date)!==null&&daysFrom(a.checkin_30_date)<0&&!a.checkin_30_done;}).forEach(function(a){
-    alerts+='<div class="alert-row danger"><span class="a-text"><span class="a-dot"></span><strong>'+esc(a.name)+'</strong> — 30-day check-in missed, due '+fmt(a.checkin_30_date)+'</span>'+vBtn(a.id)+'</div>';
+  impl.filter(function(a){return a.stage==='Evaluation'&&!a.checkin_skip&&daysFrom(a.checkin_30_date)!==null&&daysFrom(a.checkin_30_date)<0&&!a.checkin_30_done;}).forEach(function(a){
+    alerts+='<div class="alert-row danger"><span class="a-text"><span class="a-dot"></span><strong>'+esc(a.name)+'</strong> — Eval Check-In missed, due '+fmt(a.checkin_30_date)+'</span>'+vBtn(a.id)+'</div>';
   });
-  impl.filter(function(a){return a.stage==='60-day evaluation'&&daysFrom(a.checkin_30_date)!==null&&daysFrom(a.checkin_30_date)>=0&&daysFrom(a.checkin_30_date)<=7&&!a.checkin_30_done;}).forEach(function(a){
+  impl.filter(function(a){return a.stage==='Evaluation'&&!a.checkin_skip&&daysFrom(a.checkin_30_date)!==null&&daysFrom(a.checkin_30_date)>=0&&daysFrom(a.checkin_30_date)<=7&&!a.checkin_30_done;}).forEach(function(a){
     var d=daysFrom(a.checkin_30_date);
-    alerts+='<div class="alert-row warn"><span class="a-text"><span class="a-dot"></span><strong>'+esc(a.name)+'</strong> — 30-day check-in due in '+d+'d</span>'+vBtn(a.id)+'</div>';
+    alerts+='<div class="alert-row warn"><span class="a-text"><span class="a-dot"></span><strong>'+esc(a.name)+'</strong> — Eval Check-In due in '+d+'d</span>'+vBtn(a.id)+'</div>';
   });
   impl.filter(function(a){return a.stage==='Overdue';}).forEach(function(a){
-    alerts+='<div class="alert-row danger"><span class="a-text"><span class="a-dot"></span><strong>'+esc(a.name)+'</strong> — 60-day evaluation overdue</span>'+vBtn(a.id)+'</div>';
+    alerts+='<div class="alert-row danger"><span class="a-text"><span class="a-dot"></span><strong>'+esc(a.name)+'</strong> — Evaluation overdue</span>'+vBtn(a.id)+'</div>';
   });
-  impl.filter(function(a){return a.stage==='60-day evaluation'&&daysFrom(a.eval_end_date)!==null&&daysFrom(a.eval_end_date)<=10&&daysFrom(a.eval_end_date)>=0;}).forEach(function(a){
+  impl.filter(function(a){return a.stage==='Evaluation'&&daysFrom(a.eval_end_date)!==null&&daysFrom(a.eval_end_date)<=10&&daysFrom(a.eval_end_date)>=0;}).forEach(function(a){
     var d=daysFrom(a.eval_end_date);
-    alerts+='<div class="alert-row warn"><span class="a-text"><span class="a-dot"></span><strong>'+esc(a.name)+'</strong> — 60-day evaluation ends in '+d+'d</span>'+vBtn(a.id)+'</div>';
+    alerts+='<div class="alert-row warn"><span class="a-text"><span class="a-dot"></span><strong>'+esc(a.name)+'</strong> — Evaluation ends in '+d+'d</span>'+vBtn(a.id)+'</div>';
+  });
+  // Hardware payment overdue (past go-live, still unpaid) — Practice-pays arrangements only
+  accs.filter(function(a){
+    var arr=a.hw_arrangement||'Practice pays';
+    return IMPL.includes(a.stage)&&parseC(a.hardware_cost)>0&&!a.hardware_paid&&a.go_live_date&&daysFrom(a.go_live_date)<=0&&arr==='Practice pays';
+  }).forEach(function(a){
+    var d=Math.abs(daysFrom(a.go_live_date));
+    alerts+='<div class="alert-row danger"><span class="a-text"><span class="a-dot"></span><strong>'+esc(a.name)+'</strong> — Hardware payment unpaid · $'+fmtC(a.hardware_cost)+' · '+(d===0?'go-live today':d+'d past go-live')+'</span>'+vBtn(a.id)+'</div>';
   });
 
   // Pipeline breakdown
@@ -901,13 +1867,58 @@ function rDash(el,act){
     return '<div class="pipe-row" data-stage="'+esc(x.s)+'" onclick="navFilter(\'pipeline\',this.dataset.stage)"><div class="pipe-label">'+esc(x.s)+'</div><div class="pipe-bar-wrap"><div class="pipe-bar" style="width:'+pct+'%"></div></div><div class="pipe-count">'+x.n+'</div></div>';
   }).join(''):'<div style="color:var(--muted);font-size:13.5px;padding:8px 0">No open pipeline deals.</div>';
 
+  // Alcon 45 Day source — dashboard card
+  var a45=accs.filter(function(a){return a.source==='Alcon 45 Day';});
+  var a45Pipe=a45.filter(function(a){return SALES.includes(a.stage)&&a.stage!=='Deal won'&&a.stage!=='Deal lost';});
+  var a45Active=a45.filter(function(a){return a.stage==='Active';});
+  var a45Impl=a45.filter(function(a){return IMPL.includes(a.stage);});
+  var a45Lost=a45.filter(function(a){return a.stage==='Deal lost';});
+  var a45Won=a45.filter(function(a){return a.stage==='Active'||IMPL.includes(a.stage)||a.stage==='Deal won';});
+  var a45Total=a45.length;
+  var a45ConvRate=a45Total>0?Math.round(a45Won.length/a45Total*100):0;
+  var a45Revenue=a45Active.reduce(function(s,a){var amt=parseC(a.sub_amount)||0;return s+(a.sub_type==='Monthly'?amt*12:amt);},0)+
+    a45.filter(function(a){return a.stage==='Active'||IMPL.includes(a.stage);}).reduce(function(s,a){return s+(parseC(a.hardware_cost)||0);},0);
+  var a45InEval=a45.filter(function(a){return a.stage==='Evaluation';}).slice().sort(function(a,b){
+    var ad=daysFrom(a.eval_end_date);var bd=daysFrom(b.eval_end_date);
+    if(ad===null)return 1;if(bd===null)return -1;
+    return ad-bd;
+  });
+  var a45EvalRows='';
+  a45InEval.slice(0,5).forEach(function(a){
+    var ed=daysFrom(a.eval_end_date);
+    var dateStr=a.eval_end_date?fmt(a.eval_end_date)+(ed!==null?' · '+(ed<0?Math.abs(ed)+'d overdue':ed===0?'today':ed+'d left'):''):'no date set';
+    var color=ed!==null&&ed<0?'var(--danger)':ed!==null&&ed<=10?'var(--warn)':'var(--text-2)';
+    a45EvalRows+='<div class="alert-row" style="padding:10px 0;cursor:pointer" data-id="'+a.id+'" onclick="openDetail(this.dataset.id)">'+
+      '<span class="a-text"><strong>'+esc(a.name)+'</strong></span>'+
+      '<span style="font-size:12px;color:'+color+';font-weight:600">'+esc(dateStr)+'</span>'+
+    '</div>';
+  });
+  if(a45InEval.length>5)a45EvalRows+='<div style="padding:8px 0;font-size:11.5px;color:var(--muted);text-align:center;font-weight:500">+'+(a45InEval.length-5)+' more in eval</div>';
+  var alcon45HTML='';
+  if(a45Total>0){
+    alcon45HTML='<div class="card" style="margin-top:20px"><div class="card-hdr"><span class="card-title">Alcon 45 Day · Source Overview</span><span style="font-family:var(--f-mono);font-size:10.5px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase">'+a45Total+' total account'+(a45Total===1?'':'s')+'</span></div>'+
+      '<div style="padding:18px 22px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px;border-bottom:1px solid var(--line)">'+
+        '<div class="snap-box" onclick="navAlcon45()"><div class="snap-lbl">In pipeline</div><div class="snap-val">'+a45Pipe.length+'</div></div>'+
+        '<div class="snap-box" onclick="navAlcon45()"><div class="snap-lbl">In implementation</div><div class="snap-val">'+a45Impl.length+'</div></div>'+
+        '<div class="snap-box" onclick="navAlcon45()"><div class="snap-lbl">Active</div><div class="snap-val">'+a45Active.length+'</div></div>'+
+        '<div class="snap-box" onclick="navAlcon45()"><div class="snap-lbl">Conversion</div><div class="snap-val">'+a45ConvRate+'%</div></div>'+
+      '</div>'+
+      '<div style="padding:14px 22px;display:flex;justify-content:space-between;align-items:center'+(a45EvalRows?';border-bottom:1px solid var(--line)':'')+'">'+
+        '<div><div style="font-family:var(--f-mono);font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:500">Source revenue · realized + annualized</div>'+
+        '<div style="font-family:var(--f-ui);font-size:26px;font-weight:700;color:var(--ink);letter-spacing:-.02em;margin-top:4px;font-variant-numeric:tabular-nums;line-height:1">'+(a45Revenue?'$'+fmtC(a45Revenue):'—')+'</div></div>'+
+        '<div style="text-align:right"><div style="font-family:var(--f-mono);font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:500">Lost</div>'+
+        '<div style="font-family:var(--f-ui);font-size:26px;font-weight:700;color:'+(a45Lost.length?'var(--danger)':'var(--ink)')+';letter-spacing:-.02em;margin-top:4px;font-variant-numeric:tabular-nums;line-height:1">'+a45Lost.length+'</div></div>'+
+      '</div>'+
+      (a45EvalRows?'<div style="padding:14px 22px"><div style="font-family:var(--f-mono);font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:500;margin-bottom:8px">In Evaluation</div>'+a45EvalRows+'</div>':'')+
+      '</div>';
+  }
+
   el.innerHTML=
     '<div class="metrics-hero">'+
       '<div class="metric hero" onclick="navPipeVal()">'+
         '<div class="metric-lbl">Pipeline value</div>'+
         '<div class="metric-val huge">'+(pipeVal?'$'+fmtC(pipeVal):'—')+'</div>'+
-        '<div class="metric-sub"><strong>'+pipe.length+'</strong> open deal'+(pipe.length===1?'':'s')+' across the pipeline</div>'+
-        '<div class="spark">'+sparkHTML+'</div>'+
+        '<div class="metric-sub">From <strong>'+pipeWithValue+'</strong> deal'+(pipeWithValue===1?'':'s')+' with values logged · <strong>'+pipe.length+'</strong> open total</div>'+
       '</div>'+
       '<div class="metric" onclick="nav(\'active\')">'+
         '<div class="metric-lbl">Active accounts</div>'+
@@ -917,7 +1928,7 @@ function rDash(el,act){
       '<div class="metric" onclick="nav(\'impl\')">'+
         '<div class="metric-lbl">In implementation</div>'+
         '<div class="metric-val">'+impl.length+'</div>'+
-        '<div class="metric-sub">'+impl.filter(function(a){return a.stage==='60-day evaluation';}).length+' in 60-day eval</div>'+
+        '<div class="metric-sub">'+impl.filter(function(a){return a.stage==='Evaluation';}).length+' in evaluation</div>'+
       '</div>'+
       '<div class="metric" onclick="nav(\'renewals\')">'+
         '<div class="metric-lbl">Renewing · 30 days</div>'+
@@ -925,16 +1936,35 @@ function rDash(el,act){
         '<div class="metric-sub">'+(rs.length?'Needs attention →':'All clear')+'</div>'+
       '</div>'+
     '</div>'+
-    '<div style="display:grid;grid-template-columns:1.2fr 1fr;gap:20px">'+
-      '<div class="card" style="margin-bottom:0"><div class="card-hdr"><span class="card-title">Pipeline breakdown</span><button class="btn btn-sm btn-navy" onclick="nav(\'pipeline\')">View all</button></div><div style="padding:10px 22px 14px">'+pipeHTML+'</div></div>'+
-      '<div class="card" style="margin-bottom:0"><div class="card-hdr"><span class="card-title">Revenue snapshot</span><button class="btn btn-sm btn-navy" onclick="nav(\'reports\')">Reports</button></div>'+
-      '<div style="padding:16px 18px"><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">'+
-        '<div class="snap-box" onclick="navSnap(\'hardware\')"><div class="snap-lbl">Hardware</div><div class="snap-val">'+(hwRev?'$'+fmtC(hwRev):'—')+'</div></div>'+
-        '<div class="snap-box" onclick="navSnap(\'subscription\')"><div class="snap-lbl">Subscription / yr</div><div class="snap-val">'+(subRev?'$'+fmtC(subRev):'—')+'</div></div>'+
-        '<div class="snap-box" onclick="navPipeVal()"><div class="snap-lbl">Pipeline</div><div class="snap-val">'+(pipeVal?'$'+fmtC(pipeVal):'—')+'</div></div>'+
-        '<div class="snap-box" onclick="navSnap(\'kits\')"><div class="snap-lbl">Kits deployed</div><div class="snap-val">'+totalKits+'</div></div>'+
-      '</div></div></div>'+
+    '<div style="display:grid;grid-template-columns:1.2fr 1fr;gap:20px;align-items:stretch">'+
+      '<div class="card" style="margin-bottom:0;display:flex;flex-direction:column"><div class="card-hdr"><span class="card-title">Pipeline Breakdown</span><button class="btn btn-sm btn-navy" onclick="nav(\'pipeline\')">View all</button></div><div style="padding:6px 22px 10px;display:flex;flex-direction:column;flex:1;justify-content:space-evenly">'+pipeHTML+'</div></div>'+
+      '<div class="card" style="margin-bottom:0"><div class="card-hdr"><span class="card-title">Revenue Snapshot</span><button class="btn btn-sm btn-navy" onclick="nav(\'reports\')">Reports</button></div>'+
+      '<div style="padding:16px 18px">'+
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">'+
+          '<div class="snap-box" onclick="navSnap(\'hardware\')"><div class="snap-lbl">Hardware</div><div class="snap-val">'+(hwRev?'$'+fmtC(hwRev):'—')+'</div></div>'+
+          '<div class="snap-box" onclick="navSnap(\'subscription\')"><div class="snap-lbl">Subscription / yr</div><div class="snap-val">'+(subRev?'$'+fmtC(subRev):'—')+'</div></div>'+
+          '<div class="snap-box" onclick="navPipeVal()"><div class="snap-lbl">Pipeline</div><div class="snap-val">'+(pipeVal?'$'+fmtC(pipeVal):'—')+'</div></div>'+
+          (partnershipTotal>0?
+            '<div class="snap-box snap-partnership" onclick="nav(\'settings\')" title="Corporate partnership revenue · not counted in subscription / yr"><div class="snap-lbl">Corporate partnerships</div><div class="snap-val">$'+fmtC(partnershipTotal)+'</div></div>'
+            :
+            '<div class="snap-box" style="opacity:.55" onclick="nav(\'settings\')" title="Add a corporate partnership in Settings"><div class="snap-lbl">Corporate partnerships</div><div class="snap-val" style="font-size:14px;font-weight:600;color:var(--muted);margin-top:8px">Add in Settings</div></div>'
+          )+
+        '</div>'+
+        '<div class="snap-box snap-forecast" onclick="navSnap(\'forecast\')" style="margin-top:12px">'+
+          '<div style="display:flex;justify-content:space-between;align-items:flex-start">'+
+            '<div>'+
+              '<div class="snap-lbl">Subscription forecast <span style="color:var(--lime-ink);font-weight:700;letter-spacing:.06em">· FROM IMPLEMENTATIONS</span></div>'+
+              '<div class="snap-val" style="margin-top:6px">'+(subForecast?'+$'+fmtC(subForecast)+'/yr':'—')+'</div>'+
+            '</div>'+
+            '<div style="text-align:right;font-family:var(--f-mono);font-size:10.5px;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;font-weight:500;line-height:1.5">'+
+              subForecastCount+' of '+implTotal+'<br>account'+(implTotal===1?'':'s')+
+              (implMissingSub?'<br><span style="color:var(--warn-ink);font-weight:600">'+implMissingSub+' missing data</span>':'')+
+            '</div>'+
+          '</div>'+
+        '</div>'+
+      '</div></div>'+
     '</div>'+
+    alcon45HTML+
     '<div class="card" style="margin-top:20px"><div class="card-hdr"><span class="card-title">Alerts</span><span style="font-family:var(--f-mono);font-size:10.5px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase">Needs attention</span></div>'+(alerts?alerts:'<div style="padding:16px 22px;font-size:13.5px;font-weight:500;color:var(--ok)"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--ok);margin-right:10px"></span>All clear — nothing needs your attention right now.</div>')+'</div>';
 }
 
@@ -943,12 +1973,13 @@ function rPipe(el,act){
   if(!window._pipeStages){window._pipeStages=new Set(['Prospect','Intro meeting','Early diligence','Late diligence','Proposal sent']);}
   var activeStages=window._pipeStages;
   var list=accs.filter(function(a){return SALES.includes(a.stage);});
-  if(q)list=list.filter(function(a){return a.name.toLowerCase().includes(q.toLowerCase())||(a.city||'').toLowerCase().includes(q.toLowerCase());});
+  if(q)list=list.filter(function(a){return matchAccount(a,q);});
+  list=applyTagFilter(list);
   list=list.filter(function(a){return activeStages.has(a.stage);});
   if(fs==='hasvalue')list=list.filter(function(a){return parseC(a.deal_value)>0;});
   var STAGE_ORDER={'Proposal sent':0,'Late diligence':1,'Early diligence':2,'Intro meeting':3,'Prospect':4,'Deal won':5,'Deal lost':6};
   if(sortCol){
-    list=srt(list,{name:function(a){return a.name;},stage:function(a){return a.stage;},contact:function(a){return cname(a);},deal_value:function(a){return parseC(a.deal_value)||0;},updated:function(a){return a.updated_at;}});
+    list=srt(list,{name:function(a){return a.name;},stage:function(a){return a.stage;},lost_reason:function(a){return a.lost_reason||'';},contact:function(a){return cname(a);},deal_value:function(a){return parseC(a.deal_value)||0;},updated:function(a){return a.updated_at;}});
   }else{
     list=list.slice().sort(function(a,b){
       var sa=STAGE_ORDER.hasOwnProperty(a.stage)?STAGE_ORDER[a.stage]:99;
@@ -960,19 +1991,39 @@ function rPipe(el,act){
     });
   }
   var totalVal=list.reduce(function(s,a){return s+(parseC(a.deal_value)||0);},0);
+  // Show Reason column only when filter is Deal lost ONLY (cleaner than empty cells everywhere)
+  var showReasonCol=activeStages.size===1&&activeStages.has('Deal lost');
   var rows='';
   list.forEach(function(a){
     var pc=pcon(a);
     var emailHTML=pc.email?'<div class="as"><a href="mailto:'+esc(pc.email)+'" style="color:var(--ink)" onclick="event.stopPropagation()">'+esc(pc.email)+'</a></div>':'';
-    rows+=trO(a.id)+'<td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' · '+esc(a.state):'')+'</div></td><td>'+badge(a.stage)+'</td><td><div>'+esc(cname(a))+'</div>'+emailHTML+'</td><td style="font-family:var(--f-display);font-size:15px;color:var(--ink);letter-spacing:-.02em">'+(a.deal_value?'$'+fmtC(a.deal_value):'—')+'</td><td style="color:var(--muted)">'+fmt(a.updated_at)+'</td><td>'+eBtn(a.id)+'</td></tr>';
+    var tagsRender=getTags(a).length?'<div style="margin-top:4px">'+renderTagChips(a)+'</div>':'';
+    var reasonCell=showReasonCol?'<td style="font-size:12.5px;color:var(--text-2)">'+esc(a.lost_reason||'—')+'</td>':'';
+    rows+='<tr data-id="'+a.id+'" onclick="openDetail(this.dataset.id)">'+
+      (window._bulkEnabled?'<td class="bulk-col" onclick="event.stopPropagation()"><input type="checkbox" class="bulk-cb" data-id="'+a.id+'" onchange="toggleBulk(this.dataset.id,this.checked)" '+(window._bulkSelected.has(a.id)?'checked':'')+'></td>':'')+
+      '<td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' · '+esc(a.state):'')+'</div>'+tagsRender+'</td>'+
+      '<td>'+badge(a.stage)+'</td>'+
+      reasonCell+
+      '<td><div>'+esc(cname(a))+'</div>'+emailHTML+'</td>'+
+      '<td style="font-family:var(--f-ui);font-size:14px;font-weight:700;color:var(--ink);letter-spacing:-.01em;font-variant-numeric:tabular-nums">'+(a.deal_value?'$'+fmtC(a.deal_value):'—')+'</td>'+
+      '<td style="color:var(--muted)">'+fmt(a.updated_at)+'</td>'+
+      '<td>'+eBtn(a.id)+'</td></tr>';
   });
-  var totalSpan=totalVal?'<span style="margin-left:auto;font-family:var(--f-display);font-size:17px;font-weight:500;color:var(--ink);letter-spacing:-.02em">Total: <span style="color:var(--lime-ink)">$'+fmtC(totalVal)+'</span></span>':'';
+  var totalSpan=totalVal?'<span style="margin-left:auto;font-family:var(--f-ui);font-size:15px;font-weight:700;color:var(--ink);letter-spacing:-.01em;font-variant-numeric:tabular-nums">Total: <span style="color:var(--lime-ink)">$'+fmtC(totalVal)+'</span></span>':'';
   var checkboxes=SALES.map(function(s){
     var checked=activeStages.has(s)?'checked':'';
     return '<label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;font-weight:500;color:var(--text);white-space:nowrap"><input type="checkbox" '+checked+' data-stage="'+s+'" onchange="togglePipeStage(this.dataset.stage,this.checked)" style="cursor:pointer;accent-color:var(--lime)"> '+s+'</label>';
   }).join('');
+  var tagOpts=allTags().map(function(t){return '<option value="'+esc(t)+'"'+(window._tagFilter===t?' selected':'')+'>'+esc(t)+'</option>';}).join('');
   el.innerHTML=
-    '<div class="fbar"><input type="text" class="search" placeholder="Search accounts, cities…" value="'+esc(q)+'" oninput="searchInput(this.value)"></div>'+
+    '<div class="fbar">'+
+    '<input type="text" class="search" placeholder="Search account, contact, email, tag…" value="'+esc(q)+'" oninput="searchInput(this.value)">'+
+    (allTags().length?'<select class="finput" style="width:200px" onchange="window._tagFilter=this.value||null;render()">'+
+      '<option value=""'+(!window._tagFilter?' selected':'')+'>All tags</option>'+tagOpts+
+    '</select>':'')+
+    '<button class="btn '+(window._bulkEnabled?'btn-navy':'')+'" onclick="toggleBulkMode()">'+(window._bulkEnabled?'✓ Bulk select on':'Bulk select')+'</button>'+
+    tagFilterBar()+
+    '</div>'+
     '<div style="background:var(--bg);border:1px solid var(--line);border-radius:var(--r);padding:12px 16px;margin-bottom:16px;display:flex;flex-wrap:wrap;gap:14px;align-items:center">'+
     '<span style="font-family:var(--f-mono);font-size:10.5px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-right:4px">Stages</span>'+
     checkboxes+
@@ -982,7 +2033,16 @@ function rPipe(el,act){
     '<span style="font-size:12.5px;color:var(--muted);font-weight:500">'+list.length+' account'+(list.length===1?'':'s')+'</span>'+
     totalSpan+
     '</div>'+
-    '<div class="card"><div style="overflow-x:auto"><table><thead><tr>'+th('name','Account','28%')+th('stage','Stage','16%')+th('contact','Contact','22%')+th('deal_value','Deal value','14%')+th('updated','Updated','12%')+'<th style="width:8%"></th></tr></thead><tbody>'+(list.length?rows:'<tr><td colspan="6" class="empty">No accounts found.</td></tr>')+'</tbody></table></div></div>';
+    '<div class="card"><div style="overflow-x:auto"><table><thead><tr>'+
+    (window._bulkEnabled?'<th class="bulk-col"><input type="checkbox" class="bulk-cb" onchange="toggleBulkAll(this.checked)"></th>':'')+
+    (showReasonCol?
+      th('name','Account','22%')+th('stage','Stage','12%')+th('lost_reason','Reason','13%')+th('contact','Contact','19%')+th('deal_value','Deal value','11%')+th('updated','Updated','11%')+'<th style="width:8%"></th>'
+      :
+      th('name','Account','28%')+th('stage','Stage','16%')+th('contact','Contact','22%')+th('deal_value','Deal value','14%')+th('updated','Updated','12%')+'<th style="width:8%"></th>'
+    )+'</tr></thead><tbody>'+
+    (list.length?rows:'<tr><td colspan="'+(showReasonCol?8:7)+'" class="empty">No accounts found.</td></tr>')+
+    '</tbody></table></div></div>'+
+    bulkBarHTML();
 }
 function resetPipeStages(){window._pipeStages=new Set(['Prospect','Intro meeting','Early diligence','Late diligence','Proposal sent']);render();}
 function togglePipeStage(stage,checked){if(!window._pipeStages)window._pipeStages=new Set();if(checked)window._pipeStages.add(stage);else window._pipeStages.delete(stage);render();}
@@ -997,42 +2057,169 @@ function exportPipeline(){
 
 function rImpl(el,act){
   var list=accs.filter(function(a){return IMPL.includes(a.stage);});
-  if(q)list=list.filter(function(a){return a.name.toLowerCase().includes(q.toLowerCase());});
+  if(q)list=list.filter(function(a){return matchAccount(a,q);});
+  list=applyTagFilter(list);
   if(fs!=='all')list=list.filter(function(a){return a.stage===fs;});
-  list=srt(list,{name:function(a){return a.name;},stage:function(a){return a.stage;},go_live:function(a){return a.go_live_date||'';},checkin:function(a){return a.checkin_30_date||'';},eval_end:function(a){return a.eval_end_date||'';},impl_manager:function(a){return a.impl_manager||'';},kit_count:function(a){return a.kit_count||0;}});
+  list=srt(list,{name:function(a){return a.name;},stage:function(a){return a.stage;},go_live:function(a){return a.go_live_date?'A:'+a.go_live_date:(a.launch_window?'B:'+a.launch_window:'C:');},checkin:function(a){return a.checkin_30_date||'';},eval_end:function(a){return a.eval_end_date||'';},impl_manager:function(a){return a.impl_manager||'';},kit_count:function(a){return a.kit_count||0;},hw_source:function(a){return a.hw_arrangement||'Practice pays';},sub:function(a){var amt=parseC(a.sub_amount)||0;return a.sub_type==='Monthly'?amt*12:amt;},paid:function(a){return a.hardware_paid?2:(a.go_live_date&&daysFrom(a.go_live_date)<=0?0:1);}});
   var rows='';
   list.forEach(function(a){
     var ed=daysFrom(a.eval_end_date);
-    var ciBtn=a.stage==='60-day evaluation'?'<button class="btn btn-sm" style="margin-left:8px;'+(a.checkin_30_done?'background:var(--lime-wash);color:var(--lime-ink);border-color:var(--lime)':'')+'" data-id="'+a.id+'" onclick="event.stopPropagation();toggleCI(this.dataset.id)">'+(a.checkin_30_done?'Undo check-in':'Check-in done')+'</button>':'';
-    rows+=trO(a.id)+'<td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' · '+esc(a.state):'')+'</div></td><td>'+badge(a.stage)+'</td><td>'+fmt(a.go_live_date)+'</td><td>'+ciStatus(a)+ciBtn+'</td><td>'+(a.eval_end_date?'<span class="'+(ed!==null&&ed<=10?'warn':'')+'">'+fmt(a.eval_end_date)+' '+dl(ed)+'</span>':'—')+'</td><td>'+esc(a.impl_manager||'—')+'</td><td>'+(a.kit_count||'—')+'</td><td>'+eBtn(a.id)+'</td></tr>';
+    var ciBtn=(a.stage==='Evaluation'&&!a.checkin_skip)?'<button class="btn btn-sm" style="margin-left:8px;'+(a.checkin_30_done?'background:var(--lime-wash);color:var(--lime-ink);border-color:var(--lime)':'')+'" data-id="'+a.id+'" onclick="event.stopPropagation();toggleCI(this.dataset.id)">'+(a.checkin_30_done?'Undo check-in':'Check-in done')+'</button>':'';
+    var subCell;
+    if(a.sub_type==='No charge')subCell='<span class="badge b-nocharge">No charge</span>';
+    else if(a.sub_amount&&a.sub_type){
+      var suffix=a.sub_type==='Monthly'?'/mo':'/yr';
+      subCell='<span style="font-family:var(--f-ui);font-size:13px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums">$'+fmtC(a.sub_amount)+suffix+'</span>';
+    } else {
+      subCell='<span style="color:var(--warn-ink);font-size:11px;font-weight:600">missing</span>';
+    }
+    rows+=trO(a.id)+'<td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' · '+esc(a.state):'')+'</div></td><td>'+badge(a.stage)+'</td><td>'+goLiveCell(a)+'</td><td>'+ciStatus(a)+ciBtn+'</td><td>'+(a.eval_end_date?'<span class="'+(ed!==null&&ed<=10?'warn':'')+'">'+fmt(a.eval_end_date)+' '+dl(ed)+'</span>':'—')+'</td><td>'+esc(a.impl_manager||'—')+'</td><td>'+(a.kit_count||'—')+'</td><td>'+hwSourceShort(a)+'</td><td>'+hwPayStatusShort(a)+'</td><td>'+subCell+'</td><td>'+eBtn(a.id)+'</td></tr>';
   });
   var stageOpts=IMPL.map(function(s){return '<option value="'+s+'"'+(fs===s?' selected':'')+'>'+s+'</option>';}).join('');
-  el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search…" value="'+esc(q)+'" oninput="searchInput(this.value)"><select class="finput" style="width:200px" onchange="fs=this.value;render()"><option value="all">All stages</option>'+stageOpts+'</select></div><div class="card"><div style="overflow-x:auto"><table><thead><tr>'+th('name','Account','20%')+th('stage','Stage','13%')+th('go_live','Go-live','10%')+th('checkin','30-day check-in','18%')+th('eval_end','60-day end','13%')+th('impl_manager','Impl. mgr','11%')+th('kit_count','Kits','6%')+'<th style="width:9%"></th></tr></thead><tbody>'+(list.length?rows:'<tr><td colspan="8" class="empty">No accounts in implementation.</td></tr>')+'</tbody></table></div></div>';
+  el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search account, contact, email…" value="'+esc(q)+'" oninput="searchInput(this.value)"><select class="finput" style="width:200px" onchange="fs=this.value;render()"><option value="all">All stages</option>'+stageOpts+'</select></div><div class="card"><div style="overflow-x:auto"><table><thead><tr>'+th('name','Account','16%')+th('stage','Stage','10%')+th('go_live','Go-live','8%')+th('checkin','Eval Check-In','13%')+th('eval_end','Eval end','10%')+th('impl_manager','Impl. mgr','8%')+th('kit_count','Kits','5%')+th('hw_source','HW source','9%')+th('paid','HW paid','9%')+th('sub','Sub forecast','8%')+'<th style="width:4%"></th></tr></thead><tbody>'+(list.length?rows:'<tr><td colspan="11" class="empty">No accounts in implementation.</td></tr>')+'</tbody></table></div></div>';
 }
 
 function rActive(el,act){
   act.innerHTML='<button class="btn btn-navy" onclick="exportActive()">Export CSV</button>';
   var list=accs.filter(function(a){return a.stage==='Active';});
-  if(q)list=list.filter(function(a){return a.name.toLowerCase().includes(q.toLowerCase());});
+  if(q)list=list.filter(function(a){return matchAccount(a,q);});
+  list=applyTagFilter(list);
   if(!sortCol)sortCol='name';
-  list=srt(list,{name:function(a){return a.name;},city:function(a){return a.city||'';},state:function(a){return a.state||'';},sub_type:function(a){return a.sub_type||'';},renewal_date:function(a){return a.renewal_date||'';},kit_count:function(a){return a.kit_count||0;},hardware_cost:function(a){return parseC(a.hardware_cost)||0;},sub_amount:function(a){return parseC(a.sub_amount)||0;},contact:function(a){return cname(a);}});
+  list=srt(list,{name:function(a){return a.name;},city:function(a){return a.city||'';},state:function(a){return a.state||'';},sub_type:function(a){return a.sub_type||'';},year:function(a){return subYearNum(a);},start_date:function(a){return a.subscription_start_date||'';},renewal_date:function(a){return a.renewal_date||'';},kit_count:function(a){return a.kit_count||0;},hardware_cost:function(a){return parseC(a.hardware_cost)||0;},sub_amount:function(a){return parseC(a.sub_amount)||0;},contact:function(a){return cname(a);}});
   var rows='';
   list.forEach(function(a){
     var d=daysFrom(a.renewal_date);
     var subBadge=a.sub_type?'<span class="badge '+(a.sub_type==='Monthly'?'b-monthly':a.sub_type==='No charge'?'b-nocharge':'b-yearly')+'">'+a.sub_type+'</span>':'—';
     var renewCell=a.renewal_date?'<span class="'+(d!==null&&d<=30?d<=7?'danger':'warn':'')+'">'+fmt(a.renewal_date)+' '+dl(d)+'</span>':'—';
-    rows+=trO(a.id)+'<td><div class="an">'+esc(a.name)+'</div></td><td style="color:var(--muted)">'+esc(a.city||'—')+'</td><td style="color:var(--muted)">'+esc(a.state||'—')+'</td><td>'+subBadge+'</td><td>'+renewCell+'</td><td>'+(a.kit_count||'—')+'</td><td>'+(a.hardware_cost?'$'+fmtC(a.hardware_cost):'—')+'</td><td>'+(a.sub_amount?'$'+fmtC(a.sub_amount)+(a.sub_type==='Monthly'?'/mo':'/yr'):'—')+'</td><td>'+esc(cname(a))+'</td><td>'+eBtn(a.id)+'</td></tr>';
+    var tagsRender=getTags(a).length?'<div style="margin-top:4px">'+renderTagChips(a)+'</div>':'';
+    rows+='<tr data-id="'+a.id+'" onclick="openDetail(this.dataset.id)">'+
+      (window._bulkEnabled?'<td class="bulk-col" onclick="event.stopPropagation()"><input type="checkbox" class="bulk-cb" data-id="'+a.id+'" onchange="toggleBulk(this.dataset.id,this.checked)" '+(window._bulkSelected.has(a.id)?'checked':'')+'></td>':'')+
+      '<td><div class="an">'+esc(a.name)+'</div>'+tagsRender+'</td>'+
+      '<td style="color:var(--muted)">'+esc(a.city||'—')+'</td>'+
+      '<td style="color:var(--muted)">'+esc(a.state||'—')+'</td>'+
+      '<td>'+subBadge+'</td>'+
+      '<td>'+subYear(a)+'</td>'+
+      '<td style="color:var(--muted)">'+(a.subscription_start_date?fmt(a.subscription_start_date):'—')+'</td>'+
+      '<td>'+renewCell+'</td>'+
+      '<td>'+(a.kit_count||'—')+'</td>'+
+      '<td>'+(a.hardware_cost?'$'+fmtC(a.hardware_cost):'—')+'</td>'+
+      '<td>'+(a.sub_amount?'$'+fmtC(a.sub_amount)+(a.sub_type==='Monthly'?'/mo':'/yr'):'—')+'</td>'+
+      '<td>'+esc(cname(a))+'</td>'+
+      '<td>'+eBtn(a.id)+'</td></tr>';
   });
-  el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search…" value="'+esc(q)+'" oninput="searchInput(this.value)"></div><div class="card"><div style="overflow-x:auto"><table><thead><tr>'+th('name','Account','18%')+th('city','City','9%')+th('state','State','7%')+th('sub_type','Sub type','9%')+th('renewal_date','Renewal','12%')+th('kit_count','Kits','6%')+th('hardware_cost','HW cost','9%')+th('sub_amount','Sub amt','9%')+th('contact','Contact','12%')+'<th style="width:9%"></th></tr></thead><tbody>'+(list.length?rows:'<tr><td colspan="10" class="empty">No active accounts.</td></tr>')+'</tbody></table></div></div>';
+  var tagOpts=allTags().map(function(t){return '<option value="'+esc(t)+'"'+(window._tagFilter===t?' selected':'')+'>'+esc(t)+'</option>';}).join('');
+  el.innerHTML=
+    '<div class="fbar">'+
+    '<input type="text" class="search" placeholder="Search account, contact, email, tag…" value="'+esc(q)+'" oninput="searchInput(this.value)">'+
+    (allTags().length?'<select class="finput" style="width:200px" onchange="window._tagFilter=this.value||null;render()">'+
+      '<option value=""'+(!window._tagFilter?' selected':'')+'>All tags</option>'+tagOpts+
+    '</select>':'')+
+    '<button class="btn '+(window._bulkEnabled?'btn-navy':'')+'" onclick="toggleBulkMode()">'+(window._bulkEnabled?'✓ Bulk select on':'Bulk select')+'</button>'+
+    tagFilterBar()+
+    '</div>'+
+    '<div class="card"><div style="overflow-x:auto"><table><thead><tr>'+
+    (window._bulkEnabled?'<th class="bulk-col"><input type="checkbox" class="bulk-cb" onchange="toggleBulkAll(this.checked)"></th>':'')+
+    th('name','Account','15%')+th('city','City','7%')+th('state','State','5%')+th('sub_type','Sub type','8%')+th('year','Year','6%')+th('start_date','Start date','10%')+th('renewal_date','Renewal','10%')+th('kit_count','Kits','5%')+th('hardware_cost','HW cost','8%')+th('sub_amount','Sub amt','8%')+th('contact','Contact','10%')+'<th style="width:8%"></th></tr></thead><tbody>'+
+    (list.length?rows:'<tr><td colspan="13" class="empty">No active accounts.</td></tr>')+
+    '</tbody></table></div></div>'+
+    bulkBarHTML();
 }
 function exportActive(){
   exportCSV(accs.filter(function(a){return a.stage==='Active';}),
     [{label:'Account',fn:function(a){return a.name;}},{label:'City',fn:function(a){return a.city;}},{label:'State',fn:function(a){return a.state;}},
-     {label:'Sub Type',fn:function(a){return a.sub_type;}},{label:'Sub Start',fn:function(a){return fmt(a.sub_start_date);}},
+     {label:'Sub Type',fn:function(a){return a.sub_type;}},{label:'Year',fn:function(a){return a.subscription_start_date?subYearNum(a):'';}},
+     {label:'Original Start',fn:function(a){return fmt(a.subscription_start_date);}},{label:'Sub Start',fn:function(a){return fmt(a.sub_start_date);}},
      {label:'Renewal Date',fn:function(a){return fmt(a.renewal_date);}},{label:'Kits',fn:function(a){return a.kit_count;}},
      {label:'Hardware Cost',fn:function(a){return a.hardware_cost;}},{label:'Sub Amount',fn:function(a){return a.sub_amount;}},
      {label:'Contact',fn:function(a){return cname(a);}}],
     'active-accounts.csv');
+}
+
+function rLost(el,act){
+  act.innerHTML='<button class="btn btn-navy" onclick="exportLost()">Export CSV</button>';
+  var list=accs.filter(function(a){return a.stage==='Deal lost';});
+  if(q)list=list.filter(function(a){return matchAccount(a,q);});
+  list=applyTagFilter(list);
+  // Reason filter
+  var lrFilter=window._lostReasonFilter||'all';
+  if(lrFilter!=='all')list=list.filter(function(a){return (a.lost_reason||'(none)')===lrFilter;});
+  // Default sort: by updated_at desc (oldest = most stale, most worth re-engaging)
+  if(!sortCol){sortCol='updated_at';sortDir=1;}
+  list=srt(list,{
+    name:function(a){return a.name;},
+    city:function(a){return a.city||'';},
+    lost_reason:function(a){return a.lost_reason||'';},
+    updated_at:function(a){return a.updated_at||'';},
+    source:function(a){return a.source||'';}
+  });
+  // Reason options derived from data
+  var allReasons={};
+  accs.filter(function(a){return a.stage==='Deal lost';}).forEach(function(a){allReasons[a.lost_reason||'(none)']=true;});
+  var reasonOpts=Object.keys(allReasons).sort().map(function(r){return '<option value="'+esc(r)+'"'+(lrFilter===r?' selected':'')+'>'+esc(r)+'</option>';}).join('');
+  // Tag options
+  var tagOpts=allTags().map(function(t){return '<option value="'+esc(t)+'"'+(window._tagFilter===t?' selected':'')+'>'+esc(t)+'</option>';}).join('');
+  // Build rows
+  var rows='';
+  list.forEach(function(a){
+    var fus=[];try{fus=JSON.parse(a.followups_json||'[]');}catch(e){}
+    var openFU=null;
+    for(var i=0;i<fus.length;i++){if(!fus[i].done){openFU=fus[i];break;}}
+    var fuCell=openFU?
+      '<span class="warn" style="font-size:11.5px">⏰ '+esc(openFU.note||'Follow-up')+' · '+fmt(openFU.date)+'</span>':
+      '<button class="btn btn-sm" data-id="'+a.id+'" onclick="event.stopPropagation();openSetFollowup(this.dataset.id)">+ Reminder</button>';
+    var staleCell=a.updated_at?(function(){
+      var d=daysFrom(a.updated_at);
+      if(d===null)return fmt(a.updated_at);
+      var days=Math.abs(d);
+      var months=Math.floor(days/30);
+      if(months>=12)return Math.floor(months/12)+'y ago';
+      if(months>=1)return months+'mo ago';
+      return days+'d ago';
+    })():'—';
+    var tagCell=getTags(a).length?renderTagChips(a):'<span style="color:var(--muted-2);font-size:11px">—</span>';
+    rows+='<tr data-id="'+a.id+'" onclick="openDetail(this.dataset.id)">'+
+      (window._bulkEnabled?'<td class="bulk-col" onclick="event.stopPropagation()"><input type="checkbox" class="bulk-cb" data-id="'+a.id+'" onchange="toggleBulk(this.dataset.id,this.checked)" '+(window._bulkSelected&&window._bulkSelected.has(a.id)?'checked':'')+'></td>':'')+
+      '<td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' · '+esc(a.state):'')+'</div></td>'+
+      '<td><span class="badge b-lost">'+esc(a.lost_reason||'(no reason)')+'</span></td>'+
+      '<td style="color:var(--muted)">'+staleCell+'</td>'+
+      '<td style="color:var(--muted);font-size:12px">'+esc(a.source||'—')+'</td>'+
+      '<td>'+esc(cname(a))+'</td>'+
+      '<td>'+tagCell+'</td>'+
+      '<td>'+fuCell+'</td>'+
+      '<td>'+eBtn(a.id)+'</td></tr>';
+  });
+  el.innerHTML=
+    '<div style="font-size:13px;color:var(--text-2);margin-bottom:14px;font-weight:500;line-height:1.5">'+
+    '<strong style="color:var(--ink)">Lost ≠ dead forever.</strong> Use this view to revive promising accounts. '+
+    'Set follow-up reminders for "6-month re-engagement" or "Conference invite" — they\'ll appear on your dashboard when the date hits. '+
+    'Tag accounts (e.g. <code style="background:var(--surface);padding:1px 6px;border-radius:3px;font-family:var(--f-mono);font-size:11px">conference-invite</code>) to pull lists later.'+
+    '</div>'+
+    '<div class="fbar">'+
+    '<input type="text" class="search" placeholder="Search account, contact, email…" value="'+esc(q)+'" oninput="searchInput(this.value)">'+
+    '<select class="finput" style="width:200px" onchange="window._lostReasonFilter=this.value;render()">'+
+      '<option value="all"'+(lrFilter==='all'?' selected':'')+'>All lost reasons</option>'+reasonOpts+
+    '</select>'+
+    (allTags().length?'<select class="finput" style="width:200px" onchange="window._tagFilter=this.value||null;render()">'+
+      '<option value=""'+(!window._tagFilter?' selected':'')+'>All tags</option>'+tagOpts+
+    '</select>':'')+
+    '<button class="btn '+(window._bulkEnabled?'btn-navy':'')+'" onclick="toggleBulkMode()">'+(window._bulkEnabled?'✓ Bulk select on':'Bulk select')+'</button>'+
+    tagFilterBar()+
+    '</div>'+
+    '<div style="font-size:12.5px;color:var(--muted);font-weight:500;margin-bottom:12px">'+list.length+' account'+(list.length===1?'':'s')+'</div>'+
+    '<div class="card"><div style="overflow-x:auto"><table><thead><tr>'+
+    (window._bulkEnabled?'<th class="bulk-col"><input type="checkbox" class="bulk-cb" onchange="toggleBulkAll(this.checked)"></th>':'')+
+    th('name','Account','22%')+th('lost_reason','Lost reason','13%')+th('updated_at','Last touch','10%')+th('source','Source','11%')+'<th style="width:13%">Contact</th><th style="width:14%">Tags</th><th style="width:12%">Follow-up</th><th style="width:5%"></th></tr></thead><tbody>'+
+    (list.length?rows:'<tr><td colspan="9" class="empty">No lost accounts'+(lrFilter!=='all'||window._tagFilter?' match these filters':' yet — they\'ll appear here when you mark deals as Deal lost')+'.</td></tr>')+
+    '</tbody></table></div></div>'+
+    bulkBarHTML();
+}
+function exportLost(){
+  exportCSV(accs.filter(function(a){return a.stage==='Deal lost';}),
+    [{label:'Account',fn:function(a){return a.name;}},{label:'City',fn:function(a){return a.city;}},{label:'State',fn:function(a){return a.state;}},
+     {label:'Lost Reason',fn:function(a){return a.lost_reason;}},{label:'Source',fn:function(a){return a.source;}},
+     {label:'Contact',fn:function(a){return cname(a);}},{label:'Tags',fn:function(a){return a.tags||'';}},
+     {label:'Last Updated',fn:function(a){return fmt(a.updated_at);}}],
+    'lost-accounts.csv');
 }
 
 function rRenewals(el,act){
@@ -1086,6 +2273,44 @@ function rReports(el,act){
   var filteredLost=lf==='all'?lost:lost.filter(function(a){return (a.lost_reason||'Unknown')===lf;});
   var filteredSrc=sf==='all'?accs.filter(function(a){return a.source;}):accs.filter(function(a){return a.source===sf;});
 
+  // Reports-scoped sorting (independent from other pages)
+  var lostSortCol=window._lostSortCol||'name';
+  var lostSortDir=window._lostSortDir||1;
+  var srcSortCol=window._srcSortCol||'name';
+  var srcSortDir=window._srcSortDir||1;
+  function reportsSrt(list,dict,col,dir){
+    if(!col||!dict[col])return list;
+    var fn=dict[col];
+    return list.slice().sort(function(a,b){
+      var av=fn(a),bv=fn(b);
+      if(av==null)av='';if(bv==null)bv='';
+      if(typeof av==='number'&&typeof bv==='number')return (av-bv)*dir;
+      return String(av).localeCompare(String(bv))*dir;
+    });
+  }
+  filteredLost=reportsSrt(filteredLost,{
+    name:function(a){return a.name||'';},
+    city:function(a){return a.city||'';},
+    lost_reason:function(a){return a.lost_reason||'';},
+    contact:function(a){return cname(a);},
+    source:function(a){return a.source||'';}
+  },lostSortCol,lostSortDir);
+  filteredSrc=reportsSrt(filteredSrc,{
+    name:function(a){return a.name||'';},
+    stage:function(a){return a.stage||'';},
+    source:function(a){return a.source||'';},
+    contact:function(a){return cname(a);},
+    updated:function(a){return a.updated_at||'';}
+  },srcSortCol,srcSortDir);
+  function thLost(k,label,w){
+    var arrow=lostSortCol===k?(lostSortDir===1?' ↑':' ↓'):'';
+    return '<th style="width:'+w+';cursor:pointer;user-select:none" onclick="sortLostReport(\''+k+'\')">'+label+arrow+'</th>';
+  }
+  function thSrc(k,label,w){
+    var arrow=srcSortCol===k?(srcSortDir===1?' ↑':' ↓'):'';
+    return '<th style="width:'+w+';cursor:pointer;user-select:none" onclick="sortSrcReport(\''+k+'\')">'+label+arrow+'</th>';
+  }
+
   function drillTable(rows,cols){
     var trs='';
     rows.forEach(function(r){trs+=trO(r.id)+cols.map(function(c){return '<td>'+(c.fn(r)||'—')+'</td>';}).join('')+'</tr>';});
@@ -1121,7 +2346,7 @@ function rReports(el,act){
     '<select class="finput" style="width:220px;font-size:12.5px" onchange="window._lf=this.value;rReports(document.getElementById(\'pcontent\'),document.getElementById(\'pactions\'))">'+
     '<option value="all"'+(lf==='all'?' selected':'')+'>All lost reasons</option>'+lrOpts+'</select>'+
     '<span style="font-size:12.5px;color:var(--muted)">'+filteredLost.length+' account'+(filteredLost.length===1?'':'s')+'</span></div>'+
-    '<div style="overflow-x:auto"><table><thead><tr><th style="width:28%">Account</th><th style="width:14%">City</th><th style="width:14%">Lost reason</th><th style="width:16%">Contact</th><th style="width:14%">Source</th><th style="width:14%"></th></tr></thead><tbody>'+
+    '<div style="overflow-x:auto"><table><thead><tr>'+thLost('name','Account','28%')+thLost('city','City','14%')+thLost('lost_reason','Lost reason','14%')+thLost('contact','Contact','16%')+thLost('source','Source','14%')+'<th style="width:14%"></th></tr></thead><tbody>'+
     (lostRows||'<tr><td colspan="6" class="empty" style="padding:24px">No lost accounts'+(lf!=='all'?' for this reason':'')+'.</td></tr>')+
     '</tbody></table></div></div></div>'+
     '<div><div class="card"><div class="card-hdr"><span class="card-title">Lead sources</span><span style="font-family:var(--f-mono);font-size:10.5px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase">'+accs.filter(function(a){return a.source;}).length+' with source</span></div>'+
@@ -1129,7 +2354,7 @@ function rReports(el,act){
     '<select class="finput" style="width:240px;font-size:12.5px" onchange="window._sf=this.value;rReports(document.getElementById(\'pcontent\'),document.getElementById(\'pactions\'))">'+
     '<option value="all"'+(sf==='all'?' selected':'')+'>All sources</option>'+srcOpts+'</select>'+
     '<span style="font-size:12.5px;color:var(--muted)">'+filteredSrc.length+' account'+(filteredSrc.length===1?'':'s')+'</span></div>'+
-    '<div style="overflow-x:auto"><table><thead><tr><th style="width:28%">Account</th><th style="width:16%">Stage</th><th style="width:18%">Source</th><th style="width:18%">Contact</th><th style="width:14%">Updated</th><th style="width:6%"></th></tr></thead><tbody>'+
+    '<div style="overflow-x:auto"><table><thead><tr>'+thSrc('name','Account','28%')+thSrc('stage','Stage','16%')+thSrc('source','Source','18%')+thSrc('contact','Contact','18%')+thSrc('updated','Updated','14%')+'<th style="width:6%"></th></tr></thead><tbody>'+
     (srcRows||'<tr><td colspan="6" class="empty" style="padding:24px">No accounts with source data yet.</td></tr>')+
     '</tbody></table></div></div></div>'+
     '</div>';
@@ -1177,13 +2402,242 @@ function rActivity(el,act){
 
 function rSettings(el,act){
   var mgrs='';
-  implMgrs.forEach(function(m,i){
-    mgrs+='<div class="mgr-row"><span>'+esc(m)+'</span><button class="btn btn-sm btn-danger" data-i="'+i+'" onclick="removeMgr(parseInt(this.dataset.i))">Remove</button></div>';
+  implMgrs.forEach(function(m){
+    mgrs+='<div class="mgr-row"><span>'+esc(m)+'</span><button class="btn btn-sm btn-danger" data-name="'+esc(m)+'" onclick="removeMgr(this.dataset.name)">Remove</button></div>';
   });
-  el.innerHTML='<div style="max-width:560px"><div class="card"><div class="card-hdr"><span class="card-title">Implementation managers</span><button class="btn btn-sm btn-primary" onclick="showAddMgr()">+ Add</button></div><div id="mgr-list">'+mgrs+'</div></div></div>';
+  // Duplicate detection
+  var dupes=findDuplicates();
+  var ignoredMap=getIgnoredDupes();
+  var ignoredCount=Object.keys(ignoredMap).length;
+  var dupesHTML='';
+  if(dupes.length){
+    dupes.forEach(function(grp){
+      var key=dupeKey(grp);
+      dupesHTML+='<div style="background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;margin-bottom:10px">';
+      dupesHTML+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">'+
+        '<div style="font-family:var(--f-mono);font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:500">Possible match · '+grp.length+' accounts</div>'+
+        '<button class="btn btn-sm" data-key="'+esc(key)+'" onclick="ignoreDupeByKey(this.dataset.key)" title="Hide this match — not actually a duplicate">Ignore</button>'+
+      '</div>';
+      grp.forEach(function(a){
+        var sub=esc(a.acct_type||'')+(a.city?' · '+esc(a.city):'')+(a.state?' '+esc(a.state):'');
+        dupesHTML+='<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line)">'+
+          '<div><div style="font-weight:600;color:var(--ink)">'+esc(a.name)+'</div>'+
+          '<div style="font-size:11.5px;color:var(--muted);margin-top:2px">'+sub+' · '+badge(a.stage)+' · updated '+fmt(a.updated_at)+'</div></div>'+
+          '<div style="display:flex;gap:6px">'+vBtn(a.id)+eBtn(a.id)+'</div>'+
+        '</div>';
+      });
+      dupesHTML+='</div>';
+    });
+  }else{
+    dupesHTML='<div style="font-size:13px;color:var(--ok);font-weight:500;padding:12px 16px">✓ No likely duplicates'+(ignoredCount?' (besides '+ignoredCount+' ignored)':'')+'.</div>';
+  }
+  // Ignored duplicates collapsed section
+  var ignoredHTML='';
+  if(ignoredCount){
+    var allDupesIncluding=findDuplicates(true);
+    var ignoredGroups=allDupesIncluding.filter(function(g){return ignoredMap[dupeKey(g)];});
+    if(ignoredGroups.length){
+      ignoredHTML='<details style="margin-top:14px"><summary style="cursor:pointer;font-size:12px;color:var(--muted);font-weight:600;padding:6px 0">Show '+ignoredGroups.length+' ignored match'+(ignoredGroups.length===1?'':'es')+'</summary><div style="padding-top:10px">';
+      ignoredGroups.forEach(function(grp){
+        var key=dupeKey(grp);
+        ignoredHTML+='<div style="background:var(--bg);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;margin-bottom:8px;opacity:.7">'+
+          '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">'+
+            '<div style="font-family:var(--f-mono);font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:500">Ignored · '+grp.length+' accounts</div>'+
+            '<button class="btn btn-sm" data-key="'+esc(key)+'" onclick="unignoreDupe(this.dataset.key)">Restore</button>'+
+          '</div>'+
+          grp.map(function(a){return '<div style="font-size:12px;color:var(--text-2);padding:3px 0">'+esc(a.name)+'</div>';}).join('')+
+        '</div>';
+      });
+      ignoredHTML+='</div></details>';
+    }
+  }
+  // Tags admin: every unique tag with account count + rename/delete actions
+  var tagCounts={};
+  var tagDisplay={};
+  accs.forEach(function(a){
+    getTags(a).forEach(function(t){
+      var k=normTag(t);
+      tagCounts[k]=(tagCounts[k]||0)+1;
+      if(!tagDisplay[k])tagDisplay[k]=t;
+    });
+  });
+  var tagKeys=Object.keys(tagCounts).sort(function(a,b){return tagDisplay[a].localeCompare(tagDisplay[b]);});
+  var tagsHTML='';
+  if(tagKeys.length){
+    tagKeys.forEach(function(k){
+      var display=tagDisplay[k];
+      var count=tagCounts[k];
+      tagsHTML+='<div class="mgr-row">'+
+        '<div style="display:flex;align-items:center;gap:10px">'+
+          '<span class="tag-chip" style="cursor:default">'+esc(display)+'</span>'+
+          '<span style="font-family:var(--f-mono);font-size:11px;color:var(--muted);letter-spacing:.04em">'+count+' account'+(count===1?'':'s')+'</span>'+
+        '</div>'+
+        '<div style="display:flex;gap:6px">'+
+          '<button class="btn btn-sm" data-tag="'+esc(display)+'" onclick="filterByTag(this.dataset.tag)">View</button>'+
+          '<button class="btn btn-sm" data-tag="'+esc(display)+'" onclick="renameTagGlobal(this.dataset.tag)">Rename</button>'+
+          '<button class="btn btn-sm btn-danger" data-tag="'+esc(display)+'" onclick="deleteTagGlobal(this.dataset.tag)">Delete</button>'+
+        '</div>'+
+      '</div>';
+    });
+  }else{
+    tagsHTML='<div style="font-size:13px;color:var(--muted);font-weight:500;padding:12px 16px">No tags created yet. Tag accounts in the Edit form to start grouping.</div>';
+  }
+  // Partnerships list for Settings
+  var partnershipsHTML='';
+  if(partnerships&&partnerships.length){
+    partnerships.forEach(function(p){
+      var monthly=parseFloat(p.monthly_amount)||0;
+      var annual=monthly*12;
+      var devices=p.device_count||0;
+      partnershipsHTML+='<div class="mgr-row" style="padding:12px 0">'+
+        '<div style="flex:1">'+
+          '<div style="font-weight:600;color:var(--ink);font-size:13.5px">'+esc(p.name||'Partnership')+(devices?' <span style="color:var(--muted);font-weight:500;font-size:12px">· '+devices+' unit'+(devices===1?'':'s')+'</span>':'')+'</div>'+
+          '<div style="font-family:var(--f-mono);font-size:11px;color:var(--muted);letter-spacing:.03em;margin-top:3px">$'+fmtC(monthly)+'/mo · $'+fmtC(annual)+'/yr'+
+            (p.contract_end_date?' · through '+fmt(p.contract_end_date):'')+
+            (p.paid_through_date?' · paid through '+fmt(p.paid_through_date):'')+
+          '</div>'+
+        '</div>'+
+        '<div style="display:flex;gap:6px">'+
+          '<button class="btn btn-sm" data-id="'+esc(p.id)+'" onclick="openEditPartnership(this.dataset.id)">Edit</button>'+
+          '<button class="btn btn-sm btn-danger" data-id="'+esc(p.id)+'" onclick="deletePartnership(this.dataset.id)">Delete</button>'+
+        '</div>'+
+      '</div>';
+    });
+  } else {
+    partnershipsHTML='<div style="font-size:13px;color:var(--muted);font-weight:500;padding:12px 16px">No partnerships yet. Add one to show partnership revenue on the dashboard.</div>';
+  }
+  el.innerHTML='<div style="max-width:720px">'+
+    '<div class="card" style="margin-bottom:24px"><div class="card-hdr"><span class="card-title">Implementation managers</span><button class="btn btn-sm btn-primary" onclick="showAddMgr()">+ Add</button></div><div id="mgr-list">'+mgrs+'</div></div>'+
+    '<div style="font-size:11.5px;color:var(--muted);margin-bottom:24px;font-weight:500">Shared across all users. Changes are visible to everyone on your team.</div>'+
+    '<div class="card" style="margin-bottom:24px"><div class="card-hdr"><span class="card-title">Corporate partnerships</span><button class="btn btn-sm btn-primary" onclick="openAddPartnership()">+ Add</button></div><div>'+partnershipsHTML+'</div></div>'+
+    '<div style="font-size:11.5px;color:var(--muted);margin-bottom:24px;font-weight:500">Corporate revenue contracts (e.g. Alcon) shown separately from subscription revenue on the dashboard.</div>'+
+    '<div class="card" style="margin-bottom:24px"><div class="card-hdr"><span class="card-title">Tags</span><span style="font-family:var(--f-mono);font-size:10.5px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase">'+tagKeys.length+' tag'+(tagKeys.length===1?'':'s')+'</span></div><div>'+tagsHTML+'</div></div>'+
+    '<div style="font-size:11.5px;color:var(--muted);margin-bottom:24px;font-weight:500">Rename a tag to fix typos across every account at once. Delete a tag to remove it from every account it\'s on.</div>'+
+    '<div class="card"><div class="card-hdr"><span class="card-title">Possible duplicate accounts</span><span style="font-family:var(--f-mono);font-size:10.5px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase">'+dupes.length+' group'+(dupes.length===1?'':'s')+'</span></div><div style="padding:16px">'+dupesHTML+ignoredHTML+'</div></div>'+
+    '<div style="font-size:11.5px;color:var(--muted);margin-top:10px;font-weight:500">Detected by comparing normalized account names (ignoring punctuation and common words like "Eye Care," "LLC," etc.). Open any account to merge or delete.</div>'+
+    '</div>';
 }
-function showAddMgr(){var name=prompt('Enter implementation manager name:');if(!name||!name.trim())return;implMgrs.push(name.trim());localStorage.setItem('crm_impl_mgrs',JSON.stringify(implMgrs));render();}
-function removeMgr(i){if(!confirm('Remove '+implMgrs[i]+'?'))return;implMgrs.splice(i,1);localStorage.setItem('crm_impl_mgrs',JSON.stringify(implMgrs));render();}
+
+function openAddPartnership(){openEditPartnership(null);}
+function openEditPartnership(id){
+  var p=id?partnerships.find(function(x){return x.id===id;}):{};
+  if(!p)p={};
+  document.getElementById('mc').innerHTML=
+    '<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal" style="max-width:600px">'+
+    '<div class="modal-hdr"><span class="modal-title">'+(id?'Edit partnership':'Add partnership')+'</span><button class="xbtn" onclick="closeModal()">×</button></div>'+
+    '<div class="modal-body">'+
+    '<div class="fg">'+
+      '<div class="fgrp full"><label class="flbl">Partnership name *</label><input class="finput" id="pn" placeholder="e.g. Alcon corporate partnership" value="'+esc(p.name||'')+'"></div>'+
+      '<div class="fgrp"><label class="flbl">Monthly amount ($) *</label><input class="finput" id="pma" type="text" placeholder="e.g. 12,000" value="'+(p.monthly_amount?fmtC(p.monthly_amount):'')+'"></div>'+
+      '<div class="fgrp"><label class="flbl">Device count</label><input class="finput" id="pdc" type="number" placeholder="e.g. 4" value="'+(p.device_count||'')+'"></div>'+
+      '<div class="fgrp"><label class="flbl">Contract start date</label><input class="finput" id="pcs" type="date" value="'+(p.contract_start_date||'')+'"></div>'+
+      '<div class="fgrp"><label class="flbl">Contract end date</label><input class="finput" id="pce" type="date" value="'+(p.contract_end_date||'')+'"></div>'+
+      '<div class="fgrp full"><label class="flbl">Paid through date <span style="color:var(--muted);font-size:10px">how far in the future they\'ve prepaid</span></label><input class="finput" id="ppt" type="date" value="'+(p.paid_through_date||'')+'"></div>'+
+      '<div class="fgrp full"><label class="flbl">Notes</label><textarea class="finput" id="pno" rows="3" placeholder="Optional details about the arrangement">'+esc(p.notes||'')+'</textarea></div>'+
+    '</div></div>'+
+    '<div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" data-id="'+(id||'')+'" onclick="savePartnership(this.dataset.id)">Save</button></div>'+
+    '</div></div>';
+}
+async function savePartnership(id){
+  var name=(document.getElementById('pn').value||'').trim();
+  if(!name){alert('Partnership name is required.');return;}
+  var monthly=parseC(document.getElementById('pma').value);
+  if(!monthly||monthly<=0){alert('Monthly amount is required.');return;}
+  var payload={
+    name:name,
+    monthly_amount:monthly,
+    device_count:parseInt(document.getElementById('pdc').value)||null,
+    contract_start_date:document.getElementById('pcs').value||null,
+    contract_end_date:document.getElementById('pce').value||null,
+    paid_through_date:document.getElementById('ppt').value||null,
+    notes:(document.getElementById('pno').value||'').trim()||null,
+    updated_at:new Date().toISOString()
+  };
+  if(id)payload.id=id;
+  try{
+    await req('POST','partnerships',[payload],null,null);
+    closeModal();
+    await loadAll();
+  }catch(e){alert('Error: '+e.message);}
+}
+async function deletePartnership(id){
+  var p=partnerships.find(function(x){return x.id===id;});
+  if(!p)return;
+  if(!confirm('Delete partnership "'+p.name+'"?\n\nThis removes it from the dashboard revenue tracking.'))return;
+  try{
+    await req('DELETE','partnerships',null,'id=eq.'+id,null);
+    await loadAll();
+  }catch(e){alert('Error: '+e.message);}
+}
+async function renameTagGlobal(oldTag){
+  var newTag=prompt('Rename "'+oldTag+'" to:',oldTag);
+  if(newTag===null)return;
+  newTag=newTag.trim();
+  if(!newTag){alert('Tag name cannot be empty.');return;}
+  if(normTag(newTag)===normTag(oldTag)&&newTag!==oldTag){
+    // case-only change; allow it
+  } else if(normTag(newTag)===normTag(oldTag)){
+    return; // no change
+  }
+  // Find every account with this tag
+  var affected=accs.filter(function(a){
+    return getTags(a).map(normTag).indexOf(normTag(oldTag))!==-1;
+  });
+  if(!affected.length){alert('No accounts found with that tag.');return;}
+  if(!confirm('Rename "'+oldTag+'" to "'+newTag+'" on '+affected.length+' account'+(affected.length===1?'':'s')+'?'))return;
+  var updated=[];
+  affected.forEach(function(a){
+    var current=getTags(a);
+    var changed=current.map(function(t){return normTag(t)===normTag(oldTag)?newTag:t;});
+    // Dedupe in case the new name already exists
+    var seen={};
+    var deduped=[];
+    changed.forEach(function(t){var k=normTag(t);if(!seen[k]){seen[k]=true;deduped.push(t);}});
+    updated.push(Object.assign({},a,{tags:deduped.length?deduped.join(', '):null,activity_log:logActivity(a,'Renamed tag "'+oldTag+'" to "'+newTag+'"'),updated_at:new Date().toISOString()}));
+  });
+  try{
+    await req('POST','accounts',updated,null,null);
+    await loadAll();
+    alert('Renamed on '+updated.length+' account'+(updated.length===1?'':'s')+'.');
+  }catch(e){alert('Error: '+e.message);}
+}
+async function deleteTagGlobal(tag){
+  var affected=accs.filter(function(a){
+    return getTags(a).map(normTag).indexOf(normTag(tag))!==-1;
+  });
+  if(!affected.length){alert('No accounts found with that tag.');return;}
+  if(!confirm('Remove tag "'+tag+'" from all '+affected.length+' account'+(affected.length===1?'':'s')+'?\n\nThis cannot be undone.'))return;
+  var updated=[];
+  affected.forEach(function(a){
+    var current=getTags(a);
+    var filtered=current.filter(function(t){return normTag(t)!==normTag(tag);});
+    updated.push(Object.assign({},a,{tags:filtered.length?filtered.join(', '):null,activity_log:logActivity(a,'Deleted tag "'+tag+'" globally'),updated_at:new Date().toISOString()}));
+  });
+  try{
+    await req('POST','accounts',updated,null,null);
+    // Clear filter if we just deleted the tag we were filtering by
+    if(window._tagFilter&&normTag(window._tagFilter)===normTag(tag))window._tagFilter=null;
+    await loadAll();
+    alert('Tag "'+tag+'" removed from '+updated.length+' account'+(updated.length===1?'':'s')+'.');
+  }catch(e){alert('Error: '+e.message);}
+}
+async function showAddMgr(){
+  var name=prompt('Enter implementation manager name:');
+  if(!name||!name.trim())return;
+  name=name.trim();
+  if(implMgrs.includes(name)){alert(name+' is already in the list.');return;}
+  try{
+    await req('POST','impl_managers',[{name:name}],null,null);
+    await loadAll();
+  }catch(e){alert('Could not add manager: '+e.message);}
+}
+async function removeMgr(name){
+  if(!confirm('Remove '+name+'? Accounts previously assigned to them will keep the name but it won\'t appear in dropdowns.'))return;
+  try{
+    await req('DELETE','impl_managers',null,['name=eq.'+encodeURIComponent(name)],null);
+    await loadAll();
+  }catch(e){alert('Could not remove manager: '+e.message);}
+}
 
 function openLogEmail(id){
   var a=accs.find(function(x){return x.id===id;});
@@ -1293,7 +2747,14 @@ async function markFUDone(id,i){
   var fus=[];try{fus=JSON.parse(a.followups_json||'[]');}catch(e){}
   if(fus[i])fus[i].done=true;
   var updated=Object.assign({},a,{followups_json:JSON.stringify(fus),activity_log:logActivity(a,'Marked follow-up done: '+((fus[i]&&fus[i].note)||'Follow-up')),updated_at:new Date().toISOString()});
-  await upsertAcc(updated);openDetail(id);stab('f');updFUBadge();
+  await upsertAcc(updated);
+  updFUBadge();
+  // Context-aware refresh: if we're on the Follow-ups page, just re-render. Otherwise refresh the detail modal.
+  if(view==='followups'){
+    render();
+  }else{
+    openDetail(id);stab('f');
+  }
 }
 async function removeFU(id,i){
   if(!confirm('Remove this follow-up?'))return;
@@ -1302,7 +2763,13 @@ async function removeFU(id,i){
   var fus=[];try{fus=JSON.parse(a.followups_json||'[]');}catch(e){}
   fus.splice(i,1);
   var updated=Object.assign({},a,{followups_json:JSON.stringify(fus),updated_at:new Date().toISOString()});
-  await upsertAcc(updated);openDetail(id);stab('f');updFUBadge();
+  await upsertAcc(updated);
+  updFUBadge();
+  if(view==='followups'){
+    render();
+  }else{
+    openDetail(id);stab('f');
+  }
 }
 function updFUBadge(){
   var me=getUser();
@@ -1357,43 +2824,586 @@ function rSnap(el,act){
   var hwAccs=accs.filter(function(a){return (a.stage==='Active'||IMPL.includes(a.stage))&&parseC(a.hardware_cost)>0;});
   var subAccs=accs.filter(function(a){return a.stage==='Active'&&parseC(a.sub_amount)>0;});
   var kitsAccs=accs.filter(function(a){return a.stage==='Active'&&a.kit_count>0;});
-  var list=type==='hardware'?hwAccs:type==='subscription'?subAccs:kitsAccs;
-  if(q)list=list.filter(function(a){return a.name.toLowerCase().includes(q.toLowerCase());});
+  var forecastAccs=accs.filter(function(a){return IMPL.includes(a.stage);});
+  var list=type==='hardware'?hwAccs:type==='subscription'?subAccs:type==='forecast'?forecastAccs:kitsAccs;
+  if(q)list=list.filter(function(a){return matchAccount(a,q);});
+  list=applyTagFilter(list);
   list=list.slice().sort(function(a,b){return (a.name||'').localeCompare(b.name||'');});
   var total=type==='hardware'?
     list.reduce(function(s,a){return s+(parseC(a.hardware_cost)||0);},0):
     type==='subscription'?
     list.reduce(function(s,a){var amt=parseC(a.sub_amount)||0;return s+(a.sub_type==='Monthly'?amt*12:amt);},0):
+    type==='forecast'?
+    list.filter(function(a){return a.sub_type&&a.sub_type!=='No charge';}).reduce(function(s,a){var amt=parseC(a.sub_amount)||0;return s+(a.sub_type==='Monthly'?amt*12:amt);},0):
     list.reduce(function(s,a){return s+(a.kit_count||0);},0);
-  var totalLabel=type==='kits'?total+' kits':'$'+fmtC(total)+(type==='subscription'?' annualized':'');
+  var totalLabel=type==='kits'?total+' kits':'$'+fmtC(total)+(type==='subscription'||type==='forecast'?' annualized':'');
   var rows='';
   list.forEach(function(a){
     var val=type==='hardware'?(a.hardware_cost?'$'+fmtC(a.hardware_cost):'—'):
       type==='subscription'?(a.sub_amount?'$'+fmtC(a.sub_amount)+(a.sub_type==='Monthly'?'/mo':a.sub_type==='Yearly'?'/yr':''):'—'):
+      type==='forecast'?(a.sub_amount&&a.sub_type!=='No charge'?'$'+fmtC(a.sub_amount)+(a.sub_type==='Monthly'?'/mo':a.sub_type==='Yearly'?'/yr':''):'<span style="color:var(--warn-ink);font-weight:600">— missing</span>'):
       (a.kit_count||'—');
-    var subBadge=a.sub_type?'<span class="badge '+(a.sub_type==='Monthly'?'b-monthly':a.sub_type==='No charge'?'b-nocharge':'b-yearly')+'">'+(a.sub_type)+'</span>':'';
+    var subBadge=a.sub_type?'<span class="badge '+(a.sub_type==='Monthly'?'b-monthly':a.sub_type==='No charge'?'b-nocharge':'b-yearly')+'">'+(a.sub_type)+'</span>':'<span style="color:var(--muted-2);font-size:11px">—</span>';
     var rowData='<td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' · '+esc(a.state):'')+'</div></td>';
-    if(type==='hardware')rowData+='<td>'+badge(a.stage)+'</td><td style="font-family:var(--f-display);font-size:15px;color:var(--ink);letter-spacing:-.02em">'+val+'</td>';
-    else if(type==='subscription')rowData+='<td>'+subBadge+'</td><td style="font-family:var(--f-display);font-size:15px;color:var(--ink);letter-spacing:-.02em">'+val+'</td><td style="color:var(--muted)">'+fmt(a.renewal_date)+'</td>';
-    else rowData+='<td style="font-family:var(--f-display);font-size:15px;color:var(--ink);letter-spacing:-.02em">'+val+'</td><td>'+badge(a.stage)+'</td>';
+    if(type==='hardware')rowData+='<td>'+badge(a.stage)+'</td><td style="font-family:var(--f-ui);font-size:14px;font-weight:700;color:var(--ink);letter-spacing:-.01em;font-variant-numeric:tabular-nums">'+val+'</td>';
+    else if(type==='subscription')rowData+='<td>'+subBadge+'</td><td style="font-family:var(--f-ui);font-size:14px;font-weight:700;color:var(--ink);letter-spacing:-.01em;font-variant-numeric:tabular-nums">'+val+'</td><td style="color:var(--muted)">'+fmt(a.renewal_date)+'</td>';
+    else if(type==='forecast'){
+      var goLive=a.go_live_date?fmt(a.go_live_date):(a.eval_end_date?'after eval ('+fmt(a.eval_end_date)+')':'TBD');
+      rowData+='<td>'+badge(a.stage)+'</td><td>'+subBadge+'</td><td style="font-family:var(--f-ui);font-size:14px;font-weight:700;color:var(--ink);letter-spacing:-.01em;font-variant-numeric:tabular-nums">'+val+'</td><td style="color:var(--muted)">'+goLive+'</td>';
+    }
+    else rowData+='<td style="font-family:var(--f-ui);font-size:14px;font-weight:700;color:var(--ink);letter-spacing:-.01em;font-variant-numeric:tabular-nums">'+val+'</td><td>'+badge(a.stage)+'</td>';
     rowData+='<td>'+eBtn(a.id)+'</td>';
     rows+=trO(a.id)+rowData+'</tr>';
   });
   var cols=type==='hardware'?'<th>Stage</th><th>Hardware cost</th>':
     type==='subscription'?'<th>Sub type</th><th>Amount</th><th>Renewal</th>':
+    type==='forecast'?'<th>Stage</th><th>Sub type</th><th>Amount</th><th>Expected go-live</th>':
     '<th>Kits</th><th>Stage</th>';
+  var introHTML=type==='forecast'?
+    '<div style="font-size:13px;color:var(--text-2);margin-bottom:14px;font-weight:500;line-height:1.5">'+
+    '<strong style="color:var(--ink)">Forecast = signed but not yet active.</strong> These accounts have committed to a subscription via contract but haven\'t started paying yet (still in implementation or evaluation). '+
+    'When they flip to <span class="badge b-active">Active</span>, their subscription rolls into your <strong>Subscription / yr</strong> total automatically. '+
+    'Accounts marked <span style="color:var(--warn-ink);font-weight:600">missing</span> need their subscription terms entered (open the account → edit → Subscription section).'+
+    '</div>':'';
   el.innerHTML=
-    '<div class="fbar"><input type="text" class="search" placeholder="Search…" value="'+esc(q)+'" oninput="searchInput(this.value)"><span style="margin-left:auto;font-family:var(--f-display);font-size:16px;font-weight:500;color:var(--ink);letter-spacing:-.02em">Total · <span style="color:var(--lime-ink)">'+totalLabel+'</span></span></div>'+
-    '<div class="card"><div style="overflow-x:auto"><table><thead><tr><th style="width:30%">Account</th>'+cols+'<th></th></tr></thead><tbody>'+
-    (list.length?rows:'<tr><td colspan="4" class="empty">No accounts found.</td></tr>')+
+    introHTML+
+    '<div class="fbar"><input type="text" class="search" placeholder="Search account, contact, email…" value="'+esc(q)+'" oninput="searchInput(this.value)"><span style="margin-left:auto;font-family:var(--f-ui);font-size:15px;font-weight:700;color:var(--ink);letter-spacing:-.01em;font-variant-numeric:tabular-nums">Total · <span style="color:var(--lime-ink)">'+totalLabel+'</span></span></div>'+
+    '<div class="card"><div style="overflow-x:auto"><table><thead><tr><th style="width:'+(type==='forecast'?'24%':'30%')+'">Account</th>'+cols+'<th></th></tr></thead><tbody>'+
+    (list.length?rows:'<tr><td colspan="6" class="empty">No accounts found.</td></tr>')+
     '</tbody></table></div></div>';
 }
-function closeModal(){document.getElementById('mc').innerHTML='';}
+// ============ CALENDAR ============
+const EVENT_TYPES=['30 Day Check-In','Alcon 45 Day','Alcon Evaluation','Implementation','No Charge Evaluation','Other','Patient Demos','Practice Demo','PTO','Retrain','Travel','Unavailable','UVP Evaluation'];
+const EVENT_TYPE_CLASS={
+  '30 Day Check-In':'ev-checkin',
+  'Alcon 45 Day':'ev-alcon45',
+  'Alcon Evaluation':'ev-alcon',
+  'Implementation':'ev-implementation',
+  'No Charge Evaluation':'ev-nocharge',
+  'Other':'ev-other',
+  'Patient Demos':'ev-patient',
+  'Practice Demo':'ev-practice',
+  'PTO':'ev-pto',
+  'Retrain':'ev-retrain',
+  'Travel':'ev-travel',
+  'Unavailable':'ev-unavailable',
+  'UVP Evaluation':'ev-uvp',
+  'Go-live':'ev-golive',
+  'Eval end':'ev-evalend'
+};
+function calState(){
+  if(!window._cal){
+    var now=new Date();
+    window._cal={year:now.getFullYear(),month:now.getMonth(),hidden:new Set()};
+  }
+  return window._cal;
+}
+function calNav(dir){
+  var c=calState();
+  if(dir==='today'){var n=new Date();c.year=n.getFullYear();c.month=n.getMonth();}
+  else{c.month+=dir;if(c.month<0){c.month=11;c.year--;}if(c.month>11){c.month=0;c.year++;}}
+  render();
+}
+function calToggleType(type){
+  var c=calState();
+  if(c.hidden.has(type))c.hidden.delete(type);else c.hidden.add(type);
+  render();
+}
+function dateKey(d){
+  // Returns YYYY-MM-DD string in local time
+  var y=d.getFullYear();var m=String(d.getMonth()+1).padStart(2,'0');var dd=String(d.getDate()).padStart(2,'0');
+  return y+'-'+m+'-'+dd;
+}
+function parseDateLocal(s){
+  if(!s)return null;
+  var parts=String(s).split('T')[0].split('-');
+  if(parts.length!==3)return null;
+  return new Date(parseInt(parts[0]),parseInt(parts[1])-1,parseInt(parts[2]));
+}
+// Collect events (both manual + CRM-derived) for a given month
+function collectEvents(year,month){
+  var monthStart=new Date(year,month,1);
+  var monthEnd=new Date(year,month+1,0);
+  var all=[];
+  // Manual events
+  events.forEach(function(e){
+    var s=parseDateLocal(e.start_date);
+    var en=parseDateLocal(e.end_date||e.start_date);
+    if(!s)return;
+    if(!e.event_type)return;
+    if(en<monthStart||s>monthEnd)return;
+    var title=(e.account_name||'').trim()||(e.event_type||'').trim();
+    if(!title)return;
+    all.push({
+      id:e.id,
+      manager:e.manager||'Other / Guest',
+      type:e.event_type||'Other',
+      start:s,end:en,
+      title:title,
+      notes:e.notes||'',
+      accountId:e.account_id||null,
+      source:'manual'
+    });
+  });
+  // CRM auto-populated events — only for accounts actively in implementation or active
+  accs.forEach(function(a){
+    var mgr=a.impl_manager;
+    if(!mgr)return;
+    // Skip accounts with no visible name — prevents ghost bars
+    if(!a.name||!a.name.trim())return;
+    // Skip accounts not in implementation or active stage — avoids ghost events from old/lost deals
+    if(!IMPL.includes(a.stage)&&a.stage!=='Active')return;
+    // Go-live (may span multiple days if go_live_end_date is set)
+    if(a.go_live_date){
+      var gd=parseDateLocal(a.go_live_date);
+      var gde=parseDateLocal(a.go_live_end_date)||gd;
+      if(gd&&!(gde<monthStart||gd>monthEnd)){
+        all.push({id:'auto-gl-'+a.id,manager:mgr,type:'Go-live',start:gd,end:gde,title:a.name,notes:'Go-live / implementation',accountId:a.id,source:'crm'});
+      }
+    }
+    // 30-day check-in
+    if(a.checkin_30_date&&!a.checkin_skip){
+      var cd=parseDateLocal(a.checkin_30_date);
+      if(cd&&cd>=monthStart&&cd<=monthEnd){
+        all.push({id:'auto-ci-'+a.id,manager:mgr,type:'30 Day Check-In',start:cd,end:cd,title:a.name,notes:'Eval Check-In',accountId:a.id,source:'crm'});
+      }
+    }
+    // Evaluation end
+    if(a.eval_end_date){
+      var ed=parseDateLocal(a.eval_end_date);
+      if(ed&&ed>=monthStart&&ed<=monthEnd){
+        all.push({id:'auto-ev-'+a.id,manager:mgr,type:'Eval end',start:ed,end:ed,title:a.name,notes:'Evaluation end',accountId:a.id,source:'crm'});
+      }
+    }
+  });
+  return all;
+}
+function rCal(el,act){
+  var c=calState();
+  act.innerHTML='<button class="btn btn-primary" onclick="openAddEvent()">+ Add event</button>';
+  var monthName=new Date(c.year,c.month,1).toLocaleDateString('en-US',{month:'long',year:'numeric'});
+  var daysInMonth=new Date(c.year,c.month+1,0).getDate();
+  var today=new Date();today.setHours(0,0,0,0);
+  var todayKey=dateKey(today);
+  // Row order
+  var CAL_MGR_ORDER=['Chris Morgan','Leah Orr','Eric Patnode','Matt Larson'];
+  var rows=[];
+  CAL_MGR_ORDER.forEach(function(m){if(implMgrs.includes(m))rows.push(m);});
+  implMgrs.filter(function(m){return !CAL_MGR_ORDER.includes(m);}).sort().forEach(function(m){rows.push(m);});
+  rows.push('Other / Guest');
+
+  // Collect events
+  var monthEvents=collectEvents(c.year,c.month).filter(function(e){return !c.hidden.has(e.type);});
+  // Group events by manager, clamped to this month
+  var byMgr={};
+  rows.forEach(function(m){byMgr[m]=[];});
+  var monthStart=new Date(c.year,c.month,1);
+  var monthEnd=new Date(c.year,c.month+1,0);
+  monthEvents.forEach(function(ev){
+    var mgr=byMgr[ev.manager]?ev.manager:'Other / Guest';
+    // Clamp to this month's range
+    var s=new Date(Math.max(ev.start.getTime(),monthStart.getTime()));
+    var e=new Date(Math.min(ev.end.getTime(),monthEnd.getTime()));
+    byMgr[mgr].push({ev:ev,startDay:s.getDate(),endDay:e.getDate()});
+  });
+
+  // Assign lane per manager so overlapping events stack vertically
+  rows.forEach(function(mgr){
+    var items=byMgr[mgr];
+    // Sort by start day, then by length descending (longer bars get lower lanes)
+    items.sort(function(a,b){
+      if(a.startDay!==b.startDay)return a.startDay-b.startDay;
+      return (b.endDay-b.startDay)-(a.endDay-a.startDay);
+    });
+    var lanes=[];
+    items.forEach(function(it){
+      var placed=false;
+      for(var i=0;i<lanes.length;i++){
+        if(lanes[i]<it.startDay){it.lane=i;lanes[i]=it.endDay;placed=true;break;}
+      }
+      if(!placed){it.lane=lanes.length;lanes.push(it.endDay);}
+    });
+    byMgr[mgr+'_lanes']=lanes.length;
+  });
+
+  var html='<div class="cal-toolbar">'+
+    '<span class="cal-month-display">'+esc(monthName)+'</span>'+
+    '<div class="cal-nav">'+
+      '<button class="btn" onclick="calNav(-1)" title="Previous month">←</button>'+
+      '<button class="btn" onclick="calNav(\'today\')">Today</button>'+
+      '<button class="btn" onclick="calNav(1)" title="Next month">→</button>'+
+    '</div>'+
+  '</div>';
+
+  // Legend / filter
+  html+='<div class="cal-legend">'+
+    '<span class="cal-legend-label">Event types</span>';
+  EVENT_TYPES.concat(['Go-live','Eval end']).forEach(function(t){
+    var off=c.hidden.has(t)?' off':'';
+    var cls=EVENT_TYPE_CLASS[t]||'ev-other';
+    html+='<span class="cal-legend-item'+off+'" onclick="calToggleType(\''+t.replace(/\'/g,"\\'")+'\')">'+
+      '<span class="cal-legend-swatch '+cls+'"></span>'+
+      esc(t)+'</span>';
+  });
+  html+='</div>';
+
+  // Build header (matches body structure: manager cell + day-area with N equal day cells)
+  html+='<div class="cal-grid-wrap" id="cal-grid-wrap">';
+  html+='<div class="cal-row-flex cal-header-row">';
+  html+='<div class="cal-mgr-head">Manager</div>';
+  html+='<div class="cal-day-area">';
+  for(var d=1;d<=daysInMonth;d++){
+    var dt=new Date(c.year,c.month,d);
+    var dow=dt.getDay();
+    var weekend=(dow===0||dow===6)?' weekend':'';
+    var isToday=dateKey(dt)===todayKey?' today':'';
+    var dowName=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][dow];
+    html+='<div class="cal-head-cell'+weekend+isToday+'">'+d+'<span class="cal-dow">'+dowName+'</span></div>';
+  }
+  html+='</div></div>'; // close day-area, close header-row
+
+  // Body — one row per manager. Layout: 150px manager col + flex day-area holding cells + absolute event bars.
+  rows.forEach(function(mgr){
+    var items=byMgr[mgr];
+    var laneCount=Math.max(1,byMgr[mgr+'_lanes']||0);
+    var rowH=Math.max(64,laneCount*44+12);
+    html+='<div class="cal-row-flex" style="height:'+rowH+'px">';
+    html+='<div class="cal-mgr-cell">'+esc(mgr)+'</div>';
+    html+='<div class="cal-day-area">';
+    for(var dd=1;dd<=daysInMonth;dd++){
+      var dt2=new Date(c.year,c.month,dd);
+      var dow2=dt2.getDay();
+      var weekend2=(dow2===0||dow2===6)?' weekend':'';
+      html+='<div class="cal-day-cell'+weekend2+'" data-mgr="'+esc(mgr)+'" data-day="'+dd+'" onclick="openAddEventPre(\''+esc(mgr)+'\','+c.year+','+c.month+','+dd+')"></div>';
+    }
+    items.forEach(function(it){
+      var ev=it.ev;
+      if(!ev.title||!ev.title.trim())return;
+      var cls=EVENT_TYPE_CLASS[ev.type]||'ev-other';
+      var readOnlyCls=ev.source==='crm'?' readonly':'';
+      var leftPct=(it.startDay-1)/daysInMonth*100;
+      var widthPct=(it.endDay-it.startDay+1)/daysInMonth*100;
+      var topPx=6+it.lane*44;
+      // Tooltip data: store full event details as data-* attributes
+      var startStr=ev.start?dateKey(ev.start):'';
+      var endStr=ev.end?dateKey(ev.end):'';
+      html+='<span class="cal-event-bar '+cls+readOnlyCls+'" '+
+        'style="left:'+leftPct+'%;width:'+widthPct+'%;top:'+topPx+'px;height:40px" '+
+        'data-tt-title="'+esc(ev.title)+'" '+
+        'data-tt-type="'+esc(ev.type)+'" '+
+        'data-tt-start="'+startStr+'" '+
+        'data-tt-end="'+endStr+'" '+
+        'data-tt-notes="'+esc(ev.notes||'')+'" '+
+        'data-tt-source="'+esc(ev.source)+'" '+
+        'onmouseenter="showCalTooltip(this,event)" '+
+        'onmouseleave="hideCalTooltip()" '+
+        'onmousemove="moveCalTooltip(event)" '+
+        'onclick="event.stopPropagation();hideCalTooltip();handleEventClick(\''+esc(ev.id)+'\',\''+esc(ev.source)+'\',\''+esc(ev.accountId||'')+'\')">'+
+        '<span class="cal-event-label">'+esc(ev.title)+'</span>'+
+        '<span class="cal-event-sub">'+esc(ev.type)+'</span>'+
+        '</span>';
+    });
+    html+='</div></div>'; // close day-area, close row
+  });
+
+  html+='</div>'; // close cal-grid-wrap
+  // Note about CRM-auto events
+  html+='<div style="margin-top:12px;font-size:11.5px;color:var(--muted);font-weight:500">'+
+    '<span style="display:inline-block;width:10px;height:10px;border:1px dashed var(--muted);border-radius:2px;vertical-align:middle;margin-right:6px"></span>'+
+    'Dashed borders = auto-populated from CRM (go-lives, check-ins, eval ends). Click to open the account. Edit account dates to change these.</div>';
+
+  el.innerHTML=html;
+
+  // Auto-scroll: if viewing the current month, scroll so today is visible; otherwise scroll to day 1
+  setTimeout(function(){
+    var wrap=document.getElementById('cal-grid-wrap');
+    if(!wrap)return;
+    var now=new Date();
+    var viewingCurrentMonth=(now.getFullYear()===c.year&&now.getMonth()===c.month);
+    var targetDay=viewingCurrentMonth?now.getDate():1;
+    // Find the header cell for the target day
+    var headCells=wrap.querySelectorAll('.cal-header-row .cal-head-cell');
+    var target=headCells[targetDay-1];
+    if(!target)return;
+    // Scroll so target is ~25% from the left edge (gives context of preceding days)
+    var wrapWidth=wrap.clientWidth;
+    var mgrWidth=150;
+    var targetLeft=target.offsetLeft;
+    var scrollTo=Math.max(0,targetLeft-mgrWidth-Math.round((wrapWidth-mgrWidth)*0.25));
+    wrap.scrollLeft=scrollTo;
+  },50);
+}
+function handleEventClick(id,source,accId){
+  if(source==='crm'&&accId){openDetail(accId);return;}
+  if(source==='manual'){openEditEvent(id);return;}
+}
+
+// ============ CALENDAR TOOLTIP ============
+function ensureCalTooltip(){
+  var tt=document.getElementById('cal-tooltip');
+  if(!tt){
+    tt=document.createElement('div');
+    tt.id='cal-tooltip';
+    tt.className='cal-tooltip';
+    document.body.appendChild(tt);
+  }
+  return tt;
+}
+function fmtTTDate(s){
+  if(!s)return'';
+  var parts=s.split('-');
+  if(parts.length!==3)return s;
+  var d=new Date(parseInt(parts[0]),parseInt(parts[1])-1,parseInt(parts[2]));
+  return d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'});
+}
+function showCalTooltip(bar,ev){
+  var tt=ensureCalTooltip();
+  var title=bar.getAttribute('data-tt-title')||'';
+  var type=bar.getAttribute('data-tt-type')||'';
+  var start=bar.getAttribute('data-tt-start')||'';
+  var end=bar.getAttribute('data-tt-end')||'';
+  var notes=bar.getAttribute('data-tt-notes')||'';
+  var source=bar.getAttribute('data-tt-source')||'';
+  var dateStr=start===end||!end?fmtTTDate(start):fmtTTDate(start)+' → '+fmtTTDate(end);
+  var sourceHint=source==='crm'?' <span style="opacity:.6;font-size:10px">· from account</span>':'';
+  var html='<div class="cal-tooltip-title">'+esc(title)+'</div>'+
+    '<div class="cal-tooltip-meta">'+esc(type)+sourceHint+'</div>'+
+    '<div class="cal-tooltip-dates">'+esc(dateStr)+'</div>';
+  if(notes)html+='<div class="cal-tooltip-notes">'+esc(notes)+'</div>';
+  tt.innerHTML=html;
+  tt.classList.add('show');
+  moveCalTooltip(ev);
+}
+function moveCalTooltip(ev){
+  var tt=document.getElementById('cal-tooltip');
+  if(!tt||!tt.classList.contains('show'))return;
+  var offset=14;
+  var x=ev.clientX+offset;
+  var y=ev.clientY+offset;
+  // Keep within viewport
+  var rect=tt.getBoundingClientRect();
+  if(x+rect.width>window.innerWidth-8)x=ev.clientX-rect.width-offset;
+  if(y+rect.height>window.innerHeight-8)y=ev.clientY-rect.height-offset;
+  if(x<8)x=8;
+  if(y<8)y=8;
+  tt.style.left=x+'px';
+  tt.style.top=y+'px';
+}
+function hideCalTooltip(){
+  var tt=document.getElementById('cal-tooltip');
+  if(tt)tt.classList.remove('show');
+}
+function openAddEventPre(mgr,year,month,day){
+  var d=new Date(year,month,day);
+  openAddEvent({manager:mgr,start:dateKey(d)});
+}
+function openAddEvent(pre){
+  pre=pre||{};
+  var mgrOpts='<option value="">— Select manager —</option>'+implMgrs.map(function(m){return '<option value="'+esc(m)+'"'+(pre.manager===m?' selected':'')+'>'+esc(m)+'</option>';}).join('')+'<option value="Other / Guest"'+(pre.manager==='Other / Guest'?' selected':'')+'>Other / Guest</option>';
+  var typeOpts='<option value="">— Select type —</option>'+EVENT_TYPES.map(function(t){return '<option value="'+esc(t)+'">'+esc(t)+'</option>';}).join('');
+  var accOpts='<option value="">— None / freeform —</option>'+accs.slice().sort(function(a,b){return (a.name||'').localeCompare(b.name||'');}).map(function(a){return '<option value="'+esc(a.id)+'" data-name="'+esc(a.name)+'">'+esc(a.name)+'</option>';}).join('');
+  document.getElementById('mc').innerHTML=
+    '<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal" style="max-width:540px">'+
+    '<div class="modal-hdr"><span class="modal-title">Add event</span><button class="xbtn" onclick="closeModal()">×</button></div>'+
+    '<div class="modal-body">'+
+    '<div class="fg">'+
+    '<div class="fgrp"><label class="flbl">Start date *</label><input class="finput" id="ev-start" type="date" value="'+(pre.start||'')+'" onchange="syncEventEndDate()"></div>'+
+    '<div class="fgrp"><label class="flbl">End date <span style="color:var(--muted);font-size:10px">optional · multi-day</span></label><input class="finput" id="ev-end" type="date"></div>'+
+    '<div class="fgrp full"><label class="flbl">Manager *</label><select class="finput" id="ev-mgr">'+mgrOpts+'</select></div>'+
+    '<div class="fgrp full"><label class="flbl">Event type *</label><select class="finput" id="ev-type">'+typeOpts+'</select></div>'+
+    '<div class="fgrp full"><label class="flbl">Account <span style="color:var(--muted);font-size:10px">pick from CRM or leave blank</span></label><select class="finput" id="ev-acc" onchange="fillEventName()">'+accOpts+'</select></div>'+
+    '<div class="fgrp full"><label class="flbl">Display name</label><input class="finput" id="ev-name" placeholder="e.g. Smith Practice, PTO, Conference"></div>'+
+    '<div class="fgrp full"><label class="flbl">Notes</label><textarea class="finput" id="ev-notes" rows="2"></textarea></div>'+
+    '</div>'+
+    '</div>'+
+    '<div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveEvent()">Save event</button></div>'+
+    '</div></div>';
+  setTimeout(syncEventEndDate,0);
+}
+function syncEventEndDate(){
+  var startEl=document.getElementById('ev-start');
+  var endEl=document.getElementById('ev-end');
+  if(!startEl||!endEl)return;
+  var s=startEl.value;
+  if(!s)return;
+  // Always set min so user can't pick an earlier end
+  endEl.setAttribute('min',s);
+  // Auto-fill end only if it's empty or earlier than start
+  if(!endEl.value||endEl.value<s){
+    endEl.value=s;
+  }
+}
+function fillEventName(){
+  var sel=document.getElementById('ev-acc');
+  var opt=sel.options[sel.selectedIndex];
+  var name=opt?opt.getAttribute('data-name'):'';
+  var nameInput=document.getElementById('ev-name');
+  if(name&&nameInput&&!nameInput.value)nameInput.value=name;
+}
+async function saveEvent(){
+  var start=document.getElementById('ev-start').value;
+  var end=document.getElementById('ev-end').value||null;
+  var mgr=document.getElementById('ev-mgr').value;
+  var type=document.getElementById('ev-type').value;
+  var accId=document.getElementById('ev-acc').value||null;
+  var name=(document.getElementById('ev-name').value||'').trim();
+  var notes=(document.getElementById('ev-notes').value||'').trim();
+  if(!start){alert('Start date is required.');return;}
+  if(!mgr){alert('Manager is required.');return;}
+  if(!type){alert('Event type is required.');return;}
+  if(end&&end<start){alert('End date cannot be before start date.');return;}
+  // Treat same-day as single-day event (no end stored)
+  if(end&&end===start)end=null;
+  if(!name&&accId){var a=accs.find(function(x){return x.id===accId;});if(a)name=a.name;}
+  var existingId=window._editEventId||null;
+  var ev={
+    id:existingId||('ev'+Date.now()+Math.random().toString(36).slice(2,7)),
+    start_date:start,
+    end_date:end,
+    account_id:accId,
+    account_name:name||null,
+    manager:mgr,
+    event_type:type,
+    notes:notes||null,
+    created_by:existingId?undefined:getUser(),
+    updated_at:new Date().toISOString()
+  };
+  // Strip undefined keys
+  Object.keys(ev).forEach(function(k){if(ev[k]===undefined)delete ev[k];});
+  try{
+    var btn=document.querySelector('.modal-foot .btn-primary');
+    if(btn){btn.textContent='Saving…';btn.disabled=true;}
+    await upsertEvent(ev);
+    window._editEventId=null;
+    closeModal();
+  }catch(e){alert('Error: '+e.message);}
+}
+function openEditEvent(id){
+  var ev=events.find(function(x){return x.id===id;});
+  if(!ev){alert('Event not found.');return;}
+  window._editEventId=id;
+  var mgrOpts='<option value="">— Select manager —</option>'+implMgrs.map(function(m){return '<option value="'+esc(m)+'"'+(ev.manager===m?' selected':'')+'>'+esc(m)+'</option>';}).join('')+'<option value="Other / Guest"'+(ev.manager==='Other / Guest'?' selected':'')+'>Other / Guest</option>';
+  var typeOpts='<option value="">— Select type —</option>'+EVENT_TYPES.map(function(t){return '<option value="'+esc(t)+'"'+(ev.event_type===t?' selected':'')+'>'+esc(t)+'</option>';}).join('');
+  var accOpts='<option value="">— None / freeform —</option>'+accs.slice().sort(function(a,b){return (a.name||'').localeCompare(b.name||'');}).map(function(a){return '<option value="'+esc(a.id)+'"'+(ev.account_id===a.id?' selected':'')+' data-name="'+esc(a.name)+'">'+esc(a.name)+'</option>';}).join('');
+  document.getElementById('mc').innerHTML=
+    '<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal" style="max-width:540px">'+
+    '<div class="modal-hdr"><span class="modal-title">Edit event</span><button class="xbtn" onclick="closeModal()">×</button></div>'+
+    '<div class="modal-body">'+
+    '<div class="fg">'+
+    '<div class="fgrp"><label class="flbl">Start date *</label><input class="finput" id="ev-start" type="date" value="'+(ev.start_date?String(ev.start_date).split('T')[0]:'')+'" onchange="syncEventEndDate()"></div>'+
+    '<div class="fgrp"><label class="flbl">End date</label><input class="finput" id="ev-end" type="date" value="'+(ev.end_date?String(ev.end_date).split('T')[0]:'')+'"></div>'+
+    '<div class="fgrp full"><label class="flbl">Manager *</label><select class="finput" id="ev-mgr">'+mgrOpts+'</select></div>'+
+    '<div class="fgrp full"><label class="flbl">Event type *</label><select class="finput" id="ev-type">'+typeOpts+'</select></div>'+
+    '<div class="fgrp full"><label class="flbl">Account</label><select class="finput" id="ev-acc" onchange="fillEventName()">'+accOpts+'</select></div>'+
+    '<div class="fgrp full"><label class="flbl">Display name</label><input class="finput" id="ev-name" value="'+esc(ev.account_name||'')+'"></div>'+
+    '<div class="fgrp full"><label class="flbl">Notes</label><textarea class="finput" id="ev-notes" rows="2">'+esc(ev.notes||'')+'</textarea></div>'+
+    '</div>'+
+    '</div>'+
+    '<div class="modal-foot"><button class="btn btn-danger" onclick="deleteEvent(\''+esc(id)+'\')" style="margin-right:auto">Delete</button><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveEvent()">Save event</button></div>'+
+    '</div></div>';
+  setTimeout(syncEventEndDate,0);
+}
+
+function closeModal(){document.getElementById('mc').innerHTML='';window._editEventId=null;}
+
+function openStageGuide(){
+  // Stage definitions structured as data so we can render cleanly
+  var sales=[
+    {name:'Prospect',badge:'b-prospect',rows:[
+      ['Definition','Identified as a potential customer but they haven\'t agreed to anything yet.'],
+      ['Enter when','Account exists with name, location, and lead source. Outreach attempted, no commitment yet.'],
+      ['Move forward when','They agree to a real conversation with a calendar invite, OR a field rep confirms warm interest with a meeting scheduled.'],
+      ['Time in stage','Days to weeks. Don\'t let prospects rot here for months — after 3-4 attempts with no response, move to Deal lost (No decision / went silent).']
+    ]},
+    {name:'Intro meeting',badge:'b-intro',rows:[
+      ['Definition','You\'ve had (or have scheduled) the first real conversation. They know what InsightVR is. You know their practice.'],
+      ['Enter when','Meeting on the calendar OR has happened. Both sides have invested real time.'],
+      ['Move forward when','They\'ve expressed clear interest and asked specific questions about pricing, capabilities, integration, or timeline. Critically: they\'ve agreed to a follow-up step.'],
+      ['Time in stage','1–3 weeks typically. If 3 weeks pass without a follow-up scheduled, they\'re either Prospect again or Lost.']
+    ]},
+    {name:'Early diligence',badge:'b-early',rows:[
+      ['Definition','They\'ve moved past curiosity. Actively evaluating whether your product solves their problem.'],
+      ['Enter when','They\'ve requested information beyond surface-level — ROI numbers, references, demos, technical specs. They\'re doing homework. OR they\'ve expressed interest in an evaluation period.'],
+      ['Move forward when','They\'ve involved someone besides the original contact (partner, office manager, IT), OR started discussing logistics like installation timing, kit count, or training. Conversation has shifted from "is this right" to "how would we do this."'],
+      ['Time in stage','2–6 weeks. This is where most deals stall. Set follow-up reminders.']
+    ]},
+    {name:'Late diligence',badge:'b-late',rows:[
+      ['Definition','Seriously considering you and working through final concerns. Deal is real.'],
+      ['Enter when','Multiple stakeholders involved. They\'re asking decision-grade questions: contract terms, payment, evaluation specifics, who delivers, training, support.'],
+      ['Move forward when','They\'ve explicitly asked for a quote, or you\'ve offered one and they\'ve agreed to receive it. Number of kits and rough go-live timing are known.'],
+      ['Time in stage','1–3 weeks.']
+    ]},
+    {name:'Proposal sent',badge:'b-proposal',rows:[
+      ['Definition','You\'ve sent a formal quote with specific pricing for a specific configuration. The ball is in their court.'],
+      ['Enter when','Quote sent. Price is in writing.'],
+      ['Move to Won when','They\'ve signed the contract or verbally committed with paperwork in motion.'],
+      ['Move to Lost when','They\'ve explicitly declined, gone with a competitor, or gone silent for 30+ days.'],
+      ['Time in stage','1–4 weeks. After 30 days of silence, follow up directly. After 60 days, mark Lost — you can always re-open later.']
+    ]},
+    {name:'Deal won',badge:'b-won',rows:[
+      ['Definition','Contract signed. Hardware order placed.'],
+      ['Note','This stage should be transient. Once signed, immediately move to Implementation › Discovery & planning.']
+    ]},
+    {name:'Deal lost',badge:'b-lost',rows:[
+      ['Definition','Not happening, at least not now. Always tag a reason.'],
+      ['Common reasons','Price · Timing · Competition · No decision/went silent · Returned during eval · Budget cut · Other'],
+      ['Note','Lost ≠ dead forever. Set a 6-month follow-up reminder for accounts tagged "Timing" or "Budget cut." Those revive often.']
+    ]}
+  ];
+  var impl=[
+    {name:'Discovery & planning',badge:'b-discovery',rows:[
+      ['Definition','Contract signed, hardware on order, kickoff call scheduled.'],
+      ['Stays here until','Kit ships.']
+    ]},
+    {name:'Go-live scheduled',badge:'b-golive',rows:[
+      ['Definition','Hardware shipped or being shipped. Install dates on the calendar.'],
+      ['Notes','The 2–3 day install window lives in this period. Set go-live start and end dates so the calendar shows the full block.']
+    ]},
+    {name:'Evaluation',badge:'b-60day',rows:[
+      ['Definition','They\'re using it. Clock is ticking on their decision to keep or return.'],
+      ['Notes','The Eval Check-In lives here — you\'ll see a reminder on the dashboard.']
+    ]},
+    {name:'Overdue',badge:'b-overdue',rows:[
+      ['Definition','Past 60 days but no decision/transition recorded.'],
+      ['Notes','This is a flag stage, not a normal one. Accounts shouldn\'t sit here. Either convert to Active or get returned.']
+    ]},
+    {name:'Active',badge:'b-active',rows:[
+      ['Definition','Subscription started. Fully a customer.']
+    ]}
+  ];
+
+  function buildStage(s){
+    var rowsHTML='';
+    s.rows.forEach(function(r){
+      rowsHTML+='<div class="guide-lbl">'+esc(r[0])+'</div><div class="guide-val">'+esc(r[1])+'</div>';
+    });
+    return '<div class="guide-stage"><div class="guide-stage-name">'+
+      '<span class="badge '+s.badge+'">'+esc(s.name)+'</span>'+
+      '</div><div class="guide-row">'+rowsHTML+'</div></div>';
+  }
+
+  var salesHTML=sales.map(buildStage).join('');
+  var implHTML=impl.map(buildStage).join('');
+
+  document.getElementById('mc').innerHTML=
+    '<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal guide-modal">'+
+    '<div class="modal-hdr"><span class="modal-title">Stage definitions & qualifiers</span><button class="xbtn" onclick="closeModal()">×</button></div>'+
+    '<div class="modal-body">'+
+    '<div class="guide-principle"><strong>Core principle:</strong> Every stage advance requires a commitment from the prospect — not just activity from you. If you can\'t articulate what they\'re supposed to do next and by when, the deal is in the wrong stage.</div>'+
+    '<div class="guide-section"><div class="guide-h">Sales pipeline</div>'+salesHTML+'</div>'+
+    '<div class="guide-section"><div class="guide-h">Implementation flow</div>'+implHTML+'</div>'+
+    '<div class="guide-rule"><strong>Quick test:</strong> For every account in your pipeline, you should be able to answer "What\'s the next concrete step, and by what date?" If you can\'t, the deal needs a follow-up reminder or a stage change.</div>'+
+    '</div>'+
+    '<div class="modal-foot"><button class="btn btn-navy" onclick="closeModal()">Close</button></div>'+
+    '</div></div>';
+}
 function openAdd(){showForm(null);}
 function openEdit(id){showForm(accs.find(function(a){return a.id===id;}));}
 
 function cbHTML(c,i){
-  return '<div class="cblock" id="cb-'+i+'"><div class="cblock-title">'+(i===0?'Primary contact':'Additional contact')+'</div>'+(i>0?'<button class="cbtn-remove" data-i="'+i+'" onclick="rmC(parseInt(this.dataset.i))">×</button>':'')+'<div class="fg"><div class="fgrp"><label class="flbl">First name</label><input class="finput" id="cfn-'+i+'" value="'+esc(c.first||c.name||'')+'"></div><div class="fgrp"><label class="flbl">Last name</label><input class="finput" id="cln-'+i+'" value="'+esc(c.last||'')+'"></div><div class="fgrp"><label class="flbl">Title</label><input class="finput" id="ct-'+i+'" value="'+esc(c.title||'')+'"></div><div class="fgrp"><label class="flbl">Email</label><input class="finput" id="ce-'+i+'" value="'+esc(c.email||'')+'"></div><div class="fgrp full"><label class="flbl">Phone</label><input class="finput" id="cp-'+i+'" value="'+esc(c.phone||'')+'"></div></div></div>';
+  var phType=c.phone_type||'';
+  var ptOpts=['Cell','Office','Other'].map(function(t){return '<option value="'+t+'"'+(phType===t?' selected':'')+'>'+t+'</option>';}).join('');
+  return '<div class="cblock" id="cb-'+i+'"><div class="cblock-title">'+(i===0?'Primary contact':'Additional contact')+'</div>'+(i>0?'<button class="cbtn-remove" data-i="'+i+'" onclick="rmC(parseInt(this.dataset.i))">×</button>':'')+'<div class="fg"><div class="fgrp"><label class="flbl">First name</label><input class="finput" id="cfn-'+i+'" value="'+esc(c.first||c.name||'')+'"></div><div class="fgrp"><label class="flbl">Last name</label><input class="finput" id="cln-'+i+'" value="'+esc(c.last||'')+'"></div><div class="fgrp"><label class="flbl">Title</label><input class="finput" id="ct-'+i+'" value="'+esc(c.title||'')+'"></div><div class="fgrp"><label class="flbl">Email</label><input class="finput" id="ce-'+i+'" value="'+esc(c.email||'')+'"></div><div class="fgrp"><label class="flbl">Phone</label><input class="finput" id="cp-'+i+'" value="'+esc(c.phone||'')+'"></div><div class="fgrp"><label class="flbl">Phone type</label><select class="finput" id="cpt-'+i+'"><option value="">— Select —</option>'+ptOpts+'</select></div><div class="fgrp full"><label class="flbl">Personal notes <span style="color:var(--muted);font-size:10px">e.g. prefers calls in afternoon, allergic to mornings, kid in college</span></label><textarea class="finput" id="cn-'+i+'" rows="2" placeholder="Personal notes about this contact…">'+esc(c.notes||'')+'</textarea></div></div></div>';
 }
 function addC(){var i=ccount++;var d=document.createElement('div');d.innerHTML=cbHTML({},i);document.getElementById('cc').appendChild(d.firstElementChild);}
 function rmC(i){var e=document.getElementById('cb-'+i);if(e)e.remove();}
@@ -1406,7 +3416,9 @@ function gatherC(){
     var t=(document.getElementById('ct-'+i)||{}).value||'';
     var e=(document.getElementById('ce-'+i)||{}).value||'';
     var p=(document.getElementById('cp-'+i)||{}).value||'';
-    if(f||l||e||p)r.push({first:f,last:l,title:t,email:e,phone:p});
+    var pt=(document.getElementById('cpt-'+i)||{}).value||'';
+    var n=(document.getElementById('cn-'+i)||{}).value||'';
+    if(f||l||e||p||n)r.push({first:f,last:l,title:t,email:e,phone:p,phone_type:pt,notes:n});
   });
   return r;
 }
@@ -1433,36 +3445,66 @@ function showForm(acc){
     '<div class="fsec">Account info</div>'+
     '<div class="fg"><div class="fgrp full"><label class="flbl">Account name *</label><input class="finput" id="fn" value="'+esc(a.name||'')+'"></div>'+
     '<div class="fgrp"><label class="flbl">Type</label><select class="finput" id="ft" onchange="updPEField()"><option value="">— Select —</option>'+typeOpts+'</select></div>'+
-    '<div class="fgrp"><label class="flbl">Source</label><select class="finput" id="fsrc"><option value="">— Select —</option>'+srcOpts+'</select></div></div>'+
+    '<div class="fgrp"><label class="flbl">Source</label><select class="finput" id="fsrc" onchange="updateReferralLabel()"><option value="">— Select —</option>'+srcOpts+'</select></div></div>'+
     '<div id="pe-group-field" style="display:'+(a.acct_type==="Private equity group"?"block":"none")+';margin-top:14px"><div class="fgrp"><label class="flbl">PE Group name</label><input class="finput" id="fpe" placeholder="e.g. Warburg Pincus" value="'+(a.pe_group||'')+'" ></div></div>'+
     '<div class="fgrp full" style="margin-top:14px"><label class="flbl">Street address</label><input class="finput" id="faddr" value="'+esc(a.address||'')+'"></div>'+
     '<div class="fg3" style="margin-top:14px"><div class="fgrp"><label class="flbl">City</label><input class="finput" id="fci" value="'+esc(a.city||'')+'"></div><div class="fgrp"><label class="flbl">State</label><input class="finput" id="fst" value="'+esc(a.state||'')+'"></div><div class="fgrp"><label class="flbl">Zip</label><input class="finput" id="fzp" value="'+esc(a.zip||'')+'"></div></div>'+
     '<div class="fg" style="margin-top:14px"><div class="fgrp"><label class="flbl">Phone</label><input class="finput" id="fph" value="'+esc(a.phone||'')+'"></div><div class="fgrp"><label class="flbl">Website</label><input class="finput" id="fwb" value="'+esc(a.website||'')+'"></div></div>'+
+    '<div class="fgrp full" style="margin-top:14px"><label class="flbl"><span id="fref-lbl">Referral source</span> <span id="fref-hint" style="color:var(--muted);font-size:10px">who provided this lead — auto-labels based on Source</span></label><input class="finput" id="fref" value="'+esc(a.referral_source||'')+'" placeholder="Name or company"></div>'+
+    '<div class="fgrp full" style="margin-top:14px"><label class="flbl">Tags <span style="color:var(--muted);font-size:10px">comma-separated · for grouping & re-engagement campaigns</span></label><div class="tag-input-wrap"><input class="finput" id="ftags" autocomplete="off" placeholder="e.g. conference-invite, q1-2027, fl-region" value="'+esc(a.tags||'')+'" oninput="updateTagSuggest(this)" onfocus="updateTagSuggest(this)" onblur="setTimeout(hideTagSuggest,200)"><div id="tag-suggest" class="tag-suggest"></div></div></div>'+
     '<div class="fsec">Pipeline stage</div>'+
     '<div class="fg"><div class="fgrp"><label class="flbl">Pipeline type</label><select class="finput" id="fpt" onchange="updStage()"><option value="sales"'+(pt==='sales'?' selected':'')+'>Sales Pipeline</option><option value="impl"'+(pt==='impl'?' selected':'')+'>Implementation</option><option value="active"'+(pt==='active'?' selected':'')+'>Active account</option></select></div>'+
-    '<div class="fgrp"><label class="flbl">Stage</label><select class="finput" id="fsg">'+stageOpts+'</select></div>'+
+    '<div class="fgrp"><label class="flbl flbl-with-info">Stage <button type="button" class="info-btn" onclick="openStageGuide()" title="Stage definitions">i</button></label><select class="finput" id="fsg">'+stageOpts+'</select></div>'+
     '<div class="fgrp"><label class="flbl">Deal value ($)</label><input class="finput" id="fdv" type="text" placeholder="e.g. 25,000" value="'+(a.deal_value?fmtC(a.deal_value):'')+'"><div style="font-size:11px;color:var(--muted);margin-top:4px;font-weight:500">Hardware cost + first year subscription</div></div>'+
     '<div class="fgrp"><label class="flbl">Lost reason</label><select class="finput" id="flr" onchange="autoLostStage()"><option value="">—</option>'+lostOpts+'</select></div></div>'+
     '<div class="fsec">Contacts</div><div id="cc">'+contactsHTML+'</div><button class="add-c-btn" onclick="addC()">+ Add another contact</button>'+
     '<div class="fsec">Implementation & hardware</div>'+
     '<div class="fg"><div class="fgrp"><label class="flbl">Implementation manager</label><select class="finput" id="fim">'+mgrsOpts(a.impl_manager)+'</select></div>'+
     '<div class="fgrp"><label class="flbl">Signed / close date</label><input class="finput" id="fsd" type="date" value="'+(a.signed_date||'')+'"></div>'+
-    '<div class="fgrp"><label class="flbl">Go-live date</label><input class="finput" id="fgl" type="date" value="'+(a.go_live_date||'')+'" onchange="autoD()"></div>'+
-    '<div class="fgrp"><label class="flbl">30-day check-in <span style="color:var(--lime-ink);font-size:10px">auto</span></label><input class="finput" id="fc3" type="date" value="'+(a.checkin_30_date||'')+'"></div>'+
-    '<div class="fgrp"><label class="flbl">60-day eval end <span style="color:var(--lime-ink);font-size:10px">auto</span></label><input class="finput" id="fe6" type="date" value="'+(a.eval_end_date||'')+'"></div>'+
-    '<div class="fgrp"></div>'+
+    '<div class="fgrp"><label class="flbl">Go-live date</label><input class="finput" id="fgl" type="date" value="'+(a.go_live_date||'')+'" data-prev="'+(a.go_live_date||'')+'" onchange="autoD()"></div>'+
+    '<div class="fgrp"><label class="flbl">Go-live end date <span style="color:var(--lime-ink);font-size:10px">auto · for multi-day installs</span></label><input class="finput" id="fgle" type="date" value="'+(a.go_live_end_date||(a.go_live_date?addDays(a.go_live_date,2):''))+'" data-prev-start="'+(a.go_live_date||'')+'"></div>'+
+    '<div class="fgrp full"><label class="flbl">Target launch window <span style="color:var(--muted);font-size:10px">free-form when Go-live isn\'t scheduled yet — e.g. "End of Oct", "Q1 2027", "Post-remodel"</span></label><input class="finput" id="flw" value="'+esc(a.launch_window||'')+'" placeholder="Rough timing estimate"></div>'+
+    '<div class="fgrp"><label class="flbl">Eval Check-In <span style="color:var(--lime-ink);font-size:10px">auto · 2 wks post go-live · editable</span></label><input class="finput" id="fc3" type="date" value="'+(a.checkin_30_date||'')+'" '+(a.checkin_skip?'disabled style="opacity:.5"':'')+'><label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:11.5px;font-weight:500;color:var(--text-2);margin-top:6px"><input type="checkbox" id="fcs" '+(a.checkin_skip?'checked':'')+' onchange="toggleCheckinSkip()" style="cursor:pointer;accent-color:var(--lime);width:14px;height:14px"> Not needed / skip check-in</label></div>'+
+    '<div class="fgrp"><label class="flbl">Evaluation end <span style="color:var(--lime-ink);font-size:10px">auto</span></label><input class="finput" id="fe6" type="date" value="'+(a.eval_end_date||'')+'"></div>'+
     '<div class="fgrp"><label class="flbl">Number of kits</label><input class="finput" id="fkc" type="text" value="'+(a.kit_count||'')+'"></div>'+
-    '<div class="fgrp"><label class="flbl">Hardware cost ($)</label><input class="finput" id="fhc" type="text" placeholder="e.g. 5,000" value="'+(a.hardware_cost?fmtC(a.hardware_cost):'')+'"></div></div>'+
+    '<div class="fgrp"><label class="flbl">Hardware cost ($)</label><input class="finput" id="fhc" type="text" placeholder="e.g. 5,000" value="'+(a.hardware_cost?fmtC(a.hardware_cost):'')+'"></div>'+
+    '<div class="fgrp"><label class="flbl">Hardware arrangement <span style="color:var(--muted);font-size:10px">who pays?</span></label><select class="finput" id="fhwa" onchange="updateArrangement()">'+
+      HW_ARRANGEMENTS.map(function(x){return '<option value="'+esc(x)+'"'+((a.hw_arrangement||'Practice pays')===x?' selected':'')+'>'+esc(x)+'</option>';}).join('')+
+    '</select></div>'+
+    '<div class="fgrp" id="hw-payment-row"><label class="flbl">Hardware payment</label><div style="display:flex;align-items:center;gap:10px;height:38px"><label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12.5px;font-weight:500;color:var(--text);white-space:nowrap"><input type="checkbox" id="fhp" '+(a.hardware_paid?'checked':'')+' onchange="togglePaidDate()" style="cursor:pointer;accent-color:var(--lime);width:15px;height:15px"> Payment received</label></div></div>'+
+    '<div class="fgrp" id="hw-paiddate-row"><label class="flbl">Date received</label><input class="finput" id="fhpd" type="date" value="'+(a.hardware_paid_date||'')+'" '+(a.hardware_paid?'':'disabled style="opacity:.5"')+'></div></div>'+
     '<div class="fsec">Subscription</div>'+
     '<div class="fg"><div class="fgrp"><label class="flbl">Subscription type</label><select class="finput" id="fst2"><option value=""'+((!a.sub_type)?' selected':'')+'>—</option><option value="Monthly"'+(a.sub_type==='Monthly'?' selected':'')+'>Monthly</option><option value="Yearly"'+(a.sub_type==='Yearly'?' selected':'')+'>Yearly</option><option value="No charge"'+(a.sub_type==='No charge'?' selected':'')+'>No charge</option></select></div>'+
     '<div class="fgrp"><label class="flbl">Subscription amount ($)</label><input class="finput" id="fsa" type="text" placeholder="e.g. 1,200" value="'+(a.sub_amount?fmtC(a.sub_amount):'')+'"></div>'+
     '<div class="fgrp full"><label class="flbl">Subscription start date <span style="color:var(--lime-ink);font-size:10px">auto-fills renewal</span></label><input class="finput" id="fssd" type="date" value="'+(a.sub_start_date||'')+'" onchange="autoRenewal()"></div>'+
+    '<div class="fgrp"><label class="flbl">Original start date <span style="color:var(--muted);font-size:10px">for tenure · when they first became a paying customer, doesn\'t change on renewal</span></label><input class="finput" id="fosd" type="date" value="'+(a.subscription_start_date||'')+'"></div>'+
     '<div class="fgrp"><label class="flbl">Renewal date <span style="color:var(--lime-ink);font-size:10px">auto</span></label><input class="finput" id="frd" type="date" value="'+(a.renewal_date||'')+'"></div></div>'+
     '</div>'+
     '<div class="modal-foot">'+delBtn+'<button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" data-eid="'+(a.id||'')+'" onclick="saveAcc(this.dataset.eid)">Save account</button></div>'+
     '</div></div>';
+  setTimeout(updateArrangement,0);
+  setTimeout(updateReferralLabel,0);
 }
-function autoD(){var g=document.getElementById('fgl').value;if(g){document.getElementById('fc3').value=addDays(g,30);document.getElementById('fe6').value=addDays(g,60);}}
+function autoD(){
+  var g=document.getElementById('fgl').value;
+  if(!g)return;
+  var gleEl=document.getElementById('fgle');
+  var prev=gleEl.getAttribute('data-prev-start')||'';
+  var curEnd=gleEl.value||'';
+  if(!curEnd){
+    gleEl.value=addDays(g,2);
+  }else if(prev){
+    // Preserve duration: shift end by the same delta the start moved
+    var prevStart=new Date(prev);var newStart=new Date(g);
+    var delta=Math.round((newStart-prevStart)/86400000);
+    if(delta!==0)gleEl.value=addDays(curEnd,delta);
+  }else{
+    gleEl.value=addDays(g,2);
+  }
+  gleEl.setAttribute('data-prev-start',g);
+  document.getElementById('fc3').value=addDays(g,14);
+  document.getElementById('fe6').value=addDays(g,60);
+}
 function autoRenewal(){var s=document.getElementById('fssd').value;if(s){var d=new Date(s);d.setFullYear(d.getFullYear()+1);document.getElementById('frd').value=d.toISOString().split('T')[0];}}
 function autoLostStage(){var r=document.getElementById('flr').value;if(r){var pt=document.getElementById('fpt');var sg=document.getElementById('fsg');if(pt&&sg&&pt.value!=='sales'){pt.value='sales';updStage();}if(sg)sg.value='Deal lost';}}
 function updStage(){var pt=document.getElementById('fpt').value;var s=document.getElementById('fsg');if(pt==='sales')s.innerHTML=SALES.map(function(x){return '<option>'+x+'</option>';}).join('');else if(pt==='impl')s.innerHTML=IMPL.map(function(x){return '<option>'+x+'</option>';}).join('');else s.innerHTML='<option value="Active">Active</option>';}
@@ -1471,6 +3513,12 @@ function updPEField(){var v=document.getElementById('ft').value;var f=document.g
 async function saveAcc(eid){
   var name=(document.getElementById('fn').value||'').trim();
   if(!name){alert('Account name is required.');return;}
+  // Check for duplicates (skip when editing the same record)
+  var dup=findPossibleDuplicate(name,eid);
+  if(dup){
+    var msg='Possible duplicate account found:\n\n  "'+dup.name+'"  ('+(dup.stage||'no stage')+')\n\nDo you want to save this as a separate account anyway?';
+    if(!confirm(msg))return;
+  }
   var now=new Date().toISOString();
   var prev=accs.find(function(a){return a.id===eid;})||{};
   var newStage=document.getElementById('fsg').value;
@@ -1489,20 +3537,29 @@ async function saveAcc(eid){
     zip:document.getElementById('fzp').value.trim()||null,
     phone:document.getElementById('fph').value.trim()||null,
     website:document.getElementById('fwb').value.trim()||null,
+    referral_source:document.getElementById('fref')?document.getElementById('fref').value.trim()||null:null,
     stage:newStage,
     deal_value:parseC(document.getElementById('fdv').value),
     lost_reason:document.getElementById('flr').value||null,
     contacts_json:JSON.stringify(gatherC()),
+    tags:(function(){var v=(document.getElementById('ftags')||{}).value||'';var clean=getCurrentTagsFromInput(v).join(', ');return clean||null;})(),
     impl_manager:document.getElementById('fim').value||null,
     signed_date:document.getElementById('fsd').value||null,
     go_live_date:document.getElementById('fgl').value||null,
+    go_live_end_date:document.getElementById('fgle').value||null,
+    launch_window:document.getElementById('flw')?(document.getElementById('flw').value||'').trim()||null:null,
     checkin_30_date:document.getElementById('fc3').value||null,
+    checkin_skip:document.getElementById('fcs')?document.getElementById('fcs').checked:false,
     eval_end_date:document.getElementById('fe6').value||null,
     kit_count:document.getElementById('fkc').value?parseInt(document.getElementById('fkc').value):null,
     hardware_cost:parseC(document.getElementById('fhc').value),
+    hw_arrangement:document.getElementById('fhwa')?document.getElementById('fhwa').value:'Practice pays',
+    hardware_paid:document.getElementById('fhp')?document.getElementById('fhp').checked:false,
+    hardware_paid_date:(function(){var cb=document.getElementById('fhp');var dt=document.getElementById('fhpd');return (cb&&cb.checked&&dt&&dt.value)?dt.value:null;})(),
     sub_type:document.getElementById('fst2').value||null,
     sub_amount:parseC(document.getElementById('fsa').value),
     sub_start_date:document.getElementById('fssd').value||null,
+    subscription_start_date:document.getElementById('fosd')?document.getElementById('fosd').value||null:null,
     renewal_date:document.getElementById('frd').value||null,
     notes_log:prev.notes_log||'[]',
     activity_log:activity,
@@ -1516,6 +3573,46 @@ async function saveAcc(eid){
   }catch(e){alert('Error: '+e.message);}
 }
 
+function editNote(id,i){
+  var a=accs.find(function(x){return x.id===id;});
+  if(!a)return;
+  var notes=getNotes(a);
+  var n=notes[i];
+  if(!n)return;
+  var row=document.getElementById('note-row-'+i);
+  if(!row)return;
+  // Replace row contents with editable textarea + Save/Cancel
+  row.innerHTML='<div style="font-family:var(--f-mono);font-size:10.5px;color:var(--muted);margin-bottom:6px;letter-spacing:.02em">'+
+      'Editing note · originally '+esc(n.author||'Unknown')+' · '+fmtDT(n.ts)+
+    '</div>'+
+    '<textarea id="note-edit-ta-'+i+'" class="finput" style="width:100%;min-height:80px;resize:vertical;font-family:var(--f-ui)">'+esc(n.text)+'</textarea>'+
+    '<div style="display:flex;justify-content:flex-end;gap:6px;margin-top:8px">'+
+      '<button class="btn btn-sm" data-id="'+id+'" onclick="openDetail(this.dataset.id);stab(\'n\')">Cancel</button>'+
+      '<button class="btn btn-sm btn-primary" data-id="'+id+'" data-i="'+i+'" onclick="saveEditedNote(this.dataset.id,parseInt(this.dataset.i))">Save</button>'+
+    '</div>';
+  // Focus the textarea
+  var ta=document.getElementById('note-edit-ta-'+i);
+  if(ta){ta.focus();ta.setSelectionRange(ta.value.length,ta.value.length);}
+}
+async function saveEditedNote(id,i){
+  var a=accs.find(function(x){return x.id===id;});
+  if(!a)return;
+  var notes=getNotes(a);
+  if(!notes[i])return;
+  var newText=(document.getElementById('note-edit-ta-'+i)||{}).value||'';
+  newText=newText.trim();
+  if(!newText){alert('Note cannot be empty. Use Remove to delete it instead.');return;}
+  if(newText===notes[i].text){openDetail(id);stab('n');return;}
+  // Update note with edited timestamp + audit info
+  notes[i].text=newText;
+  notes[i].edited_ts=new Date().toISOString();
+  notes[i].edited_by=getUser();
+  var updated=Object.assign({},a,{notes_log:JSON.stringify(notes),activity_log:logActivity(a,'Edited a note'),updated_at:new Date().toISOString()});
+  try{
+    await upsertAcc(updated);
+    openDetail(id);stab('n');
+  }catch(e){alert('Error: '+e.message);}
+}
 async function addNote(id){
   var text=(document.getElementById('note-input').value||'').trim();
   if(!text)return;
@@ -1541,12 +3638,23 @@ function openDetail(id){
     contacts.forEach(function(c,i){
       var cn=((c.first||'')+' '+(c.last||'')).trim()||c.name||'—';
       var emailLink=c.email?'<a href="mailto:'+esc(c.email)+'" style="color:var(--ink);font-weight:500;border-bottom:1px solid var(--line-2)">'+esc(c.email)+'</a>':'—';
-      ch+='<div style="'+(i>0?'padding-top:18px;border-top:1px solid var(--line);margin-top:18px':'')+'"><div style="font-family:var(--f-mono);font-size:10.5px;font-weight:600;color:var(--ink);margin-bottom:12px;text-transform:uppercase;letter-spacing:.1em">'+(i===0?'Primary contact':'Contact '+(i+1))+'</div><div class="dgrid"><div class="dlbl">Name</div><div class="dval">'+esc(cn)+'</div><div class="dlbl">Title</div><div class="dval">'+esc(c.title||'—')+'</div><div class="dlbl">Email</div><div class="dval">'+emailLink+'</div><div class="dlbl">Phone</div><div class="dval">'+esc(c.phone||'—')+'</div></div></div>';
+      var phoneDisplay=c.phone?(esc(c.phone)+(c.phone_type?' <span style="color:var(--muted);font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:.05em;margin-left:4px">'+esc(c.phone_type)+'</span>':'')):'—';
+      var personalNotes=c.notes?'<div style="margin-top:10px;padding:10px 12px;background:var(--lime-wash);border-left:3px solid var(--lime);border-radius:4px;font-size:12.5px;line-height:1.55;color:var(--text);white-space:pre-wrap;font-style:italic">'+esc(c.notes)+'</div>':'';
+      ch+='<div style="'+(i>0?'padding-top:18px;border-top:1px solid var(--line);margin-top:18px':'')+'"><div style="font-family:var(--f-mono);font-size:10.5px;font-weight:600;color:var(--ink);margin-bottom:12px;text-transform:uppercase;letter-spacing:.1em">'+(i===0?'Primary contact':'Contact '+(i+1))+'</div><div class="dgrid"><div class="dlbl">Name</div><div class="dval">'+esc(cn)+'</div><div class="dlbl">Title</div><div class="dval">'+esc(c.title||'—')+'</div><div class="dlbl">Email</div><div class="dval">'+emailLink+'</div><div class="dlbl">Phone</div><div class="dval">'+phoneDisplay+'</div></div>'+personalNotes+'</div>';
     });
   }else{ch='<div style="color:var(--muted);font-size:13.5px">No contacts added.</div>';}
   var notes=getNotes(a);var activity=getActivity(a);
   var notesItems='';
-  notes.forEach(function(n){notesItems+='<div class="note-entry"><div class="note-meta">'+esc(n.author||'Unknown')+' · '+fmtDT(n.ts)+'</div><div class="note-text">'+esc(n.text)+'</div></div>';});
+  notes.forEach(function(n,ni){
+    var editedHint=n.edited_ts?' <span style="color:var(--muted-2);font-style:italic">· edited '+fmtDT(n.edited_ts)+'</span>':'';
+    notesItems+='<div class="note-entry" id="note-row-'+ni+'">'+
+      '<div class="note-meta" style="display:flex;justify-content:space-between;align-items:center;gap:8px">'+
+        '<span>'+esc(n.author||'Unknown')+' · '+fmtDT(n.ts)+editedHint+'</span>'+
+        '<button class="btn btn-sm" style="padding:2px 8px;font-size:11px" data-id="'+a.id+'" data-i="'+ni+'" onclick="event.stopPropagation();editNote(this.dataset.id,parseInt(this.dataset.i))">Edit</button>'+
+      '</div>'+
+      '<div class="note-text" id="note-text-'+ni+'">'+esc(n.text)+'</div>'+
+    '</div>';
+  });
   var notesHTML='<div class="note-input-area"><textarea id="note-input" placeholder="Add a note…" rows="3"></textarea><div class="note-input-area-foot"><button class="btn btn-primary btn-sm" data-id="'+a.id+'" id="note-save-btn" onclick="addNote(this.dataset.id)">Add note</button></div></div>'+(notesItems||'<div style="color:var(--muted);font-size:13.5px;padding:8px 0">No notes yet.</div>');
   var actItems='';
   activity.forEach(function(e){actItems+='<div class="activity-entry"><span style="font-weight:600;color:var(--ink)">'+esc(e.who||'Unknown')+'</span><span style="font-family:var(--f-mono);color:var(--muted);margin-left:8px;font-size:11px;letter-spacing:.02em">'+fmtDT(e.ts)+'</span><div style="color:var(--text);margin-top:3px;font-size:12.5px">'+esc(e.what)+'</div></div>';});
@@ -1584,19 +3692,22 @@ function openDetail(id){
 
   document.getElementById('mc').innerHTML=
     '<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal">'+
-    '<div class="modal-hdr"><div><div class="modal-title">'+esc(a.name)+'</div><div class="detail-sub">'+esc(a.acct_type||'')+(a.source?' · '+esc(a.source):'')+(a.city?' · '+esc(a.city):'')+(a.state?' '+esc(a.state):'')+'</div></div><div style="display:flex;align-items:center;gap:12px">'+badge(a.stage)+'<button class="xbtn" onclick="closeModal()">×</button></div></div>'+
+    '<div class="modal-hdr"><div><div class="modal-title">'+esc(a.name)+'</div><div class="detail-sub">'+esc(a.acct_type||'')+(a.source?' · '+esc(a.source):'')+(a.city?' · '+esc(a.city):'')+(a.state?' '+esc(a.state):'')+'</div>'+(getTags(a).length?'<div style="margin-top:8px">'+renderTagChips(a)+'</div>':'')+'</div><div style="display:flex;align-items:center;gap:12px">'+badge(a.stage)+'<button class="xbtn" onclick="closeModal()">×</button></div></div>'+
     '<div class="modal-body"><div class="tabs"><div class="tab active" id="dt-c" onclick="stab(\'c\')">Contacts</div><div class="tab" id="dt-i" onclick="stab(\'i\')">Implementation</div><div class="tab" id="dt-s" onclick="stab(\'s\')">Subscription</div><div class="tab" id="dt-n" onclick="stab(\'n\')">Notes</div><div class="tab" id="dt-a" onclick="stab(\'a\')">Activity</div><div class="tab" id="dt-d" onclick="stab(\'d\')">Docs</div><div class="tab" id="dt-f" onclick="stab(\'f\')">Follow-ups</div></div>'+
     '<div id="dc-c">'+ch+'</div>'+
     '<div id="dc-i" style="display:none"><div class="dgrid">'+
     '<div class="dlbl">Impl. manager</div><div class="dval">'+esc(a.impl_manager||'—')+'</div>'+
     '<div class="dlbl">Signed date</div><div class="dval">'+fmt(a.signed_date)+'</div>'+
-    '<div class="dlbl">Go-live date</div><div class="dval">'+fmt(a.go_live_date)+'</div>'+
-    '<div class="dlbl">30-day check-in</div><div class="dval">'+ciStatus(a)+'</div>'+
-    '<div class="dlbl">60-day eval end</div><div class="dval">'+(a.eval_end_date?'<span class="'+(ed!==null&&ed<=10?'warn':'')+'">'+fmt(a.eval_end_date)+' '+dl(ed)+'</span>':'—')+'</div>'+
+    '<div class="dlbl">Go-live date</div><div class="dval">'+goLiveCell(a)+'</div>'+
+    '<div class="dlbl">Eval Check-In</div><div class="dval">'+ciStatus(a)+'</div>'+
+    '<div class="dlbl">Evaluation end</div><div class="dval">'+(a.eval_end_date?'<span class="'+(ed!==null&&ed<=10?'warn':'')+'">'+fmt(a.eval_end_date)+' '+dl(ed)+'</span>':'—')+'</div>'+
     '<div class="dlbl">Kits</div><div class="dval">'+(a.kit_count||'—')+'</div>'+
     '<div class="dlbl">Hardware cost</div><div class="dval">'+(a.hardware_cost?'$'+fmtC(a.hardware_cost):'—')+'</div>'+
+    (a.hardware_cost?'<div class="dlbl">HW arrangement</div><div class="dval">'+esc(a.hw_arrangement||'Practice pays')+'</div>':'')+
+    (a.hardware_cost?'<div class="dlbl">HW payment</div><div class="dval">'+hwPayStatus(a)+'</div>':'')+
     '<div class="dlbl">Phone</div><div class="dval">'+esc(a.phone||'—')+'</div>'+
     '<div class="dlbl">Website</div><div class="dval">'+esc(a.website||'—')+'</div>'+
+    (a.referral_source?'<div class="dlbl">'+(function(){var s=a.source;if(s==='Alcon - Field'||s==='Alcon 45 Day')return 'Alcon rep';if(s==='B&L - Field')return 'B&L rep';if(s==='J&J - Field')return 'J&J rep';if(s==='Referral')return 'Referred by';if(s==='Industry partner')return 'Partner';if(s==='Other')return 'Source detail';return 'Referral source';})()+'</div><div class="dval">'+esc(a.referral_source)+'</div>':'')+
     (a.deal_value?'<div class="dlbl">Deal value</div><div class="dval">$'+fmtC(a.deal_value)+'</div>':'')+
     (a.lost_reason?'<div class="dlbl">Lost reason</div><div class="dval">'+esc(a.lost_reason)+'</div>':'')+
     '</div></div>'+
@@ -1605,6 +3716,8 @@ function openDetail(id){
     '<div class="dlbl">Sub type</div><div class="dval">'+(a.sub_type?'<span class="badge '+(a.sub_type==='Monthly'?'b-monthly':'b-yearly')+'">'+a.sub_type+'</span>':'—')+'</div>'+
     '<div class="dlbl">Amount</div><div class="dval">'+(a.sub_amount?'$'+fmtC(a.sub_amount)+(a.sub_type==='Monthly'?'/mo':'/yr'):'—')+'</div>'+
     '<div class="dlbl">Renewal date</div><div class="dval">'+(a.renewal_date?'<span class="'+(d!==null&&d<=30?d<=7?'danger':'warn':'')+'">'+fmt(a.renewal_date)+' '+dl(d)+'</span>':'—')+'</div>'+
+    (a.stage==='Active'?'<div class="dlbl">Original start</div><div class="dval">'+(a.subscription_start_date?fmt(a.subscription_start_date):'<span style="color:var(--muted)">—</span>')+'</div>'+
+      '<div class="dlbl">Tenure</div><div class="dval">'+subYear(a)+'</div>':'')+
     '</div></div>'+
     '<div id="dc-n" style="display:none">'+notesHTML+'</div>'+
     '<div id="dc-a" style="display:none">'+actHTML+'</div>'+
@@ -1624,8 +3737,6 @@ function stab(t){
 }
 
 document.addEventListener('DOMContentLoaded',function(){
-  var saved=localStorage.getItem('crm_impl_mgrs');
-  if(saved){try{implMgrs=JSON.parse(saved);}catch(e){}}
   var name=getUser();
   if(name&&name!=='Unknown'){
     document.getElementById('sf-name').textContent=name;
