@@ -2251,6 +2251,62 @@ function rRenewals(el,act){
   el.innerHTML=html||'<div class="empty">No active accounts to track.</div>';
 }
 
+function gatherEmails(accList){
+  // Returns an array of {account, name, title, email, stage, tags} rows for every contact with an email, deduped by email (lowercase)
+  var seen={};
+  var rows=[];
+  accList.forEach(function(a){
+    var contacts=[];
+    try{contacts=JSON.parse(a.contacts_json||'[]');}catch(e){contacts=[];}
+    contacts.forEach(function(c){
+      var email=(c.email||'').trim();
+      if(!email)return;
+      var key=email.toLowerCase();
+      if(seen[key])return;
+      seen[key]=true;
+      var first=(c.first||c.name||'').trim();
+      var last=(c.last||'').trim();
+      var full=(first+' '+last).trim()||'(no name)';
+      rows.push({account:a.name||'',name:full,title:c.title||'',email:email,stage:a.stage||'',tags:a.tags||''});
+    });
+  });
+  return rows;
+}
+function getEmailListAccounts(which){
+  if(which==='customer')return accs.filter(function(a){return a.stage==='Active'||IMPL.includes(a.stage);});
+  if(which==='prospect')return accs.filter(function(a){return SALES.includes(a.stage)&&a.stage!=='Deal won';});
+  return [];
+}
+function exportEmailListCSV(which){
+  var rows=gatherEmails(getEmailListAccounts(which));
+  if(!rows.length){alert('No emails found for this list.');return;}
+  var filename=which==='customer'?'customer-emails.csv':'prospect-emails.csv';
+  exportCSV(rows,[
+    {label:'Account',fn:function(r){return r.account;}},
+    {label:'Contact',fn:function(r){return r.name;}},
+    {label:'Title',fn:function(r){return r.title;}},
+    {label:'Email',fn:function(r){return r.email;}},
+    {label:'Stage',fn:function(r){return r.stage;}},
+    {label:'Tags',fn:function(r){return r.tags;}}
+  ],filename);
+}
+function copyEmailList(which){
+  var rows=gatherEmails(getEmailListAccounts(which));
+  if(!rows.length){alert('No emails found for this list.');return;}
+  var list=rows.map(function(r){return r.email;}).join(', ');
+  // Clipboard write with fallback
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(list).then(function(){
+      alert('Copied '+rows.length+' email'+(rows.length===1?'':'s')+' to clipboard, comma-separated.\n\nPaste into your email client\'s To: or Bcc: field.');
+    }).catch(function(){promptCopy(list,rows.length);});
+  } else {
+    promptCopy(list,rows.length);
+  }
+}
+function promptCopy(text,count){
+  // Fallback: show the text in a prompt the user can copy from
+  window.prompt(count+' emails — press Cmd+C / Ctrl+C to copy:',text);
+}
 function rReports(el,act){
   act.innerHTML='<button class="btn btn-navy" onclick="exportReports()">Export CSV</button>';
   var active=accs.filter(function(a){return a.stage==='Active';});
@@ -2331,7 +2387,24 @@ function rReports(el,act){
   });
   var srcOpts=sources.map(function(s){return '<option value="'+esc(s)+'"'+(sf===s?' selected':'')+'>'+esc(s)+'</option>';}).join('');
 
+  // Email list counts
+  var customerEmails=gatherEmails(accs.filter(function(a){return a.stage==='Active'||IMPL.includes(a.stage);}));
+  var prospectEmails=gatherEmails(accs.filter(function(a){return SALES.includes(a.stage)&&a.stage!=='Deal won';}));
   el.innerHTML=
+    '<div class="card" style="margin-bottom:24px;background:oklch(97% 0.03 230);border-color:oklch(85% 0.05 230)">'+
+    '<div class="card-hdr" style="border-bottom-color:oklch(85% 0.05 230)"><span class="card-title" style="color:oklch(28% 0.10 230)">Email list exports</span><span style="font-family:var(--f-mono);font-size:10.5px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase">For campaigns · all contacts, deduped</span></div>'+
+    '<div style="padding:18px 22px;display:grid;grid-template-columns:1fr 1fr;gap:16px">'+
+      '<div style="padding:16px;background:var(--bg);border:1px solid var(--line);border-radius:var(--r)">'+
+        '<div style="font-family:var(--f-ui);font-size:14px;font-weight:700;color:var(--ink);margin-bottom:4px">Customer emails</div>'+
+        '<div style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.5">Active + Implementation accounts<br><strong style="color:var(--ink);font-weight:700">'+customerEmails.length+'</strong> unique email'+(customerEmails.length===1?'':'s')+'</div>'+
+        '<div style="display:flex;gap:6px"><button class="btn btn-sm btn-primary" onclick="exportEmailListCSV(\'customer\')">Download CSV</button><button class="btn btn-sm" onclick="copyEmailList(\'customer\')">Copy emails</button></div>'+
+      '</div>'+
+      '<div style="padding:16px;background:var(--bg);border:1px solid var(--line);border-radius:var(--r)">'+
+        '<div style="font-family:var(--f-ui);font-size:14px;font-weight:700;color:var(--ink);margin-bottom:4px">Prospect emails</div>'+
+        '<div style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.5">Sales Pipeline + Deal lost (for re-engagement)<br><strong style="color:var(--ink);font-weight:700">'+prospectEmails.length+'</strong> unique email'+(prospectEmails.length===1?'':'s')+'</div>'+
+        '<div style="display:flex;gap:6px"><button class="btn btn-sm btn-primary" onclick="exportEmailListCSV(\'prospect\')">Download CSV</button><button class="btn btn-sm" onclick="copyEmailList(\'prospect\')">Copy emails</button></div>'+
+      '</div>'+
+    '</div></div>'+
     '<div class="report-grid">'+
     mCard('Hardware revenue',hwRev?'$'+fmtC(hwRev):'$0','Active accounts','drill-hw')+
     mCard('Annual subscription',subRev?'$'+fmtC(subRev):'$0','Annualized','drill-sub')+
