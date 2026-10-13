@@ -2307,6 +2307,69 @@ function promptCopy(text,count){
   // Fallback: show the text in a prompt the user can copy from
   window.prompt(count+' emails — press Cmd+C / Ctrl+C to copy:',text);
 }
+function exportSalesforceAccounts(){
+  // Active + Implementation accounts, formatted for Salesforce import
+  var list=accs.filter(function(a){return a.stage==='Active'||IMPL.includes(a.stage);});
+  if(!list.length){alert('No accounts to export.');return;}
+  // Sort by name for predictable file order
+  list=list.slice().sort(function(a,b){return (a.name||'').localeCompare(b.name||'');});
+  exportCSV(list,[
+    {label:'Account Name',fn:function(a){return a.name||'';}},
+    {label:'Website',fn:function(a){return a.website||'';}},
+    {label:'One-time ARR (Hardware)',fn:function(a){
+      // Zero out non-Practice-pays arrangements per CEO handoff decision
+      var arr=a.hw_arrangement||'Practice pays';
+      if(arr!=='Practice pays')return 0;
+      return parseC(a.hardware_cost)||0;
+    }},
+    {label:'Subscription ARR',fn:function(a){
+      var amt=parseC(a.sub_amount)||0;
+      if(a.sub_type==='Monthly')return amt*12;
+      if(a.sub_type==='Yearly')return amt;
+      return 0; // No charge or blank
+    }},
+    {label:'Start Date',fn:function(a){return a.subscription_start_date||'';}},
+    {label:'Renewal Date',fn:function(a){return a.renewal_date||'';}},
+    {label:'Term',fn:function(a){
+      if(a.sub_type==='Monthly')return 'Monthly';
+      if(a.sub_type==='Yearly')return 'Annual';
+      if(a.sub_type==='No charge')return 'No charge';
+      return '';
+    }},
+    {label:'Stage',fn:function(a){return a.stage||'';}}
+  ],'greenman-accounts-'+new Date().toISOString().split('T')[0]+'.csv');
+}
+function exportSalesforceContacts(){
+  // One row per contact for Active + Implementation accounts
+  var list=accs.filter(function(a){return a.stage==='Active'||IMPL.includes(a.stage);});
+  list=list.slice().sort(function(a,b){return (a.name||'').localeCompare(b.name||'');});
+  var rows=[];
+  list.forEach(function(a){
+    var contacts=[];
+    try{contacts=JSON.parse(a.contacts_json||'[]');}catch(e){contacts=[];}
+    contacts.forEach(function(c){
+      var email=(c.email||'').trim();
+      if(!email)return; // skip contacts without emails
+      var first=(c.first||c.name||'').trim();
+      var last=(c.last||'').trim();
+      // If "first" field contains both names, try to split
+      if(!last&&first.indexOf(' ')>-1){
+        var parts=first.split(/\s+/);
+        first=parts[0];
+        last=parts.slice(1).join(' ');
+      }
+      rows.push({first:first,last:last,email:email,title:c.title||'',account:a.name||''});
+    });
+  });
+  if(!rows.length){alert('No contacts with emails to export.');return;}
+  exportCSV(rows,[
+    {label:'First Name',fn:function(r){return r.first;}},
+    {label:'Last Name',fn:function(r){return r.last;}},
+    {label:'Email',fn:function(r){return r.email;}},
+    {label:'Title',fn:function(r){return r.title;}},
+    {label:'Account Name',fn:function(r){return r.account;}}
+  ],'greenman-contacts-'+new Date().toISOString().split('T')[0]+'.csv');
+}
 function rReports(el,act){
   act.innerHTML='<button class="btn btn-navy" onclick="exportReports()">Export CSV</button>';
   var active=accs.filter(function(a){return a.stage==='Active';});
@@ -2390,6 +2453,10 @@ function rReports(el,act){
   // Email list counts
   var customerEmails=gatherEmails(accs.filter(function(a){return a.stage==='Active'||IMPL.includes(a.stage);}));
   var prospectEmails=gatherEmails(accs.filter(function(a){return SALES.includes(a.stage)&&a.stage!=='Deal won';}));
+  // Salesforce handoff counts
+  var sfAccounts=accs.filter(function(a){return a.stage==='Active'||IMPL.includes(a.stage);});
+  var sfContacts=0;
+  sfAccounts.forEach(function(a){var cs=[];try{cs=JSON.parse(a.contacts_json||'[]');}catch(e){}cs.forEach(function(c){if((c.email||'').trim())sfContacts++;});});
   el.innerHTML=
     '<div class="card" style="margin-bottom:24px;background:oklch(97% 0.03 230);border-color:oklch(85% 0.05 230)">'+
     '<div class="card-hdr" style="border-bottom-color:oklch(85% 0.05 230)"><span class="card-title" style="color:oklch(28% 0.10 230)">Email list exports</span><span style="font-family:var(--f-mono);font-size:10.5px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase">For campaigns · all contacts, deduped</span></div>'+
@@ -2405,6 +2472,22 @@ function rReports(el,act){
         '<div style="display:flex;gap:6px"><button class="btn btn-sm btn-primary" onclick="exportEmailListCSV(\'prospect\')">Download CSV</button><button class="btn btn-sm" onclick="copyEmailList(\'prospect\')">Copy emails</button></div>'+
       '</div>'+
     '</div></div>'+
+    '<div class="card" style="margin-bottom:24px;background:oklch(97% 0.03 285);border-color:oklch(85% 0.05 285)">'+
+    '<div class="card-hdr" style="border-bottom-color:oklch(85% 0.05 285)"><span class="card-title" style="color:oklch(28% 0.10 285)">Salesforce handoff</span><span style="font-family:var(--f-mono);font-size:10.5px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase">Active + Implementation · for acquirer\'s CRM</span></div>'+
+    '<div style="padding:18px 22px;display:grid;grid-template-columns:1fr 1fr;gap:16px">'+
+      '<div style="padding:16px;background:var(--bg);border:1px solid var(--line);border-radius:var(--r)">'+
+        '<div style="font-family:var(--f-ui);font-size:14px;font-weight:700;color:var(--ink);margin-bottom:4px">Accounts</div>'+
+        '<div style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.5">Name, website, hardware ARR, subscription ARR, start, renewal, term<br><strong style="color:var(--ink);font-weight:700">'+sfAccounts.length+'</strong> account'+(sfAccounts.length===1?'':'s')+'</div>'+
+        '<button class="btn btn-sm btn-primary" onclick="exportSalesforceAccounts()">Download accounts.csv</button>'+
+      '</div>'+
+      '<div style="padding:16px;background:var(--bg);border:1px solid var(--line);border-radius:var(--r)">'+
+        '<div style="font-family:var(--f-ui);font-size:14px;font-weight:700;color:var(--ink);margin-bottom:4px">Contacts</div>'+
+        '<div style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.5">First name, last name, email, account name<br><strong style="color:var(--ink);font-weight:700">'+sfContacts+'</strong> contact'+(sfContacts===1?'':'s')+' with emails</div>'+
+        '<button class="btn btn-sm btn-primary" onclick="exportSalesforceContacts()">Download contacts.csv</button>'+
+      '</div>'+
+    '</div>'+
+    '<div style="padding:0 22px 18px;font-size:11.5px;color:var(--muted);line-height:1.6;font-weight:500">Hardware ARR shows $0 for Alcon-supplied, Loaner, and Razer Laptop arrangements (Greenman wasn\'t paid for those units).</div>'+
+    '</div>'+
     '<div class="report-grid">'+
     mCard('Hardware revenue',hwRev?'$'+fmtC(hwRev):'$0','Active accounts','drill-hw')+
     mCard('Annual subscription',subRev?'$'+fmtC(subRev):'$0','Annualized','drill-sub')+
