@@ -2313,9 +2313,28 @@ function exportSalesforceAccounts(){
   if(!list.length){alert('No accounts to export.');return;}
   // Sort by name for predictable file order
   list=list.slice().sort(function(a,b){return (a.name||'').localeCompare(b.name||'');});
+  // Helper: get the primary (first) contact for an account, splitting first/last if needed
+  function primary(a){
+    var cs=[];
+    try{cs=JSON.parse(a.contacts_json||'[]');}catch(e){cs=[];}
+    var c=cs[0]||{};
+    var first=(c.first||c.name||'').trim();
+    var last=(c.last||'').trim();
+    if(!last&&first.indexOf(' ')>-1){
+      var parts=first.split(/\s+/);
+      first=parts[0];
+      last=parts.slice(1).join(' ');
+    }
+    return {first:first,last:last,email:(c.email||'').trim(),title:c.title||'',phone:c.phone||''};
+  }
   exportCSV(list,[
     {label:'Account Name',fn:function(a){return a.name||'';}},
     {label:'Website',fn:function(a){return a.website||'';}},
+    {label:'Main Contact First Name',fn:function(a){return primary(a).first;}},
+    {label:'Main Contact Last Name',fn:function(a){return primary(a).last;}},
+    {label:'Main Contact Email',fn:function(a){return primary(a).email;}},
+    {label:'Main Contact Title',fn:function(a){return primary(a).title;}},
+    {label:'Main Contact Phone',fn:function(a){return primary(a).phone;}},
     {label:'One-time ARR (Hardware)',fn:function(a){
       // Zero out non-Practice-pays arrangements per CEO handoff decision
       var arr=a.hw_arrangement||'Practice pays';
@@ -2477,7 +2496,7 @@ function rReports(el,act){
     '<div style="padding:18px 22px;display:grid;grid-template-columns:1fr 1fr;gap:16px">'+
       '<div style="padding:16px;background:var(--bg);border:1px solid var(--line);border-radius:var(--r)">'+
         '<div style="font-family:var(--f-ui);font-size:14px;font-weight:700;color:var(--ink);margin-bottom:4px">Accounts</div>'+
-        '<div style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.5">Name, website, hardware ARR, subscription ARR, start, renewal, term<br><strong style="color:var(--ink);font-weight:700">'+sfAccounts.length+'</strong> account'+(sfAccounts.length===1?'':'s')+'</div>'+
+        '<div style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.5">Name, website, main contact, hardware ARR, subscription ARR, start, renewal, term<br><strong style="color:var(--ink);font-weight:700">'+sfAccounts.length+'</strong> account'+(sfAccounts.length===1?'':'s')+'</div>'+
         '<button class="btn btn-sm btn-primary" onclick="exportSalesforceAccounts()">Download accounts.csv</button>'+
       '</div>'+
       '<div style="padding:16px;background:var(--bg);border:1px solid var(--line);border-radius:var(--r)">'+
