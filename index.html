@@ -1159,6 +1159,7 @@ function matchAccount(a,query){
   if((a.state||'').toLowerCase().includes(q))return true;
   if((a.tags||'').toLowerCase().includes(q))return true;
   if((a.referral_source||'').toLowerCase().includes(q))return true;
+  if((a.alcon_crm||'').toLowerCase().includes(q))return true;
   if((a.launch_window||'').toLowerCase().includes(q))return true;
   // Search contacts: first name, last name, full name, email
   var contacts=[];try{contacts=JSON.parse(a.contacts_json||'[]');}catch(e){}
@@ -1293,6 +1294,18 @@ function togglePaidDate(){
   } else {
     dt.disabled=true;
     dt.style.opacity='.5';
+  }
+}
+function toggleCheckinSkip(){
+  var cb=document.getElementById('fcs');
+  var dt=document.getElementById('fc3');
+  if(!cb||!dt)return;
+  if(cb.checked){
+    dt.disabled=true;
+    dt.style.opacity='.5';
+  } else {
+    dt.disabled=false;
+    dt.style.opacity='1';
   }
 }
 function updateArrangement(){
@@ -1694,6 +1707,7 @@ function logActivity(acc,what){
   return JSON.stringify(log.slice(0,50));
 }
 function ciStatus(a){
+  if(a.checkin_skip)return'<span style="color:var(--muted);font-style:italic;font-size:12.5px">N/A — skipped</span>';
   if(!a.checkin_30_date)return'—';
   var d=daysFrom(a.checkin_30_date);
   if(a.checkin_30_done)return'<span style="color:var(--ok);font-weight:600">✓ Done</span>';
@@ -1823,10 +1837,10 @@ function rDash(el,act){
     var d=daysFrom(a.renewal_date);
     alerts+='<div class="alert-row danger"><span class="a-text"><span class="a-dot"></span><strong>'+esc(a.name)+'</strong> — '+(d<0?'renewal OVERDUE by '+Math.abs(d)+' day'+(Math.abs(d)===1?'':'s')+' · '+fmt(a.renewal_date):'renewal in '+d+' day'+(d===1?'':'s')+' · '+fmt(a.renewal_date))+'</span>'+vBtn(a.id)+'</div>';
   });
-  impl.filter(function(a){return a.stage==='Evaluation'&&daysFrom(a.checkin_30_date)!==null&&daysFrom(a.checkin_30_date)<0&&!a.checkin_30_done;}).forEach(function(a){
+  impl.filter(function(a){return a.stage==='Evaluation'&&!a.checkin_skip&&daysFrom(a.checkin_30_date)!==null&&daysFrom(a.checkin_30_date)<0&&!a.checkin_30_done;}).forEach(function(a){
     alerts+='<div class="alert-row danger"><span class="a-text"><span class="a-dot"></span><strong>'+esc(a.name)+'</strong> — Eval Check-In missed, due '+fmt(a.checkin_30_date)+'</span>'+vBtn(a.id)+'</div>';
   });
-  impl.filter(function(a){return a.stage==='Evaluation'&&daysFrom(a.checkin_30_date)!==null&&daysFrom(a.checkin_30_date)>=0&&daysFrom(a.checkin_30_date)<=7&&!a.checkin_30_done;}).forEach(function(a){
+  impl.filter(function(a){return a.stage==='Evaluation'&&!a.checkin_skip&&daysFrom(a.checkin_30_date)!==null&&daysFrom(a.checkin_30_date)>=0&&daysFrom(a.checkin_30_date)<=7&&!a.checkin_30_done;}).forEach(function(a){
     var d=daysFrom(a.checkin_30_date);
     alerts+='<div class="alert-row warn"><span class="a-text"><span class="a-dot"></span><strong>'+esc(a.name)+'</strong> — Eval Check-In due in '+d+'d</span>'+vBtn(a.id)+'</div>';
   });
@@ -2047,11 +2061,11 @@ function rImpl(el,act){
   if(q)list=list.filter(function(a){return matchAccount(a,q);});
   list=applyTagFilter(list);
   if(fs!=='all')list=list.filter(function(a){return a.stage===fs;});
-  list=srt(list,{name:function(a){return a.name;},stage:function(a){return a.stage;},go_live:function(a){return a.go_live_date?'A:'+a.go_live_date:(a.launch_window?'B:'+a.launch_window:'C:');},checkin:function(a){return a.checkin_30_date||'';},eval_end:function(a){return a.eval_end_date||'';},impl_manager:function(a){return a.impl_manager||'';},kit_count:function(a){return a.kit_count||0;},hw_source:function(a){return a.hw_arrangement||'Practice pays';},sub:function(a){var amt=parseC(a.sub_amount)||0;return a.sub_type==='Monthly'?amt*12:amt;},paid:function(a){return a.hardware_paid?2:(a.go_live_date&&daysFrom(a.go_live_date)<=0?0:1);}});
+  list=srt(list,{name:function(a){return a.name;},stage:function(a){return a.stage;},go_live:function(a){return a.go_live_date?'A:'+a.go_live_date:(a.launch_window?'B:'+a.launch_window:'C:');},checkin:function(a){return a.checkin_30_date||'';},eval_end:function(a){return a.eval_end_date||'';},impl_manager:function(a){return a.impl_manager||'';},alcon_crm:function(a){return a.alcon_crm||'';},kit_count:function(a){return a.kit_count||0;},hw_source:function(a){return a.hw_arrangement||'Practice pays';},sub:function(a){var amt=parseC(a.sub_amount)||0;return a.sub_type==='Monthly'?amt*12:amt;},paid:function(a){return a.hardware_paid?2:(a.go_live_date&&daysFrom(a.go_live_date)<=0?0:1);}});
   var rows='';
   list.forEach(function(a){
     var ed=daysFrom(a.eval_end_date);
-    var ciBtn=a.stage==='Evaluation'?'<button class="btn btn-sm" style="margin-left:8px;'+(a.checkin_30_done?'background:var(--lime-wash);color:var(--lime-ink);border-color:var(--lime)':'')+'" data-id="'+a.id+'" onclick="event.stopPropagation();toggleCI(this.dataset.id)">'+(a.checkin_30_done?'Undo check-in':'Check-in done')+'</button>':'';
+    var ciBtn=(a.stage==='Evaluation'&&!a.checkin_skip)?'<button class="btn btn-sm" style="margin-left:8px;'+(a.checkin_30_done?'background:var(--lime-wash);color:var(--lime-ink);border-color:var(--lime)':'')+'" data-id="'+a.id+'" onclick="event.stopPropagation();toggleCI(this.dataset.id)">'+(a.checkin_30_done?'Undo check-in':'Check-in done')+'</button>':'';
     var subCell;
     if(a.sub_type==='No charge')subCell='<span class="badge b-nocharge">No charge</span>';
     else if(a.sub_amount&&a.sub_type){
@@ -2060,10 +2074,10 @@ function rImpl(el,act){
     } else {
       subCell='<span style="color:var(--warn-ink);font-size:11px;font-weight:600">missing</span>';
     }
-    rows+=trO(a.id)+'<td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' · '+esc(a.state):'')+'</div></td><td>'+badge(a.stage)+'</td><td>'+goLiveCell(a)+'</td><td>'+ciStatus(a)+ciBtn+'</td><td>'+(a.eval_end_date?'<span class="'+(ed!==null&&ed<=10?'warn':'')+'">'+fmt(a.eval_end_date)+' '+dl(ed)+'</span>':'—')+'</td><td>'+esc(a.impl_manager||'—')+'</td><td>'+(a.kit_count||'—')+'</td><td>'+hwSourceShort(a)+'</td><td>'+hwPayStatusShort(a)+'</td><td>'+subCell+'</td><td>'+eBtn(a.id)+'</td></tr>';
+    rows+=trO(a.id)+'<td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' · '+esc(a.state):'')+'</div></td><td>'+badge(a.stage)+'</td><td>'+goLiveCell(a)+'</td><td>'+ciStatus(a)+ciBtn+'</td><td>'+(a.eval_end_date?'<span class="'+(ed!==null&&ed<=10?'warn':'')+'">'+fmt(a.eval_end_date)+' '+dl(ed)+'</span>':'—')+'</td><td>'+esc(a.impl_manager||'—')+'</td><td style="color:var(--text-2)">'+esc(a.alcon_crm||'—')+'</td><td>'+(a.kit_count||'—')+'</td><td>'+hwSourceShort(a)+'</td><td>'+hwPayStatusShort(a)+'</td><td>'+subCell+'</td><td>'+eBtn(a.id)+'</td></tr>';
   });
   var stageOpts=IMPL.map(function(s){return '<option value="'+s+'"'+(fs===s?' selected':'')+'>'+s+'</option>';}).join('');
-  el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search account, contact, email…" value="'+esc(q)+'" oninput="searchInput(this.value)"><select class="finput" style="width:200px" onchange="fs=this.value;render()"><option value="all">All stages</option>'+stageOpts+'</select></div><div class="card"><div style="overflow-x:auto"><table><thead><tr>'+th('name','Account','16%')+th('stage','Stage','10%')+th('go_live','Go-live','8%')+th('checkin','Eval Check-In','13%')+th('eval_end','Eval end','10%')+th('impl_manager','Impl. mgr','8%')+th('kit_count','Kits','5%')+th('hw_source','HW source','9%')+th('paid','HW paid','9%')+th('sub','Sub forecast','8%')+'<th style="width:4%"></th></tr></thead><tbody>'+(list.length?rows:'<tr><td colspan="11" class="empty">No accounts in implementation.</td></tr>')+'</tbody></table></div></div>';
+  el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search account, contact, email…" value="'+esc(q)+'" oninput="searchInput(this.value)"><select class="finput" style="width:200px" onchange="fs=this.value;render()"><option value="all">All stages</option>'+stageOpts+'</select></div><div class="card"><div style="overflow-x:auto"><table><thead><tr>'+th('name','Account','15%')+th('stage','Stage','9%')+th('go_live','Go-live','8%')+th('checkin','Eval Check-In','12%')+th('eval_end','Eval end','9%')+th('impl_manager','Impl. mgr','8%')+th('alcon_crm','Alcon CRM','9%')+th('kit_count','Kits','5%')+th('hw_source','HW source','8%')+th('paid','HW paid','8%')+th('sub','Sub forecast','7%')+'<th style="width:4%"></th></tr></thead><tbody>'+(list.length?rows:'<tr><td colspan="12" class="empty">No accounts in implementation.</td></tr>')+'</tbody></table></div></div>';
 }
 
 function rActive(el,act){
@@ -2238,6 +2252,144 @@ function rRenewals(el,act){
   el.innerHTML=html||'<div class="empty">No active accounts to track.</div>';
 }
 
+function gatherEmails(accList){
+  // Returns an array of {account, name, title, email, stage, tags} rows for every contact with an email, deduped by email (lowercase)
+  var seen={};
+  var rows=[];
+  accList.forEach(function(a){
+    var contacts=[];
+    try{contacts=JSON.parse(a.contacts_json||'[]');}catch(e){contacts=[];}
+    contacts.forEach(function(c){
+      var email=(c.email||'').trim();
+      if(!email)return;
+      var key=email.toLowerCase();
+      if(seen[key])return;
+      seen[key]=true;
+      var first=(c.first||c.name||'').trim();
+      var last=(c.last||'').trim();
+      var full=(first+' '+last).trim()||'(no name)';
+      rows.push({account:a.name||'',name:full,title:c.title||'',email:email,stage:a.stage||'',tags:a.tags||''});
+    });
+  });
+  return rows;
+}
+function getEmailListAccounts(which){
+  if(which==='customer')return accs.filter(function(a){return a.stage==='Active'||IMPL.includes(a.stage);});
+  if(which==='prospect')return accs.filter(function(a){return SALES.includes(a.stage)&&a.stage!=='Deal won';});
+  return [];
+}
+function exportEmailListCSV(which){
+  var rows=gatherEmails(getEmailListAccounts(which));
+  if(!rows.length){alert('No emails found for this list.');return;}
+  var filename=which==='customer'?'customer-emails.csv':'prospect-emails.csv';
+  exportCSV(rows,[
+    {label:'Account',fn:function(r){return r.account;}},
+    {label:'Contact',fn:function(r){return r.name;}},
+    {label:'Title',fn:function(r){return r.title;}},
+    {label:'Email',fn:function(r){return r.email;}},
+    {label:'Stage',fn:function(r){return r.stage;}},
+    {label:'Tags',fn:function(r){return r.tags;}}
+  ],filename);
+}
+function copyEmailList(which){
+  var rows=gatherEmails(getEmailListAccounts(which));
+  if(!rows.length){alert('No emails found for this list.');return;}
+  var list=rows.map(function(r){return r.email;}).join(', ');
+  // Clipboard write with fallback
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(list).then(function(){
+      alert('Copied '+rows.length+' email'+(rows.length===1?'':'s')+' to clipboard, comma-separated.\n\nPaste into your email client\'s To: or Bcc: field.');
+    }).catch(function(){promptCopy(list,rows.length);});
+  } else {
+    promptCopy(list,rows.length);
+  }
+}
+function promptCopy(text,count){
+  // Fallback: show the text in a prompt the user can copy from
+  window.prompt(count+' emails — press Cmd+C / Ctrl+C to copy:',text);
+}
+function exportSalesforceAccounts(){
+  // Active + Implementation accounts, formatted for Salesforce import
+  var list=accs.filter(function(a){return a.stage==='Active'||IMPL.includes(a.stage);});
+  if(!list.length){alert('No accounts to export.');return;}
+  // Sort by name for predictable file order
+  list=list.slice().sort(function(a,b){return (a.name||'').localeCompare(b.name||'');});
+  // Helper: get the primary (first) contact for an account, splitting first/last if needed
+  function primary(a){
+    var cs=[];
+    try{cs=JSON.parse(a.contacts_json||'[]');}catch(e){cs=[];}
+    var c=cs[0]||{};
+    var first=(c.first||c.name||'').trim();
+    var last=(c.last||'').trim();
+    if(!last&&first.indexOf(' ')>-1){
+      var parts=first.split(/\s+/);
+      first=parts[0];
+      last=parts.slice(1).join(' ');
+    }
+    return {first:first,last:last,email:(c.email||'').trim(),title:c.title||'',phone:c.phone||''};
+  }
+  exportCSV(list,[
+    {label:'Account Name',fn:function(a){return a.name||'';}},
+    {label:'Website',fn:function(a){return a.website||'';}},
+    {label:'Main Contact First Name',fn:function(a){return primary(a).first;}},
+    {label:'Main Contact Last Name',fn:function(a){return primary(a).last;}},
+    {label:'Main Contact Email',fn:function(a){return primary(a).email;}},
+    {label:'Main Contact Title',fn:function(a){return primary(a).title;}},
+    {label:'Main Contact Phone',fn:function(a){return primary(a).phone;}},
+    {label:'One-time ARR (Hardware)',fn:function(a){
+      // Zero out non-Practice-pays arrangements per CEO handoff decision
+      var arr=a.hw_arrangement||'Practice pays';
+      if(arr!=='Practice pays')return 0;
+      return parseC(a.hardware_cost)||0;
+    }},
+    {label:'Subscription ARR',fn:function(a){
+      var amt=parseC(a.sub_amount)||0;
+      if(a.sub_type==='Monthly')return amt*12;
+      if(a.sub_type==='Yearly')return amt;
+      return 0; // No charge or blank
+    }},
+    {label:'Start Date',fn:function(a){return a.subscription_start_date||'';}},
+    {label:'Renewal Date',fn:function(a){return a.renewal_date||'';}},
+    {label:'Term',fn:function(a){
+      if(a.sub_type==='Monthly')return 'Monthly';
+      if(a.sub_type==='Yearly')return 'Annual';
+      if(a.sub_type==='No charge')return 'No charge';
+      return '';
+    }},
+    {label:'Stage',fn:function(a){return a.stage||'';}}
+  ],'greenman-accounts-'+new Date().toISOString().split('T')[0]+'.csv');
+}
+function exportSalesforceContacts(){
+  // One row per contact for Active + Implementation accounts
+  var list=accs.filter(function(a){return a.stage==='Active'||IMPL.includes(a.stage);});
+  list=list.slice().sort(function(a,b){return (a.name||'').localeCompare(b.name||'');});
+  var rows=[];
+  list.forEach(function(a){
+    var contacts=[];
+    try{contacts=JSON.parse(a.contacts_json||'[]');}catch(e){contacts=[];}
+    contacts.forEach(function(c){
+      var email=(c.email||'').trim();
+      if(!email)return; // skip contacts without emails
+      var first=(c.first||c.name||'').trim();
+      var last=(c.last||'').trim();
+      // If "first" field contains both names, try to split
+      if(!last&&first.indexOf(' ')>-1){
+        var parts=first.split(/\s+/);
+        first=parts[0];
+        last=parts.slice(1).join(' ');
+      }
+      rows.push({first:first,last:last,email:email,title:c.title||'',account:a.name||''});
+    });
+  });
+  if(!rows.length){alert('No contacts with emails to export.');return;}
+  exportCSV(rows,[
+    {label:'First Name',fn:function(r){return r.first;}},
+    {label:'Last Name',fn:function(r){return r.last;}},
+    {label:'Email',fn:function(r){return r.email;}},
+    {label:'Title',fn:function(r){return r.title;}},
+    {label:'Account Name',fn:function(r){return r.account;}}
+  ],'greenman-contacts-'+new Date().toISOString().split('T')[0]+'.csv');
+}
 function rReports(el,act){
   act.innerHTML='<button class="btn btn-navy" onclick="exportReports()">Export CSV</button>';
   var active=accs.filter(function(a){return a.stage==='Active';});
@@ -2318,7 +2470,44 @@ function rReports(el,act){
   });
   var srcOpts=sources.map(function(s){return '<option value="'+esc(s)+'"'+(sf===s?' selected':'')+'>'+esc(s)+'</option>';}).join('');
 
+  // Email list counts
+  var customerEmails=gatherEmails(accs.filter(function(a){return a.stage==='Active'||IMPL.includes(a.stage);}));
+  var prospectEmails=gatherEmails(accs.filter(function(a){return SALES.includes(a.stage)&&a.stage!=='Deal won';}));
+  // Salesforce handoff counts
+  var sfAccounts=accs.filter(function(a){return a.stage==='Active'||IMPL.includes(a.stage);});
+  var sfContacts=0;
+  sfAccounts.forEach(function(a){var cs=[];try{cs=JSON.parse(a.contacts_json||'[]');}catch(e){}cs.forEach(function(c){if((c.email||'').trim())sfContacts++;});});
   el.innerHTML=
+    '<div class="card" style="margin-bottom:24px;background:oklch(97% 0.03 230);border-color:oklch(85% 0.05 230)">'+
+    '<div class="card-hdr" style="border-bottom-color:oklch(85% 0.05 230)"><span class="card-title" style="color:oklch(28% 0.10 230)">Email list exports</span><span style="font-family:var(--f-mono);font-size:10.5px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase">For campaigns · all contacts, deduped</span></div>'+
+    '<div style="padding:18px 22px;display:grid;grid-template-columns:1fr 1fr;gap:16px">'+
+      '<div style="padding:16px;background:var(--bg);border:1px solid var(--line);border-radius:var(--r)">'+
+        '<div style="font-family:var(--f-ui);font-size:14px;font-weight:700;color:var(--ink);margin-bottom:4px">Customer emails</div>'+
+        '<div style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.5">Active + Implementation accounts<br><strong style="color:var(--ink);font-weight:700">'+customerEmails.length+'</strong> unique email'+(customerEmails.length===1?'':'s')+'</div>'+
+        '<div style="display:flex;gap:6px"><button class="btn btn-sm btn-primary" onclick="exportEmailListCSV(\'customer\')">Download CSV</button><button class="btn btn-sm" onclick="copyEmailList(\'customer\')">Copy emails</button></div>'+
+      '</div>'+
+      '<div style="padding:16px;background:var(--bg);border:1px solid var(--line);border-radius:var(--r)">'+
+        '<div style="font-family:var(--f-ui);font-size:14px;font-weight:700;color:var(--ink);margin-bottom:4px">Prospect emails</div>'+
+        '<div style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.5">Sales Pipeline + Deal lost (for re-engagement)<br><strong style="color:var(--ink);font-weight:700">'+prospectEmails.length+'</strong> unique email'+(prospectEmails.length===1?'':'s')+'</div>'+
+        '<div style="display:flex;gap:6px"><button class="btn btn-sm btn-primary" onclick="exportEmailListCSV(\'prospect\')">Download CSV</button><button class="btn btn-sm" onclick="copyEmailList(\'prospect\')">Copy emails</button></div>'+
+      '</div>'+
+    '</div></div>'+
+    '<div class="card" style="margin-bottom:24px;background:oklch(97% 0.03 285);border-color:oklch(85% 0.05 285)">'+
+    '<div class="card-hdr" style="border-bottom-color:oklch(85% 0.05 285)"><span class="card-title" style="color:oklch(28% 0.10 285)">Salesforce handoff</span><span style="font-family:var(--f-mono);font-size:10.5px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase">Active + Implementation · for acquirer\'s CRM</span></div>'+
+    '<div style="padding:18px 22px;display:grid;grid-template-columns:1fr 1fr;gap:16px">'+
+      '<div style="padding:16px;background:var(--bg);border:1px solid var(--line);border-radius:var(--r)">'+
+        '<div style="font-family:var(--f-ui);font-size:14px;font-weight:700;color:var(--ink);margin-bottom:4px">Accounts</div>'+
+        '<div style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.5">Name, website, main contact, hardware ARR, subscription ARR, start, renewal, term<br><strong style="color:var(--ink);font-weight:700">'+sfAccounts.length+'</strong> account'+(sfAccounts.length===1?'':'s')+'</div>'+
+        '<button class="btn btn-sm btn-primary" onclick="exportSalesforceAccounts()">Download accounts.csv</button>'+
+      '</div>'+
+      '<div style="padding:16px;background:var(--bg);border:1px solid var(--line);border-radius:var(--r)">'+
+        '<div style="font-family:var(--f-ui);font-size:14px;font-weight:700;color:var(--ink);margin-bottom:4px">Contacts</div>'+
+        '<div style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.5">First name, last name, email, account name<br><strong style="color:var(--ink);font-weight:700">'+sfContacts+'</strong> contact'+(sfContacts===1?'':'s')+' with emails</div>'+
+        '<button class="btn btn-sm btn-primary" onclick="exportSalesforceContacts()">Download contacts.csv</button>'+
+      '</div>'+
+    '</div>'+
+    '<div style="padding:0 22px 18px;font-size:11.5px;color:var(--muted);line-height:1.6;font-weight:500">Hardware ARR shows $0 for Alcon-supplied, Loaner, and Razer Laptop arrangements (Greenman wasn\'t paid for those units).</div>'+
+    '</div>'+
     '<div class="report-grid">'+
     mCard('Hardware revenue',hwRev?'$'+fmtC(hwRev):'$0','Active accounts','drill-hw')+
     mCard('Annual subscription',subRev?'$'+fmtC(subRev):'$0','Annualized','drill-sub')+
@@ -2949,7 +3138,7 @@ function collectEvents(year,month){
       }
     }
     // 30-day check-in
-    if(a.checkin_30_date){
+    if(a.checkin_30_date&&!a.checkin_skip){
       var cd=parseDateLocal(a.checkin_30_date);
       if(cd&&cd>=monthStart&&cd<=monthEnd){
         all.push({id:'auto-ci-'+a.id,manager:mgr,type:'30 Day Check-In',start:cd,end:cd,title:a.name,notes:'Eval Check-In',accountId:a.id,source:'crm'});
@@ -3438,6 +3627,7 @@ function showForm(acc){
     '<div class="fg3" style="margin-top:14px"><div class="fgrp"><label class="flbl">City</label><input class="finput" id="fci" value="'+esc(a.city||'')+'"></div><div class="fgrp"><label class="flbl">State</label><input class="finput" id="fst" value="'+esc(a.state||'')+'"></div><div class="fgrp"><label class="flbl">Zip</label><input class="finput" id="fzp" value="'+esc(a.zip||'')+'"></div></div>'+
     '<div class="fg" style="margin-top:14px"><div class="fgrp"><label class="flbl">Phone</label><input class="finput" id="fph" value="'+esc(a.phone||'')+'"></div><div class="fgrp"><label class="flbl">Website</label><input class="finput" id="fwb" value="'+esc(a.website||'')+'"></div></div>'+
     '<div class="fgrp full" style="margin-top:14px"><label class="flbl"><span id="fref-lbl">Referral source</span> <span id="fref-hint" style="color:var(--muted);font-size:10px">who provided this lead — auto-labels based on Source</span></label><input class="finput" id="fref" value="'+esc(a.referral_source||'')+'" placeholder="Name or company"></div>'+
+    '<div class="fgrp full" style="margin-top:14px"><label class="flbl">Alcon CRM <span style="color:var(--muted);font-size:10px">who at Alcon manages this account relationship · leave blank if none assigned</span></label><input class="finput" id="facrm" value="'+esc(a.alcon_crm||'')+'" placeholder="Alcon CRM name"></div>'+
     '<div class="fgrp full" style="margin-top:14px"><label class="flbl">Tags <span style="color:var(--muted);font-size:10px">comma-separated · for grouping & re-engagement campaigns</span></label><div class="tag-input-wrap"><input class="finput" id="ftags" autocomplete="off" placeholder="e.g. conference-invite, q1-2027, fl-region" value="'+esc(a.tags||'')+'" oninput="updateTagSuggest(this)" onfocus="updateTagSuggest(this)" onblur="setTimeout(hideTagSuggest,200)"><div id="tag-suggest" class="tag-suggest"></div></div></div>'+
     '<div class="fsec">Pipeline stage</div>'+
     '<div class="fg"><div class="fgrp"><label class="flbl">Pipeline type</label><select class="finput" id="fpt" onchange="updStage()"><option value="sales"'+(pt==='sales'?' selected':'')+'>Sales Pipeline</option><option value="impl"'+(pt==='impl'?' selected':'')+'>Implementation</option><option value="active"'+(pt==='active'?' selected':'')+'>Active account</option></select></div>'+
@@ -3451,7 +3641,7 @@ function showForm(acc){
     '<div class="fgrp"><label class="flbl">Go-live date</label><input class="finput" id="fgl" type="date" value="'+(a.go_live_date||'')+'" data-prev="'+(a.go_live_date||'')+'" onchange="autoD()"></div>'+
     '<div class="fgrp"><label class="flbl">Go-live end date <span style="color:var(--lime-ink);font-size:10px">auto · for multi-day installs</span></label><input class="finput" id="fgle" type="date" value="'+(a.go_live_end_date||(a.go_live_date?addDays(a.go_live_date,2):''))+'" data-prev-start="'+(a.go_live_date||'')+'"></div>'+
     '<div class="fgrp full"><label class="flbl">Target launch window <span style="color:var(--muted);font-size:10px">free-form when Go-live isn\'t scheduled yet — e.g. "End of Oct", "Q1 2027", "Post-remodel"</span></label><input class="finput" id="flw" value="'+esc(a.launch_window||'')+'" placeholder="Rough timing estimate"></div>'+
-    '<div class="fgrp"><label class="flbl">Eval Check-In <span style="color:var(--lime-ink);font-size:10px">auto · 2 wks post go-live · editable</span></label><input class="finput" id="fc3" type="date" value="'+(a.checkin_30_date||'')+'"></div>'+
+    '<div class="fgrp"><label class="flbl">Eval Check-In <span style="color:var(--lime-ink);font-size:10px">auto · 2 wks post go-live · editable</span></label><input class="finput" id="fc3" type="date" value="'+(a.checkin_30_date||'')+'" '+(a.checkin_skip?'disabled style="opacity:.5"':'')+'><label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:11.5px;font-weight:500;color:var(--text-2);margin-top:6px"><input type="checkbox" id="fcs" '+(a.checkin_skip?'checked':'')+' onchange="toggleCheckinSkip()" style="cursor:pointer;accent-color:var(--lime);width:14px;height:14px"> Not needed / skip check-in</label></div>'+
     '<div class="fgrp"><label class="flbl">Evaluation end <span style="color:var(--lime-ink);font-size:10px">auto</span></label><input class="finput" id="fe6" type="date" value="'+(a.eval_end_date||'')+'"></div>'+
     '<div class="fgrp"><label class="flbl">Number of kits</label><input class="finput" id="fkc" type="text" value="'+(a.kit_count||'')+'"></div>'+
     '<div class="fgrp"><label class="flbl">Hardware cost ($)</label><input class="finput" id="fhc" type="text" placeholder="e.g. 5,000" value="'+(a.hardware_cost?fmtC(a.hardware_cost):'')+'"></div>'+
@@ -3525,6 +3715,7 @@ async function saveAcc(eid){
     phone:document.getElementById('fph').value.trim()||null,
     website:document.getElementById('fwb').value.trim()||null,
     referral_source:document.getElementById('fref')?document.getElementById('fref').value.trim()||null:null,
+    alcon_crm:document.getElementById('facrm')?document.getElementById('facrm').value.trim()||null:null,
     stage:newStage,
     deal_value:parseC(document.getElementById('fdv').value),
     lost_reason:document.getElementById('flr').value||null,
@@ -3536,6 +3727,7 @@ async function saveAcc(eid){
     go_live_end_date:document.getElementById('fgle').value||null,
     launch_window:document.getElementById('flw')?(document.getElementById('flw').value||'').trim()||null:null,
     checkin_30_date:document.getElementById('fc3').value||null,
+    checkin_skip:document.getElementById('fcs')?document.getElementById('fcs').checked:false,
     eval_end_date:document.getElementById('fe6').value||null,
     kit_count:document.getElementById('fkc').value?parseInt(document.getElementById('fkc').value):null,
     hardware_cost:parseC(document.getElementById('fhc').value),
@@ -3683,6 +3875,7 @@ function openDetail(id){
     '<div id="dc-c">'+ch+'</div>'+
     '<div id="dc-i" style="display:none"><div class="dgrid">'+
     '<div class="dlbl">Impl. manager</div><div class="dval">'+esc(a.impl_manager||'—')+'</div>'+
+    '<div class="dlbl">Alcon CRM</div><div class="dval">'+esc(a.alcon_crm||'—')+'</div>'+
     '<div class="dlbl">Signed date</div><div class="dval">'+fmt(a.signed_date)+'</div>'+
     '<div class="dlbl">Go-live date</div><div class="dval">'+goLiveCell(a)+'</div>'+
     '<div class="dlbl">Eval Check-In</div><div class="dval">'+ciStatus(a)+'</div>'+
