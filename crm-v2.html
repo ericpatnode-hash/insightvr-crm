@@ -1159,6 +1159,7 @@ function matchAccount(a,query){
   if((a.state||'').toLowerCase().includes(q))return true;
   if((a.tags||'').toLowerCase().includes(q))return true;
   if((a.referral_source||'').toLowerCase().includes(q))return true;
+  if((a.alcon_crm||'').toLowerCase().includes(q))return true;
   if((a.launch_window||'').toLowerCase().includes(q))return true;
   // Search contacts: first name, last name, full name, email
   var contacts=[];try{contacts=JSON.parse(a.contacts_json||'[]');}catch(e){}
@@ -2060,7 +2061,7 @@ function rImpl(el,act){
   if(q)list=list.filter(function(a){return matchAccount(a,q);});
   list=applyTagFilter(list);
   if(fs!=='all')list=list.filter(function(a){return a.stage===fs;});
-  list=srt(list,{name:function(a){return a.name;},stage:function(a){return a.stage;},go_live:function(a){return a.go_live_date?'A:'+a.go_live_date:(a.launch_window?'B:'+a.launch_window:'C:');},checkin:function(a){return a.checkin_30_date||'';},eval_end:function(a){return a.eval_end_date||'';},impl_manager:function(a){return a.impl_manager||'';},kit_count:function(a){return a.kit_count||0;},hw_source:function(a){return a.hw_arrangement||'Practice pays';},sub:function(a){var amt=parseC(a.sub_amount)||0;return a.sub_type==='Monthly'?amt*12:amt;},paid:function(a){return a.hardware_paid?2:(a.go_live_date&&daysFrom(a.go_live_date)<=0?0:1);}});
+  list=srt(list,{name:function(a){return a.name;},stage:function(a){return a.stage;},go_live:function(a){return a.go_live_date?'A:'+a.go_live_date:(a.launch_window?'B:'+a.launch_window:'C:');},checkin:function(a){return a.checkin_30_date||'';},eval_end:function(a){return a.eval_end_date||'';},impl_manager:function(a){return a.impl_manager||'';},alcon_crm:function(a){return a.alcon_crm||'';},kit_count:function(a){return a.kit_count||0;},hw_source:function(a){return a.hw_arrangement||'Practice pays';},sub:function(a){var amt=parseC(a.sub_amount)||0;return a.sub_type==='Monthly'?amt*12:amt;},paid:function(a){return a.hardware_paid?2:(a.go_live_date&&daysFrom(a.go_live_date)<=0?0:1);}});
   var rows='';
   list.forEach(function(a){
     var ed=daysFrom(a.eval_end_date);
@@ -2073,10 +2074,10 @@ function rImpl(el,act){
     } else {
       subCell='<span style="color:var(--warn-ink);font-size:11px;font-weight:600">missing</span>';
     }
-    rows+=trO(a.id)+'<td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' · '+esc(a.state):'')+'</div></td><td>'+badge(a.stage)+'</td><td>'+goLiveCell(a)+'</td><td>'+ciStatus(a)+ciBtn+'</td><td>'+(a.eval_end_date?'<span class="'+(ed!==null&&ed<=10?'warn':'')+'">'+fmt(a.eval_end_date)+' '+dl(ed)+'</span>':'—')+'</td><td>'+esc(a.impl_manager||'—')+'</td><td>'+(a.kit_count||'—')+'</td><td>'+hwSourceShort(a)+'</td><td>'+hwPayStatusShort(a)+'</td><td>'+subCell+'</td><td>'+eBtn(a.id)+'</td></tr>';
+    rows+=trO(a.id)+'<td><div class="an">'+esc(a.name)+'</div><div class="as">'+esc(a.city||'')+(a.state?' · '+esc(a.state):'')+'</div></td><td>'+badge(a.stage)+'</td><td>'+goLiveCell(a)+'</td><td>'+ciStatus(a)+ciBtn+'</td><td>'+(a.eval_end_date?'<span class="'+(ed!==null&&ed<=10?'warn':'')+'">'+fmt(a.eval_end_date)+' '+dl(ed)+'</span>':'—')+'</td><td>'+esc(a.impl_manager||'—')+'</td><td style="color:var(--text-2)">'+esc(a.alcon_crm||'—')+'</td><td>'+(a.kit_count||'—')+'</td><td>'+hwSourceShort(a)+'</td><td>'+hwPayStatusShort(a)+'</td><td>'+subCell+'</td><td>'+eBtn(a.id)+'</td></tr>';
   });
   var stageOpts=IMPL.map(function(s){return '<option value="'+s+'"'+(fs===s?' selected':'')+'>'+s+'</option>';}).join('');
-  el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search account, contact, email…" value="'+esc(q)+'" oninput="searchInput(this.value)"><select class="finput" style="width:200px" onchange="fs=this.value;render()"><option value="all">All stages</option>'+stageOpts+'</select></div><div class="card"><div style="overflow-x:auto"><table><thead><tr>'+th('name','Account','16%')+th('stage','Stage','10%')+th('go_live','Go-live','8%')+th('checkin','Eval Check-In','13%')+th('eval_end','Eval end','10%')+th('impl_manager','Impl. mgr','8%')+th('kit_count','Kits','5%')+th('hw_source','HW source','9%')+th('paid','HW paid','9%')+th('sub','Sub forecast','8%')+'<th style="width:4%"></th></tr></thead><tbody>'+(list.length?rows:'<tr><td colspan="11" class="empty">No accounts in implementation.</td></tr>')+'</tbody></table></div></div>';
+  el.innerHTML='<div class="fbar"><input type="text" class="search" placeholder="Search account, contact, email…" value="'+esc(q)+'" oninput="searchInput(this.value)"><select class="finput" style="width:200px" onchange="fs=this.value;render()"><option value="all">All stages</option>'+stageOpts+'</select></div><div class="card"><div style="overflow-x:auto"><table><thead><tr>'+th('name','Account','15%')+th('stage','Stage','9%')+th('go_live','Go-live','8%')+th('checkin','Eval Check-In','12%')+th('eval_end','Eval end','9%')+th('impl_manager','Impl. mgr','8%')+th('alcon_crm','Alcon CRM','9%')+th('kit_count','Kits','5%')+th('hw_source','HW source','8%')+th('paid','HW paid','8%')+th('sub','Sub forecast','7%')+'<th style="width:4%"></th></tr></thead><tbody>'+(list.length?rows:'<tr><td colspan="12" class="empty">No accounts in implementation.</td></tr>')+'</tbody></table></div></div>';
 }
 
 function rActive(el,act){
@@ -3626,6 +3627,7 @@ function showForm(acc){
     '<div class="fg3" style="margin-top:14px"><div class="fgrp"><label class="flbl">City</label><input class="finput" id="fci" value="'+esc(a.city||'')+'"></div><div class="fgrp"><label class="flbl">State</label><input class="finput" id="fst" value="'+esc(a.state||'')+'"></div><div class="fgrp"><label class="flbl">Zip</label><input class="finput" id="fzp" value="'+esc(a.zip||'')+'"></div></div>'+
     '<div class="fg" style="margin-top:14px"><div class="fgrp"><label class="flbl">Phone</label><input class="finput" id="fph" value="'+esc(a.phone||'')+'"></div><div class="fgrp"><label class="flbl">Website</label><input class="finput" id="fwb" value="'+esc(a.website||'')+'"></div></div>'+
     '<div class="fgrp full" style="margin-top:14px"><label class="flbl"><span id="fref-lbl">Referral source</span> <span id="fref-hint" style="color:var(--muted);font-size:10px">who provided this lead — auto-labels based on Source</span></label><input class="finput" id="fref" value="'+esc(a.referral_source||'')+'" placeholder="Name or company"></div>'+
+    '<div class="fgrp full" style="margin-top:14px"><label class="flbl">Alcon CRM <span style="color:var(--muted);font-size:10px">who at Alcon manages this account relationship · leave blank if none assigned</span></label><input class="finput" id="facrm" value="'+esc(a.alcon_crm||'')+'" placeholder="Alcon CRM name"></div>'+
     '<div class="fgrp full" style="margin-top:14px"><label class="flbl">Tags <span style="color:var(--muted);font-size:10px">comma-separated · for grouping & re-engagement campaigns</span></label><div class="tag-input-wrap"><input class="finput" id="ftags" autocomplete="off" placeholder="e.g. conference-invite, q1-2027, fl-region" value="'+esc(a.tags||'')+'" oninput="updateTagSuggest(this)" onfocus="updateTagSuggest(this)" onblur="setTimeout(hideTagSuggest,200)"><div id="tag-suggest" class="tag-suggest"></div></div></div>'+
     '<div class="fsec">Pipeline stage</div>'+
     '<div class="fg"><div class="fgrp"><label class="flbl">Pipeline type</label><select class="finput" id="fpt" onchange="updStage()"><option value="sales"'+(pt==='sales'?' selected':'')+'>Sales Pipeline</option><option value="impl"'+(pt==='impl'?' selected':'')+'>Implementation</option><option value="active"'+(pt==='active'?' selected':'')+'>Active account</option></select></div>'+
@@ -3713,6 +3715,7 @@ async function saveAcc(eid){
     phone:document.getElementById('fph').value.trim()||null,
     website:document.getElementById('fwb').value.trim()||null,
     referral_source:document.getElementById('fref')?document.getElementById('fref').value.trim()||null:null,
+    alcon_crm:document.getElementById('facrm')?document.getElementById('facrm').value.trim()||null:null,
     stage:newStage,
     deal_value:parseC(document.getElementById('fdv').value),
     lost_reason:document.getElementById('flr').value||null,
@@ -3872,6 +3875,7 @@ function openDetail(id){
     '<div id="dc-c">'+ch+'</div>'+
     '<div id="dc-i" style="display:none"><div class="dgrid">'+
     '<div class="dlbl">Impl. manager</div><div class="dval">'+esc(a.impl_manager||'—')+'</div>'+
+    '<div class="dlbl">Alcon CRM</div><div class="dval">'+esc(a.alcon_crm||'—')+'</div>'+
     '<div class="dlbl">Signed date</div><div class="dval">'+fmt(a.signed_date)+'</div>'+
     '<div class="dlbl">Go-live date</div><div class="dval">'+goLiveCell(a)+'</div>'+
     '<div class="dlbl">Eval Check-In</div><div class="dval">'+ciStatus(a)+'</div>'+
